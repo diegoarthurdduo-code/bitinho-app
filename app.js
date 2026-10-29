@@ -290,7 +290,7 @@
   /* ---------- Telas ---------- */
   function telaInicio() {
     var alvo = alvoContinuar(), p = S.hojeQtd, meta = S.config.meta;
-    var h = '<header class="top pad"><div class="stack"><span class="eyebrow">' + saudacao() + '</span><h1 class="title-xl">Olá, ' + esc(S.nome || 'Aprendiz') + '!</h1></div>' + mascote('feliz', 64) + '</header>';
+    var h = '<header class="top pad"><div class="stack"><span class="eyebrow">' + saudacao() + '</span><h1 class="title-xl">Olá, ' + esc(S.nome || 'Aprendiz') + '!</h1></div>' + (S.foto ? '<img class="home-avatar" src="' + S.foto + '" alt="Sua foto de perfil">' : mascote('feliz', 64)) + '</header>';
     h += '<div class="chips pad"><span class="pill fire">' + ic('flame') + S.streak + (S.streak === 1 ? ' dia' : ' dias') + '</span><span class="pill bolt">' + ic('bolt') + S.xp + ' pontos</span><span class="pill">' + ic('star') + 'Nível ' + nivel() + '</span></div>';
     var dicasPc = ['Use Ctrl + Z para desfazer uma ação que acabou de fazer. Funciona em muitos editores e aplicativos.','Faça cópias dos arquivos importantes em outro local ou na nuvem. Assim, um problema no computador não apaga tudo.','Antes de clicar num link recebido por mensagem, confira quem enviou e para onde o endereço realmente aponta.','Use nomes claros para arquivos e pastas. Exemplo: trabalho-historia-outubro.docx.'];
     h += '<div class="pad"><div class="tip tip-card">' + ic('bulb') + '<div><strong>Dica de computador</strong><br>' + dicasPc[(new Date().getDate() + S.hojeQtd) % dicasPc.length] + '</div></div></div>';

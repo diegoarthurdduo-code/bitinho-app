@@ -114,6 +114,7 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 
 /* Topo */
 .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.home-avatar { width: 58px; height: 58px; flex: none; object-fit: cover; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--accent); }
 .top .stack { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
