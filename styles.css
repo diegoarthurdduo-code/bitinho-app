@@ -400,7 +400,7 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 .partes-explicadas { display: grid; gap: 9px; }
 .partes-explicadas h3 { font-size: 15px; }
 .concept-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
-.concept-list li { display: grid; gap: 3px; padding: 10px 12px; border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; background: var(--surface-2); font-size: 13px; line-height: 1.55; }
+.concept-list li { display: block; padding: 0; border: 0; border-radius: 0; background: transparent; font-size: 13px; line-height: 1.55; }
 .concept-list u { width: fit-content; color: var(--fg); font-weight: 800; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 .concept-list span { color: var(--muted); }
 .apostila-result, .practice-note { padding: 12px 14px; border-radius: var(--r-md); background: var(--accent-soft); font-size: 13px; line-height: 1.55; }
@@ -430,10 +430,27 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 .concept-list li { grid-template-columns: 25px minmax(0, 1fr); gap: 8px; align-items: start; padding: 12px; }
 .concept-list li > div { display: grid; gap: 4px; }
 .concept-step { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--accent-ink); background: var(--accent); font-size: 11px; }
+.concept-detail { overflow: hidden; border-left: 3px solid var(--accent); border-radius: 0 15px 15px 0; background: var(--surface-2); transition: background .2s, box-shadow .2s; }
+.concept-detail[open] { background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface-2)); box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 9%, transparent); }
+.concept-detail summary { display: grid; grid-template-columns: 25px minmax(0, 1fr) auto; gap: 9px; align-items: start; padding: 12px; list-style: none; cursor: pointer; }
+.concept-detail summary::-webkit-details-marker { display: none; }
+.concept-summary-text { display: grid; gap: 4px; min-width: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.concept-summary-text u { width: fit-content; color: var(--fg); font-weight: 800; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.concept-action { display: inline-flex; align-items: center; gap: 3px; padding: 4px 7px; border-radius: 999px; color: var(--accent); background: var(--bg); font-size: 10px; font-weight: 800; white-space: nowrap; }
+.concept-action b { font-size: 15px; line-height: 1; transition: transform .25s; }
+.concept-detail[open] .concept-action b { transform: rotate(180deg); }
+.concept-example-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s cubic-bezier(.2,.8,.2,1); }
+.concept-detail[open] .concept-example-panel { grid-template-rows: 1fr; }
+.concept-example { min-height: 0; overflow: hidden; padding: 0 12px 0 46px; opacity: 0; transform: translateY(-4px); transition: opacity .22s ease, transform .22s ease, padding .22s ease; }
+.concept-detail[open] .concept-example { padding-bottom: 12px; opacity: 1; transform: translateY(0); }
+.concept-example small { display: block; margin-bottom: 6px; color: var(--muted); font-size: 10px; font-weight: 700; }
+.concept-example pre { max-height: 150px; overflow: auto; margin: 0; padding: 10px 11px; border: 1px solid #34415b; border-radius: 10px; color: #c7dcff; background: #101827; font: 10px/1.6 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.concept-example code { font: inherit; }
 .apostila-result { background: color-mix(in srgb, var(--ok-bg) 75%, var(--surface)); }
 .apostila-result p, .practice-note p, .tip p { margin-top: 5px; }
 .tip p { line-height: 1.55; }
 .mindmap { position: relative; display: grid; gap: 16px; margin-top: 12px; padding: 16px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--line)); border-radius: 26px; background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 58%), var(--surface); box-shadow: var(--shadow); }
+.mindmap-bottom-title { margin-top: 18px; padding-bottom: 28px; }
 .mindmap::before { position: absolute; inset: 0; background-image: radial-gradient(color-mix(in srgb, var(--accent) 20%, transparent) .8px, transparent .8px); background-size: 17px 17px; content: ''; opacity: .28; pointer-events: none; }
 .mindmap-hub, .mindmap-roots, .mindmap-footer { position: relative; z-index: 1; }
 .mindmap-hub { display: grid; justify-items: center; gap: 5px; width: min(100%, 290px); margin: 0 auto 3px; padding: 16px 18px; border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--line)); border-radius: 20px; background: linear-gradient(135deg, var(--accent-deep), var(--accent)); color: var(--accent-ink); text-align: center; box-shadow: 0 12px 25px color-mix(in srgb, var(--accent) 22%, transparent); }
@@ -501,6 +518,7 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
   .topic-panel, .topic-toggle-icon, .mindmap-node, .mindmap-plus { transition: none !important; }
   .topic-content, .mindmap-details { animation: none !important; }
   .map-code-caret { animation: none !important; }
+  .concept-example-panel, .concept-example, .concept-action b { transition: none !important; }
 }
 .lesson-note { display: grid; gap: 12px; padding: 18px; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); }
 .lesson-note > p { line-height: 1.55; }
