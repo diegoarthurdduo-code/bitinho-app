@@ -5,6 +5,10 @@
   var APP = document.getElementById('app');
   var DISC = ((window.BITINHO && window.BITINHO.disciplinas) || []).slice().sort(function (a, b) { return a.ordem - b.ordem; });
   var KEY = 'bitinho-v1';
+  var USERS_KEY = 'bitinho-users-v1';
+  var auth = { mode: 'login', user: localStorage.getItem('bitinho-session-v1') || '' };
+  function users() { try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); } catch (_) { return {}; } }
+  function dataKey() { return KEY + ':' + (auth.user || 'guest'); }
 
   /* ---------- Índice das lições ---------- */
   var LIC = {};
@@ -43,7 +47,7 @@
   }
   function carregar() {
     var s = null;
-    try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) { s = null; }
+    try { s = JSON.parse(localStorage.getItem(dataKey())); } catch (e) { s = null; }
     if (!s || typeof s !== 'object' || !s.concluidas) s = estadoDemo();
     s.config = Object.assign({ tema: 'auto', plataforma: 'ios', lembrete: true, meta: 1 }, s.config || {});
     return s;
@@ -54,7 +58,7 @@
     if (S.hojeData !== hoje()) { S.hojeData = hoje(); S.hojeQtd = 0; }
     if (S.ultimoDia && S.streak > 0 && diasEntre(S.ultimoDia, hoje()) > 2) { S.streak = 0; retorno = true; }
   })();
-  function salvar() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* sem armazenamento */ } }
+  function salvar() { try { localStorage.setItem(dataKey(), JSON.stringify(S)); } catch (e) { /* sem armazenamento */ } }
 
   var ui = { tab: 'inicio', screen: 'inicio', params: {}, from: null, trilhaSel: {}, lesson: null, result: null };
 
@@ -197,7 +201,7 @@
   /* ---------- Navegação ---------- */
   function ir(tela, params, anim) {
     ui.screen = tela; ui.params = params || {};
-    if (tela === 'inicio' || tela === 'disciplinas' || tela === 'perfil') ui.tab = tela;
+    if (tela === 'inicio' || tela === 'disciplinas' || tela === 'ementa' || tela === 'perfil') ui.tab = tela;
     if (tela === 'trilha') ui.tab = 'disciplinas';
     render(anim || 'fwd');
   }
@@ -282,6 +286,8 @@
     var alvo = alvoContinuar(), p = S.hojeQtd, meta = S.config.meta;
     var h = '<header class="top pad"><div class="stack"><span class="eyebrow">' + saudacao() + '</span><h1 class="title-xl">Olá, ' + esc(S.nome || 'Aprendiz') + '!</h1></div>' + mascote('feliz', 64) + '</header>';
     h += '<div class="chips pad"><span class="pill fire">' + ic('flame') + S.streak + (S.streak === 1 ? ' dia' : ' dias') + '</span><span class="pill bolt">' + ic('bolt') + S.xp + ' pontos</span><span class="pill">' + ic('star') + 'Nível ' + nivel() + '</span></div>';
+    var dicasPc = ['Use Ctrl + Z para desfazer uma ação que acabou de fazer. Funciona em muitos editores e aplicativos.','Faça cópias dos arquivos importantes em outro local ou na nuvem. Assim, um problema no computador não apaga tudo.','Antes de clicar num link recebido por mensagem, confira quem enviou e para onde o endereço realmente aponta.','Use nomes claros para arquivos e pastas. Exemplo: trabalho-historia-outubro.docx.'];
+    h += '<div class="pad"><div class="tip tip-card">' + ic('bulb') + '<div><strong>Dica de computador</strong><br>' + dicasPc[(new Date().getDate() + S.hojeQtd) % dicasPc.length] + '</div></div></div>';
     if (retorno) {
       h += '<div class="pad"><div class="notice">' + ic('sparkle') + '<div><strong>Que bom ter você de volta!</strong><br>Sua sequência recomeça hoje, sem pressa. Você já estudou em ' + S.diasEstudo + ' dias e isso continua valendo.</div></div></div>';
     }
@@ -440,10 +446,36 @@
     return h + '</div></div>';
   }
 
+  var temaEmenta = 'python';
+  var conteudoEmenta = {
+    python: [
+      ['Variáveis','Uma variável guarda um valor sob um nome fácil de lembrar.','nome = "Lia"\nidade = 15\nprint(nome)','O sinal = atribui o valor. print() mostra o conteúdo na tela.','Textos usam aspas; números podem ficar sem aspas.'],
+      ['Tipos de dados','Python trabalha com textos (str), inteiros (int), decimais (float) e valores lógicos (bool).','cidade = "Recife"\ntentativas = 3\ntemperatura = 28.5\nesta_logado = True','O tipo descreve a espécie de valor.','Use type(valor) para descobrir o tipo.'],
+      ['Entrada e saída','input() pergunta algo e print() exibe uma resposta.','nome = input("Seu nome: ")\nprint("Olá, " + nome)','A resposta é guardada em nome e aparece na saudação.','input() começa como texto; use int(input(...)) para receber um inteiro.'],
+      ['Condições','if e else escolhem caminhos. Os dois-pontos abrem um bloco e a indentação define suas linhas.','idade = 16\nif idade >= 18:\n    print("Maior")\nelse:\n    print("Menor")','Como idade é menor que 18, executa o bloco else.','A indentação é parte da sintaxe Python.'],
+      ['Repetição com for','for repete instruções para cada item. range(3) produz 0, 1 e 2.','for numero in range(3):\n    print("Volta", numero)','O bloco roda três vezes e numero muda em cada volta.','range(1, 4) gera 1, 2 e 3.'],
+      ['Funções','def cria uma função e return devolve um resultado.','def dobro(numero):\n    return numero * 2\n\nprint(dobro(5))','A chamada dobro(5) devolve 10.','Parâmetros são as informações que a função recebe.']
+    ],
+    html: [
+      ['Estrutura da página','HTML organiza o conteúdo e dá significado às partes da página.','<!doctype html>\n<html lang="pt-BR">\n  <head><title>Meu site</title></head>\n  <body><h1>Olá!</h1></body>\n</html>','head guarda informações; body contém o conteúdo visível.','Tags normalmente têm abertura e fechamento.'],
+      ['Títulos e parágrafos','Use h1 a h6 para títulos e p para parágrafos.','<h1>Meu projeto</h1>\n<h2>Sobre</h2>\n<p>Aprendendo HTML.</p>','h1 é o título principal e h2 inicia uma seção.','Mantenha os níveis numa ordem coerente.'],
+      ['Links e imagens','a cria links com href. img mostra imagens e alt oferece descrição acessível.','<a href="https://exemplo.com">Visite</a>\n<img src="bitinho.png" alt="Mascote Bitinho">','href aponta o destino; src aponta o arquivo.','Escreva um alt útil para imagens informativas.'],
+      ['Listas','ul cria listas sem ordem; ol cria listas numeradas. Cada item usa li.','<ul>\n  <li>HTML</li>\n  <li>Python</li>\n</ul>','O navegador agrupa os itens como lista.','Cada item deve ficar dentro de li.'],
+      ['Formulários','label explica um campo e deve estar associado ao id dele.','<label for="email">Seu e-mail</label>\n<input id="email" type="email">','type=email ajuda o navegador a validar e oferece teclado apropriado.','Rótulos claros tornam formulários acessíveis.'],
+      ['Atributos e classes','Atributos configuram elementos; class permite selecioná-los no CSS.','<p class="destaque">Uma ideia</p>\n<a href="/ajuda" class="botao">Ajuda</a>','A classe destaque pode receber estilos pelo seletor .destaque.','HTML estrutura; CSS estiliza; JavaScript adiciona comportamento.']
+    ]
+  };
+  function telaEmenta() {
+    var lista = conteudoEmenta[temaEmenta];
+    var h = '<header class="pad ementa-head"><span class="eyebrow">Apostila para consultar quando quiser</span><h1 class="title-xl">Ementa</h1><p class="muted">Conceitos explicados com exemplos e dicas práticas.</p></header><div class="pad"><div class="seg"><button class="' + (temaEmenta === "python" ? "on" : "") + '" data-act="ementaTab" data-v="python">🐍 Python</button><button class="' + (temaEmenta === "html" ? "on" : "") + '" data-act="ementaTab" data-v="html">🌐 HTML</button></div></div><div class="pad list">';
+    lista.forEach(function (x,i) { h += '<article class="lesson-note"><span class="soft-tag">' + temaEmenta.toUpperCase() + ' · ' + (i+1) + '</span><h2 class="title-md">' + esc(x[0]) + '</h2><p>' + esc(x[1]) + '</p><div class="editor-shot"><div class="editor-top"><span>● <i>●</i> <b>●</b></span><span>' + (temaEmenta === 'python' ? 'exemplo.py' : 'index.html') + '</span><span>VS Code · exemplo</span></div><pre>' + esc(x[2]) + '</pre></div><p><strong>O que acontece?</strong> ' + esc(x[3]) + '</p><div class="tip">💡 ' + esc(x[4]) + '</div></article>'; });
+    return h + '</div>';
+  }
   function telaPerfil() {
     var xpNivel = S.xp % 100, ganhas = medalhasAtuais(), c = S.config;
     var concl = Object.keys(S.concluidas).length;
-    var h = '<header class="pad profile-h"><div class="avatar">' + mascote('feliz', 56) + '</div><div style="min-width:0"><span class="eyebrow">Seu perfil</span><input class="nameinput" id="nome" value="' + esc(S.nome) + '" maxlength="20" aria-label="Seu nome" autocomplete="off"></div></header>';
+    var h = '<header class="pad profile-h"><label class="avatar avatar-upload">' + (S.foto ? '<img src="' + S.foto + '" alt="Foto de perfil">' : mascote('feliz',56)) + '<input id="fotoPerfil" type="file" accept="image/*"></label><div style="min-width:0"><span class="eyebrow">Seu perfil</span><input class="nameinput" id="nome" value="' + esc(S.nome) + '" maxlength="20" aria-label="Seu nome" autocomplete="off"></div></header>';
+    h += '<div class="pad"><button class="btn soft" data-act="abrirEmenta">Abrir ementa de Python e HTML</button></div>';
     h += '<div class="pad"><div class="card level"><div class="row"><span>Nível ' + nivel() + '</span><span class="muted">' + xpNivel + '/100 pontos</span></div>' + bar(xpNivel) + '<span class="small muted">Faltam ' + (100 - xpNivel) + ' pontos para o nível ' + (nivel() + 1) + '.</span></div></div>';
     h += '<div class="pad grid2"><div class="stat">' + ic('flame') + '<div><b>' + S.streak + '</b><span>sequência atual</span></div></div><div class="stat">' + ic('calendar') + '<div><b>' + S.diasEstudo + '</b><span>dias estudados</span></div></div><div class="stat">' + ic('bolt') + '<div><b>' + S.xp + '</b><span>pontos</span></div></div><div class="stat">' + ic('check') + '<div><b>' + concl + '</b><span>lições concluídas</span></div></div></div>';
     h += '<div class="pad list"><h2 class="title-md">Progresso por disciplina</h2>';
@@ -457,12 +489,12 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad" style="display:flex;flex-direction:column;align-items:center;gap:4px"><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p></div>';
+    h += '<div class="pad" style="display:flex;flex-direction:column;align-items:center;gap:4px"><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p></div>';
     return h;
   }
 
   function abas() {
-    var itens = [['inicio', 'Início', 'home'], ['disciplinas', 'Disciplinas', 'grid'], ['perfil', 'Perfil', 'user']];
+    var itens = [['inicio', 'Início', 'home'], ['disciplinas', 'Disciplinas', 'grid'], ['ementa', 'Ementa', 'book'], ['perfil', 'Perfil', 'user']];
     return '<nav class="tabbar" aria-label="Navegação principal"><div class="tabbar-in pad">' + itens.map(function (i) {
       return '<button class="tab' + (ui.tab === i[0] ? ' on' : '') + '" data-act="tab" data-t="' + i[0] + '"' + (ui.tab === i[0] ? ' aria-current="page"' : '') + '><span class="pillbg">' + ic(i[2]) + '</span>' + i[1] + '</button>';
     }).join('') + '</div></nav>';
@@ -482,6 +514,7 @@
       case 'disciplinas': corpo = telaDisciplinas(); break;
       case 'trilha': corpo = telaTrilha(); break;
       case 'perfil': corpo = telaPerfil(); break;
+      case 'ementa': corpo = telaEmenta(); break;
       case 'licao': corpo = telaLicao(); cls += ' lesson'; semAbas = true; break;
       case 'resultado': corpo = telaResultado(); cls += ' result'; semAbas = true; break;
       default: corpo = telaInicio();
@@ -496,6 +529,7 @@
     var nome = document.getElementById('nome');
     if (nome) nome.addEventListener('input', function () { S.nome = nome.value; salvar(); });
     if (nome) nome.addEventListener('keydown', function (e) { if (e.key === 'Enter') nome.blur(); });
+    var foto=document.getElementById('fotoPerfil'); if(foto) foto.addEventListener('change',function(){var f=foto.files&&foto.files[0];if(!f)return;if(f.size>1500000){toast('Escolha uma imagem de até 1,5 MB.');return;}var rd=new FileReader();rd.onload=function(){S.foto=rd.result;salvar();render(null);};rd.readAsDataURL(f);});
   }
 
   /* ---------- Eventos ---------- */
@@ -505,6 +539,9 @@
     var a = el.dataset.act, L = ui.lesson, ex;
     switch (a) {
       case 'tab': ui.tab = el.dataset.t; ir(el.dataset.t, {}, 'fade'); break;
+      case 'abrirEmenta': ir('ementa', {}, 'fwd'); break;
+      case 'ementaTab': temaEmenta=el.dataset.v; render(null); break;
+      case 'sairConta': localStorage.removeItem('bitinho-session-v1'); location.reload(); break;
       case 'disc': ir('trilha', { disc: el.dataset.id }, 'fwd'); break;
       case 'voltar': ir('disciplinas', {}, 'back'); break;
       case 'trilha': ui.trilhaSel[el.dataset.d] = el.dataset.id; render(null); break;
@@ -537,5 +574,6 @@
     }
   });
 
-  render('fade');
+  function telaAuth(){APP.innerHTML='<main class="auth-screen"><section class="auth-brand">'+mascote('feliz',72)+'<span class="eyebrow">APRENDA UM POUQUINHO TODO DIA</span><h1 class="title-xl">Bitinho</h1><p>Programação e computador sem complicação.</p></section><form class="auth-card" id="authForm"><h2>'+(auth.mode==='cadastro'?'Crie sua conta':'Entre no Bitinho')+'</h2>'+(auth.mode==='cadastro'?'<label>Seu nome<input name="nome" required maxlength="20"></label>':'')+'<label>E-mail<input name="email" type="email" required></label><label>Senha<input name="senha" type="password" required minlength="6"></label><button class="btn primary" type="submit">'+(auth.mode==='cadastro'?'Criar conta':'Entrar')+'</button><button class="linkbtn" id="trocarAuth" type="button">'+(auth.mode==='cadastro'?'Já tenho conta · Entrar':'Criar uma conta')+'</button><small>Conta local: dados salvos somente neste aparelho.</small></form></main>';document.getElementById('trocarAuth').onclick=function(){auth.mode=auth.mode==='login'?'cadastro':'login';telaAuth();};document.getElementById('authForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target),email=String(f.get('email')).trim().toLowerCase(),senha=String(f.get('senha')),u=users();if(auth.mode==='cadastro'){if(u[email]){toast('Já existe uma conta com esse e-mail.');return;}u[email]={senha:senha,nome:String(f.get('nome')).trim()||'Aprendiz'};localStorage.setItem(USERS_KEY,JSON.stringify(u));auth.user=email;localStorage.setItem('bitinho-session-v1',email);S=estadoDemo();S.nome=u[email].nome;S.xp=0;S.streak=0;S.melhor=0;S.diasEstudo=0;S.ultimoDia='';S.concluidas={};salvar();}else{if(!u[email]||u[email].senha!==senha){toast('E-mail ou senha incorretos.');return;}auth.user=email;localStorage.setItem('bitinho-session-v1',email);S=carregar();}render('fade');};}
+  if(!auth.user||!users()[auth.user]){auth.user='';telaAuth();}else{S=carregar();render('fade');}
 })();

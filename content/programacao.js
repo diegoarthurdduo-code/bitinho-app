@@ -424,8 +424,27 @@ window.BITINHO.disciplinas.push({
         {
           id: 'py-m3',
           nome: 'Repetição com for',
-          emBreve: true,
-          licoes: []
+          licoes: [
+            {
+              id: 'py-5', titulo: 'Repetindo com for', minutos: 4, xp: 25,
+              fala: 'Vamos ensinar o computador a repetir uma tarefa!',
+              intro: { titulo: 'Uma instrução, várias voltas', paragrafos: ['O `for` percorre uma sequência e executa o bloco uma vez para cada item.', '`range(3)` gera 0, 1 e 2. O recuo indica o que será repetido.'], codigo: { arquivo: 'repeticao.py', lang: 'python', texto: 'for numero in range(3):\n    print("Volta", numero)', destaque: [1, 2] }, dica: 'O limite final de range não entra na contagem.' },
+              exercicios: [
+                { tipo: 'multipla', enunciado: 'Quantas vezes roda o bloco em `range(4)`?', opcoes: ['3 vezes', '4 vezes', '5 vezes', 'Uma vez'], certa: 1, porque: 'range(4) produz 0, 1, 2 e 3: quatro valores.' },
+                { tipo: 'lacunas', enunciado: 'Complete o comando de repetição.', lang: 'python', arquivo: 'cores.py', modelo: '{{0}} cor in ["azul", "roxo"]:\n    print(cor)', banco: ['for', 'if', 'while'], respostas: ['for'], porque: 'for percorre os itens da lista, um de cada vez.' },
+                { tipo: 'ordenar', enunciado: 'Organize um laço que mostra 0, 1 e 2.', lang: 'python', etapas: ['for n in range(3):', '    print(n)'], porque: 'O bloco indentado fica logo abaixo da linha for.' }
+              ]
+            },
+            {
+              id: 'py-6', titulo: 'Criando funções', minutos: 5, xp: 30,
+              fala: 'Uma função é uma receita que podemos reutilizar.',
+              intro: { titulo: 'Dê um nome para uma tarefa', paragrafos: ['`def` cria uma função. Ela pode receber parâmetros e devolver um valor com `return`.', 'Depois de definir, chame a função pelo nome para executar suas instruções.'], codigo: { arquivo: 'funcoes.py', lang: 'python', texto: 'def dobro(numero):\n    return numero * 2\n\nprint(dobro(5))', destaque: [1, 2, 4] }, dica: 'O parâmetro numero recebe o valor passado na chamada: neste exemplo, 5.' },
+              exercicios: [
+                { tipo: 'multipla', enunciado: 'O que `return` faz dentro de uma função?', opcoes: ['Devolve um resultado', 'Repete o código', 'Apaga uma variável', 'Abre uma janela'], certa: 0, porque: 'return entrega o resultado da função para o trecho que a chamou.' },
+                { tipo: 'lacunas', enunciado: 'Complete a palavra que define uma função.', lang: 'python', arquivo: 'saudacao.py', modelo: '{{0}} oi():\n    print("Oi!")', banco: ['def', 'for', 'if'], respostas: ['def'], porque: 'def é a palavra reservada usada para definir uma função.' }
+              ]
+            }
+          ]
         }
       ]
     }
