@@ -492,30 +492,34 @@
   var mapaMentalApostila = {
     basico: {
       python: [
-        { icone: '📦', titulo: 'Guardar informações', resumo: 'Variáveis e tipos dão nome aos dados.', mini: ['str · texto', 'int · inteiro', 'float · decimal', 'bool · verdadeiro/falso'], extra: 'Pense numa variável como uma caixa identificada. O nome ajuda você a lembrar o que guardou e o tipo indica quais operações fazem sentido.' },
-        { icone: '💬', titulo: 'Conversar com o programa', resumo: 'Entrada recebe dados; saída apresenta respostas.', mini: ['input()', 'print()', 'int() e float()', 'conversão de dados'], extra: 'Uma sequência comum é: perguntar com input(), guardar a resposta, converter quando for número, calcular e exibir com print().' },
-        { icone: '🧮', titulo: 'Transformar dados', resumo: 'Operadores fazem cálculos e comparações.', mini: ['+  −  *', '/  //  %', '** potência', 'parênteses'], extra: 'O operador % retorna o resto. Por isso, numero % 2 == 0 é um jeito conhecido de verificar se um inteiro é par.' },
-        { icone: '🧭', titulo: 'Escrever com clareza', resumo: 'Comentários e bons nomes explicam a intenção.', mini: ['snake_case', '# comentário', 'nomes descritivos', 'uma etapa por vez'], extra: 'Código claro ajuda você a encontrar erros e ajuda outra pessoa a entender o programa sem precisar adivinhar o que cada variável significa.' }
+        { icone: '🖥️', titulo: 'Mostrar e calcular', resumo: 'Dê uma instrução e confira o resultado.', mini: ['print()', 'textos com aspas', 'números e contas', 'parênteses'], extra: 'O programa executa as linhas na ordem. Experimente mudar o texto ou os números e observe o resultado que aparece.' },
+        { icone: '📦', titulo: 'Variáveis e tipos', resumo: 'Dê nomes para as informações que o programa usa.', mini: ['str · texto', 'int · inteiro', 'float · decimal', 'bool · verdadeiro/falso'], extra: 'Pense numa variável como uma caixa identificada. O nome ajuda você a lembrar o que guardou e o tipo indica quais operações fazem sentido.' },
+        { icone: '💬', titulo: 'Entrada e conversão', resumo: 'Receba uma resposta e prepare o valor para usar.', mini: ['input()', 'print()', 'int() e float()', 'conversão de dados'], extra: 'Uma sequência comum é: perguntar com input(), guardar a resposta, converter quando for número, calcular e exibir com print().' },
+        { icone: '🧮', titulo: 'Operadores e contas', resumo: 'Transforme valores com cálculos e comparações.', mini: ['+  −  *', '/  //  %', '** potência', 'parênteses'], extra: 'O operador % retorna o resto. Por isso, numero % 2 == 0 é um jeito conhecido de verificar se um inteiro é par.' },
+        { icone: '🧭', titulo: 'Código bem explicado', resumo: 'Use comentários e nomes para deixar sua intenção clara.', mini: ['snake_case', '# comentário', 'nomes descritivos', 'uma etapa por vez'], extra: 'Código claro ajuda você a encontrar erros e ajuda outra pessoa a entender o programa sem precisar adivinhar o que cada variável significa.' }
       ],
       html: [
         { icone: '🏗️', titulo: 'Estrutura do documento', resumo: 'A página tem uma base organizada em head e body.', mini: ['doctype', 'html e idioma', 'head e title', 'body'], extra: 'A estrutura funciona como o esqueleto da página: primeiro as configurações; depois, o conteúdo que aparece para a pessoa.' },
         { icone: '📝', titulo: 'Texto com hierarquia', resumo: 'Títulos e parágrafos dão ordem ao conteúdo.', mini: ['h1 · assunto principal', 'h2 e h3 · seções', 'p · parágrafo', 'strong · importância'], extra: 'A hierarquia deve fazer sentido mesmo sem estilos visuais. Isso melhora a leitura, a navegação por leitor de tela e a organização do documento.' },
         { icone: '🔗', titulo: 'Navegação e imagens', resumo: 'Links levam a destinos; imagens precisam de descrição.', mini: ['a e href', 'img e src', 'alt descritivo', 'caminho de arquivo'], extra: 'Antes de publicar, confira se o destino do link existe e se o caminho da imagem aponta para o arquivo correto.' },
-        { icone: '🧩', titulo: 'Agrupar informações', resumo: 'Listas e seções mostram como as partes se relacionam.', mini: ['ul · lista com marcadores', 'ol · lista numerada', 'li · item', 'section · assunto'], extra: 'As tags podem ficar dentro umas das outras. Mantenha a ordem de abertura e fechamento para a estrutura continuar válida.' }
+        { icone: '🧩', titulo: 'Agrupar informações', resumo: 'Listas e seções mostram como as partes se relacionam.', mini: ['ul · lista com marcadores', 'ol · lista numerada', 'li · item', 'section · assunto'], extra: 'As tags podem ficar dentro umas das outras. Mantenha a ordem de abertura e fechamento para a estrutura continuar válida.' },
+        { icone: '⚙️', titulo: 'Configurar elementos', resumo: 'Atributos ajustam links, imagens e caminhos.', mini: ['href', 'src', 'alt', 'caminho relativo'], extra: 'Atributos ficam na tag de abertura. Confira cada valor com atenção: um caminho ou nome errado pode impedir a imagem de aparecer.' }
       ]
     },
     intermediario: {
       python: [
         { icone: '🔀', titulo: 'Tomar decisões', resumo: 'Condições escolhem qual bloco será executado.', mini: ['if', 'elif', 'else', 'and · or · not'], extra: 'Leia cada condição como uma pergunta que só pode ser verdadeira ou falsa. A indentação mostra qual instrução pertence a cada resposta.' },
         { icone: '🔁', titulo: 'Repetir instruções', resumo: 'Laços percorrem sequências ou repetem até uma condição mudar.', mini: ['for', 'while', 'range()', 'contador e parada'], extra: 'Um while precisa de uma condição que eventualmente fique falsa. Se nada alterar essa condição, o programa pode ficar preso numa repetição sem fim.' },
+        { icone: '🧱', titulo: 'Criar funções', resumo: 'Funções separam tarefas e permitem reutilizar código.', mini: ['def', 'parâmetro', 'argumento', 'return'], extra: 'Uma função bem nomeada deve cuidar de uma tarefa clara. Ao separar o programa em funções, fica mais fácil testar e corrigir cada parte.' },
         { icone: '🗂️', titulo: 'Trabalhar com coleções', resumo: 'Listas reúnem itens e funcionam bem com laços.', mini: ['lista [ ]', 'índice começa em 0', 'append()', 'percorrer itens'], extra: 'Use uma lista quando os valores têm relação entre si. Um for pode visitar cada item sem você precisar escrever o mesmo comando várias vezes.' },
-        { icone: '🧱', titulo: 'Criar funções', resumo: 'Funções separam tarefas e permitem reutilizar código.', mini: ['def', 'parâmetro', 'argumento', 'return'], extra: 'Uma função bem nomeada deve cuidar de uma tarefa clara. Ao separar o programa em funções, fica mais fácil testar e corrigir cada parte.' }
+        { icone: '🧠', titulo: 'Juntar regras', resumo: 'Operadores lógicos combinam mais de uma condição.', mini: ['and · as duas regras', 'or · uma das regras', 'not · inverter', 'comparações'], extra: 'Escreva cada condição em uma linha mental separada. Depois combine com and ou or e confira se o resultado esperado faz sentido.' }
       ],
       html: [
         { icone: '📊', titulo: 'Organizar conjuntos de dados', resumo: 'Listas e tabelas estruturam grupos e comparações.', mini: ['ul e ol', 'li', 'table', 'tr · th · td'], extra: 'Tabelas são próprias para dados que se cruzam em linhas e colunas. Para posicionar cartões e seções na tela, use CSS em vez de tabela.' },
         { icone: '📨', titulo: 'Receber informações', resumo: 'Formulários juntam rótulos, campos e ações.', mini: ['form', 'label + for', 'input + id', 'required e type'], extra: 'Cada campo precisa de uma label visível. O atributo name identifica o dado e o type pode ajudar o navegador a validar ou sugerir conteúdo.' },
         { icone: '🧠', titulo: 'Dar significado à página', resumo: 'Tags semânticas descrevem o papel de cada região.', mini: ['header', 'main', 'article', 'footer'], extra: 'Semântica ajuda mecanismos de busca e tecnologias assistivas a reconhecer o conteúdo principal, as publicações e as áreas de navegação.' },
-        { icone: '🎨', titulo: 'Separar conteúdo e aparência', resumo: 'Classes conectam elementos HTML a regras CSS.', mini: ['class no HTML', '.classe no CSS', 'seletor', 'propriedade e valor'], extra: 'Use HTML para organizar e nomear o conteúdo. Use CSS para definir cor, espaço, tamanho, alinhamento e adaptação a diferentes telas.' }
+        { icone: '🎨', titulo: 'Separar conteúdo e aparência', resumo: 'Classes conectam elementos HTML a regras CSS.', mini: ['class no HTML', '.classe no CSS', 'seletor', 'propriedade e valor'], extra: 'Use HTML para organizar e nomear o conteúdo. Use CSS para definir cor, espaço, tamanho, alinhamento e adaptação a diferentes telas.' },
+        { icone: '♿', titulo: 'Acessibilidade', resumo: 'Rótulos e foco claro ajudam mais pessoas a usar a página.', mini: ['label visível', 'id + for', 'autocomplete', 'teclado e foco'], extra: 'Teste percorrer os controles com Tab. Uma pessoa deve conseguir entender cada campo e perceber qual elemento está selecionado.' }
       ]
     }
   };
@@ -530,7 +534,7 @@
     }
     var cap = conteudoApostila[capituloApostila], lista = cap[temaApostila];
     h += '<section class="pad apostila-chooser"><div class="apostila-path"><span class="soft-tag">ETAPA 2 DE 2 · ' + (temaApostila === 'html' ? '🌐 HTML' : '🐍 PYTHON') + '</span><button class="linkbtn" data-act="apostilaEscolherTecnologia">Trocar tecnologia</button></div><div><h2 class="title-md">Agora escolha seu capítulo</h2><p class="muted" style="margin-top:5px">Você pode começar do início ou ir direto ao conteúdo intermediário.</p></div><div class="chapter-tabs" role="tablist" aria-label="Capítulos">' + [['basico', 'Capítulo 1', 'Básico', 'Fundamentos explicados desde o começo.'], ['intermediario', 'Capítulo 2', 'Intermediário', 'Combine os fundamentos e crie soluções maiores.']].map(function (x) { return '<button role="tab" aria-selected="' + (capituloApostila === x[0]) + '" class="chapter-tab' + (capituloApostila === x[0] ? ' on' : '') + '" data-act="apostilaCapitulo" data-v="' + x[0] + '"><span>' + x[1] + '</span><strong>' + x[2] + '</strong><small>' + x[3] + '</small><b class="chapter-open">' + (capituloApostila === x[0] ? 'Estudando agora' : 'Abrir capítulo →') + '</b></button>'; }).join('') + '</div><p class="chapter-summary">' + esc(cap.resumo) + '</p></section>';
-    h += '<div class="pad apostila-section-title"><span class="soft-tag">' + cap.nome.toUpperCase() + ' · ' + (temaApostila === 'html' ? 'HTML' : 'PYTHON') + '</span><h2 class="title-md">Seu mapa de aprendizagem</h2><p class="muted">Veja como as ideias se conectam. Toque em cada ramo para abrir mini tópicos e explicações extras.</p><section class="mindmap"><div class="mindmap-hub"><span>🧠 MAPA MENTAL</span><strong>' + (temaApostila === 'html' ? 'HTML' : 'Python') + ' · ' + cap.nome + '</strong><small>Quatro caminhos para organizar o que você vai aprender</small></div><div class="mindmap-roots">' + mapaMentalApostila[capituloApostila][temaApostila].map(function (m, n) { return '<details class="mindmap-node"' + (n === 0 ? ' open' : '') + '><summary><span class="mindmap-icon">' + m.icone + '</span><span class="mindmap-label"><strong>' + esc(m.titulo) + '</strong><small>' + esc(m.resumo) + '</small></span><span class="mindmap-plus" aria-hidden="true">+</span></summary><div class="mindmap-details"><div class="mini-topics">' + m.mini.map(function (tag) { return '<span>' + esc(tag) + '</span>'; }).join('') + '</div><p><b>💡 Um passo além:</b> ' + esc(m.extra) + '</p></div></details>'; }).join('') + '</div><div class="mindmap-footer">Dica de estudo <span>Abra um ramo, leia os mini tópicos e depois encontre essas ideias nos exemplos abaixo.</span></div></section></div>';
+    h += '<div class="pad apostila-section-title"><span class="soft-tag">' + cap.nome.toUpperCase() + ' · ' + (temaApostila === 'html' ? 'HTML' : 'PYTHON') + '</span><h2 class="title-md">Seu mapa de aprendizagem</h2><p class="muted">Toque em qualquer ramo: os mini tópicos aparecem junto com um exemplo de código que será escrito na tela.</p><section class="mindmap"><div class="mindmap-hub"><span>🧠 MAPA MENTAL</span><strong>' + (temaApostila === 'html' ? 'HTML' : 'Python') + ' · ' + cap.nome + '</strong><small>Explore cinco ideias e veja um exemplo de cada uma</small></div><div class="mindmap-roots">' + mapaMentalApostila[capituloApostila][temaApostila].map(function (m, n) { var exemplo = lista[n] || lista[0]; return '<details class="mindmap-node" data-map-node="' + n + '"' + (n === 0 ? ' open' : '') + '><summary><span class="mindmap-icon">' + m.icone + '</span><span class="mindmap-label"><strong>' + esc(m.titulo) + '</strong><small>' + esc(m.resumo) + '</small></span><span class="mindmap-plus" aria-hidden="true">+</span></summary><div class="mindmap-details"><div class="mini-topics">' + m.mini.map(function (tag) { return '<span>' + esc(tag) + '</span>'; }).join('') + '</div><p><b>💡 Um passo além:</b> ' + esc(m.extra) + '</p><div class="map-code-window"><div class="map-code-toolbar"><span class="map-code-dots"><i></i><i></i><i></i></span><strong>' + (temaApostila === 'html' ? 'index.html' : 'exemplo.py') + '</strong><span class="map-code-status" aria-live="polite">O código aparece ao abrir este ramo</span></div><pre class="map-code-screen"><code class="map-code-output"></code><i class="map-code-caret" aria-hidden="true"></i></pre><pre class="map-code-source" hidden>' + esc(exemplo.codigo) + '</pre></div><small class="map-code-caption">Exemplo do tópico: ' + esc(exemplo.titulo.replace(/^\d+\.\s*/, '')) + '</small></div></details>'; }).join('') + '</div><div class="mindmap-footer">Dica de estudo <span>Abra um ramo, veja o código surgir letra por letra e depois encontre o mesmo exemplo na aula correspondente.</span></div></section></div>';
     h += '<div class="pad apostila-section-title"><h2 class="title-md">Aulas do capítulo</h2><p class="muted">Toque em um tópico para abrir ou fechar. O primeiro já começa aberto para você ver como funciona.</p></div>';
     h += '<div class="pad list apostila-lessons">';
     lista.forEach(function (x, i) {
@@ -577,6 +581,7 @@
   function render(anim) {
     aplicarConfig();
     var old = document.getElementById('screen'), topo = old && !anim ? (old.querySelector('.l-body') || old).scrollTop : 0;
+    if (old) Array.prototype.forEach.call(old.querySelectorAll('.mindmap-node'), function (no) { if (no._mapTypingTimer) clearInterval(no._mapTypingTimer); });
     var corpo, cls = 'screen', semAbas = false;
     ui.keepAnim = !!anim;
     switch (ui.screen) {
@@ -591,6 +596,36 @@
     ui.keepAnim = !!anim;
     APP.className = S.config.plataforma;
     APP.innerHTML = '<div class="' + cls + (anim ? ' enter-' + anim : '') + '" id="screen">' + corpo + '</div>' + (semAbas ? '' : abas());
+    if (ui.screen === 'apostila' && temaApostila) {
+      var mapaNos = APP.querySelectorAll('.mindmap-node');
+      function escreverCodigoMapa(no) {
+        var fonte = no.querySelector('.map-code-source'), saida = no.querySelector('.map-code-output'), estadoCodigo = no.querySelector('.map-code-status');
+        if (!fonte || !saida || !estadoCodigo) return;
+        if (no._mapTypingTimer) { clearInterval(no._mapTypingTimer); no._mapTypingTimer = null; }
+        var codigoCompleto = fonte.textContent, posicao = 0;
+        saida.textContent = '';
+        no.classList.add('typing');
+        estadoCodigo.textContent = 'Escrevendo código...';
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          saida.textContent = codigoCompleto; no.classList.remove('typing'); estadoCodigo.textContent = 'Código pronto'; return;
+        }
+        no._mapTypingTimer = setInterval(function () {
+          posicao = Math.min(posicao + 2, codigoCompleto.length);
+          saida.textContent = codigoCompleto.slice(0, posicao);
+          if (posicao >= codigoCompleto.length) {
+            clearInterval(no._mapTypingTimer); no._mapTypingTimer = null;
+            no.classList.remove('typing'); estadoCodigo.textContent = 'Código pronto · tópico ' + (Number(no.dataset.mapNode) + 1);
+          }
+        }, 13);
+      }
+      Array.prototype.forEach.call(mapaNos, function (no) {
+        no.addEventListener('toggle', function () {
+          if (no.open) escreverCodigoMapa(no);
+          else { if (no._mapTypingTimer) clearInterval(no._mapTypingTimer); no._mapTypingTimer = null; no.classList.remove('typing'); }
+        });
+        if (no.open) escreverCodigoMapa(no);
+      });
+    }
     if (!anim && topo) { var el = document.getElementById('screen'); (el.querySelector('.l-body') || el).scrollTop = topo; }
     if (ui.screen === 'licao') { ui.lesson.prevPct = pctLicao(); }
     var ta = document.getElementById('resposta');
