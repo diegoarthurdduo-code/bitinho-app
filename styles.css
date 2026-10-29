@@ -405,6 +405,36 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 .apostila-result, .practice-note { padding: 12px 14px; border-radius: var(--r-md); background: var(--accent-soft); font-size: 13px; line-height: 1.55; }
 .apostila-result p, .practice-note p { margin-top: 4px; }
 .practice-note { background: var(--surface-2); }
+.technology-cards { display: grid; gap: 14px; }
+.technology-card { display: grid; grid-template-columns: 54px 1fr; gap: 4px 13px; align-items: center; padding: 18px; text-align: left; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); transition: transform .18s, border-color .18s, box-shadow .18s; }
+.technology-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 12px 28px rgba(60,30,140,.14); }
+.technology-card.html { background: linear-gradient(135deg, var(--surface), color-mix(in srgb, #42b5e8 12%, var(--surface))); }
+.technology-card.python { background: linear-gradient(135deg, var(--surface), color-mix(in srgb, #f2c84b 14%, var(--surface))); }
+.technology-emoji { grid-row: span 3; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 16px; background: var(--bg); font-size: 28px; }
+.technology-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
+.technology-copy, .technology-foot { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.technology-cta { grid-column: 2; margin-top: 7px; color: var(--accent); font-size: 13px; font-weight: 800; }
+.apostila-path { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.apostila-path .linkbtn { flex: none; font-size: 12px; }
+.chapter-tab { min-height: 142px; align-content: start; }
+.chapter-tab small { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.chapter-open { align-self: end; margin-top: 8px; color: var(--accent); font-size: 12px; }
+.apostila-section-title { display: grid; gap: 5px; }
+.apostila-section-title p { font-size: 13px; line-height: 1.5; }
+.topic-number { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--accent); font-size: 11px; font-weight: 900; letter-spacing: .08em; }
+.topic-number i { color: var(--muted); font-size: 10px; font-style: normal; letter-spacing: .04em; }
+.learning-goal { padding: 13px 14px; border-radius: 14px; background: var(--surface-2); font-size: 13px; line-height: 1.55; }
+.learning-goal p { margin-top: 4px; color: var(--muted); }
+.partes-explicadas > p { font-size: 12px; line-height: 1.5; }
+.concept-list li { grid-template-columns: 25px minmax(0, 1fr); gap: 8px; align-items: start; padding: 12px; }
+.concept-list li > div { display: grid; gap: 4px; }
+.concept-step { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--accent-ink); background: var(--accent); font-size: 11px; }
+.apostila-result { background: color-mix(in srgb, var(--ok-bg) 75%, var(--surface)); }
+.apostila-result p, .practice-note p, .tip p { margin-top: 5px; }
+.tip p { line-height: 1.55; }
+@media (min-width: 620px) {
+  .technology-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .lesson-note { display: grid; gap: 12px; padding: 18px; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); }
 .lesson-note > p { line-height: 1.55; }
 .editor-shot { overflow: hidden; border: 1px solid #352b4e; border-radius: 16px; color: #e8e3f5; background: #15111f; box-shadow: 0 8px 20px rgba(30,14,80,.18); }
