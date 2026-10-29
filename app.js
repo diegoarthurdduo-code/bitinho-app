@@ -33,6 +33,9 @@
   function estadoDemo() {
     return {
       nome: 'Aprendiz',
+      apelido: '',
+      bio: '',
+      nota: '',
       xp: 70,
       streak: 3,
       melhor: 3,
@@ -49,6 +52,9 @@
     var s = null;
     try { s = JSON.parse(localStorage.getItem(dataKey())); } catch (e) { s = null; }
     if (!s || typeof s !== 'object' || !s.concluidas) s = estadoDemo();
+    s.apelido = s.apelido || '';
+    s.bio = s.bio || '';
+    s.nota = s.nota || '';
     s.config = Object.assign({ tema: 'auto', plataforma: 'ios', lembrete: true, meta: 1 }, s.config || {});
     return s;
   }
@@ -474,7 +480,8 @@
   function telaPerfil() {
     var xpNivel = S.xp % 100, ganhas = medalhasAtuais(), c = S.config;
     var concl = Object.keys(S.concluidas).length;
-    var h = '<header class="pad profile-h"><label class="avatar avatar-upload">' + (S.foto ? '<img src="' + S.foto + '" alt="Foto de perfil">' : mascote('feliz',56)) + '<input id="fotoPerfil" type="file" accept="image/*"></label><div style="min-width:0"><span class="eyebrow">Seu perfil</span><input class="nameinput" id="nome" value="' + esc(S.nome) + '" maxlength="20" aria-label="Seu nome" autocomplete="off"></div></header>';
+    var h = '<header class="pad profile-head"><div class="profile-tools"><span class="profile-mark">BITINHO</span><label class="edit-profile">Editar foto<input id="fotoPerfil" type="file" accept="image/*" aria-label="Alterar foto de perfil"></label></div><div class="profile-hero"><label class="avatar avatar-upload profile-avatar">' + (S.foto ? '<img src="' + S.foto + '" alt="Foto de perfil">' : mascote('feliz',76)) + '</label><div class="profile-note-bubble"' + (S.nota ? '' : ' hidden') + '>' + esc(S.nota) + '</div><div class="profile-name-row"><input class="nameinput profile-name" id="nome" value="' + esc(S.nome) + '" maxlength="20" aria-label="Seu nome" autocomplete="off"><span class="profile-level-dot" title="Nível ' + nivel() + '">✦</span></div><p class="profile-nickname"' + (S.apelido ? '' : ' hidden') + '>@' + esc(S.apelido) + '</p><p class="profile-bio">' + (S.bio ? esc(S.bio).replace(/\n/g, '<br>') : '<span>Adicione uma bio para contar um pouco sobre você.</span>') + '</p></div></header>';
+    h += '<section class="pad profile-editor"><div class="section-h"><h2 class="title-md">Sobre você</h2><span class="small muted">Personalize seu perfil</span></div><label class="profile-field"><span>Apelido</span><input id="apelido" value="' + esc(S.apelido) + '" maxlength="24" placeholder="Como quer ser chamado?" autocomplete="off"></label><label class="profile-field"><span>Bio</span><textarea id="bio" maxlength="160" rows="3" placeholder="Conte um pouco sobre você...">' + esc(S.bio) + '</textarea><small><span id="bioCount">' + S.bio.length + '</span>/160</small></label><label class="profile-field"><span>Nota temporária</span><input id="nota" value="' + esc(S.nota) + '" maxlength="32" placeholder="Ex.: estudando HTML hoje ✨" autocomplete="off"><small>Aparece ao lado da sua foto.</small></label></section>';
     h += '<div class="pad"><button class="btn soft" data-act="abrirEmenta">Abrir ementa de Python e HTML</button></div>';
     h += '<div class="pad"><div class="card level"><div class="row"><span>Nível ' + nivel() + '</span><span class="muted">' + xpNivel + '/100 pontos</span></div>' + bar(xpNivel) + '<span class="small muted">Faltam ' + (100 - xpNivel) + ' pontos para o nível ' + (nivel() + 1) + '.</span></div></div>';
     h += '<div class="pad grid2"><div class="stat">' + ic('flame') + '<div><b>' + S.streak + '</b><span>sequência atual</span></div></div><div class="stat">' + ic('calendar') + '<div><b>' + S.diasEstudo + '</b><span>dias estudados</span></div></div><div class="stat">' + ic('bolt') + '<div><b>' + S.xp + '</b><span>pontos</span></div></div><div class="stat">' + ic('check') + '<div><b>' + concl + '</b><span>lições concluídas</span></div></div></div>';
@@ -529,6 +536,7 @@
     var nome = document.getElementById('nome');
     if (nome) nome.addEventListener('input', function () { S.nome = nome.value; salvar(); });
     if (nome) nome.addEventListener('keydown', function (e) { if (e.key === 'Enter') nome.blur(); });
+    ['apelido', 'bio', 'nota'].forEach(function (id) { var field = document.getElementById(id); if (!field) return; field.addEventListener('input', function () { S[id] = field.value; salvar(); if (id === 'bio') { var count = document.getElementById('bioCount'), bio = document.querySelector('.profile-bio'); if (count) count.textContent = field.value.length; if (bio) bio.innerHTML = field.value ? esc(field.value).replace(/\n/g, '<br>') : '<span>Adicione uma bio para contar um pouco sobre você.</span>'; } else { var preview = document.querySelector(id === 'nota' ? '.profile-note-bubble' : '.profile-nickname'); if (preview) { preview.textContent = id === 'apelido' ? (field.value ? '@' + field.value : '') : field.value; preview.hidden = !field.value; } } }); });
     var foto=document.getElementById('fotoPerfil'); if(foto) foto.addEventListener('change',function(){var f=foto.files&&foto.files[0];if(!f)return;if(f.size>1500000){toast('Escolha uma imagem de até 1,5 MB.');return;}var rd=new FileReader();rd.onload=function(){S.foto=rd.result;salvar();render(null);};rd.readAsDataURL(f);});
   }
 
