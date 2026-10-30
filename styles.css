@@ -88,6 +88,7 @@ h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap: balance; }
 
 #app { height: 100%; max-width: 430px; margin: 0 auto; display: flex; flex-direction: column; background: var(--bg); position: relative; overflow: hidden; }
+.profile-version { padding: 4px 0 max(8px, env(safe-area-inset-bottom, 0px)); color: var(--muted); font: 11px/1 var(--font-body); opacity: .75; }
 @media (min-width: 520px) {
   #app { border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
 }

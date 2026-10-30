@@ -14,6 +14,10 @@ content/
   ia.js               IA e produtividade
 ```
 
+## Versão do app
+
+A versão atual aparece discretamente no canto inferior do app. Ao preparar cada atualização que será enviada ao GitHub, atualize o número exibido em `index.html` seguindo o formato `vMAJOR.MINOR.PATCH` (por exemplo, `v1.0.0` para `v1.0.1`). Assim, depois do `git pull`, a versão visível confirma qual atualização está instalada.
+
 ## Como adicionar conteúdo
 
 **Nova lição:** copie um objeto de `licoes` em qualquer arquivo de `content/`, troque o `id` (único) e o texto.
