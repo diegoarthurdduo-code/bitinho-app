@@ -402,7 +402,7 @@
     return h;
   }
 
-  function apoioExercicio(l, ex) {
+  function apoioExercicio(l) {
     var intro = l.intro || {}, h = '';
     h += '<details class="exercise-review"><summary><span>📘</span><span><strong>Rever a explicação</strong><small>Abra para consultar o conceito e um exemplo</small></span><b aria-hidden="true">⌄</b></summary><div class="exercise-review-body">';
     if (intro.titulo) h += '<h3>' + esc(intro.titulo) + '</h3>';
@@ -410,10 +410,14 @@
     if (intro.codigo) h += '<div class="exercise-example-label">Exemplo de código</div>' + cartaoCodigo(intro.codigo);
     if (intro.dica) h += '<div class="tip">' + ic('bulb') + '<div>' + fmt(intro.dica) + '</div></div>';
     h += '</div></details>';
-    var resposta = textoResposta(ex);
-    h += '<details class="exercise-answer"><summary><span>✅</span><span><strong>Ver gabarito explicado</strong><small>Confira a resposta quando quiser</small></span><b aria-hidden="true">⌄</b></summary><div class="exercise-answer-body">';
-    if (ex.tipo === 'desafio' || ex.lang) h += '<pre><code>' + esc(resposta || 'Consulte a explicação acima e tente novamente.') + '</code></pre>';
-    else h += '<p><strong>Resposta:</strong> ' + esc(resposta || 'Consulte a explicação acima e tente novamente.') + '</p>';
+    return h;
+  }
+
+  function gabaritoExercicio(ex) {
+    var resposta = textoResposta(ex) || 'Revise o exemplo e tente novamente.';
+    var h = '<details class="exercise-answer"><summary><span>✅</span><span><strong>Ver gabarito completo</strong><small>Resposta e explicação do exercício</small></span><b aria-hidden="true">⌄</b></summary><div class="exercise-answer-body">';
+    if (ex.tipo === 'desafio' || ex.lang) h += '<pre><code>' + esc(resposta) + '</code></pre>';
+    else h += '<p><strong>Resposta:</strong> ' + esc(resposta) + '</p>';
     if (ex.porque) h += '<p>' + fmt(ex.porque) + '</p>';
     h += '</div></details>';
     return h;
@@ -428,18 +432,18 @@
     else if (ex.tipo === 'lacunas') h += viewLacunas(ex, L);
     else if (ex.tipo === 'ordenar') h += viewOrdenar(ex, L);
     else h += viewDesafio(ex, L);
-    if (ex) h += apoioExercicio(l, ex);
+    if (ex) h += apoioExercicio(l);
     h += '</div>';
     if (!ex) {
       h += '<div class="l-foot pad"><button class="btn primary" data-act="avancar">Entendi, vamos praticar</button></div>';
     } else if (!L.fb) {
       h += '<div class="l-foot pad"><button class="btn primary" data-act="conferir"' + (respostaCompleta() ? '' : ' disabled') + '>Verificar</button></div>';
     } else if (L.fb.ok) {
-      h += '<div class="sheet ok pad" role="status"><h3>' + ic('ok') + ['Muito bem!', 'Isso mesmo!', 'Acertou!', 'Ótimo trabalho!'][(L.idx + L.tent) % 4] + '</h3><p>' + fmt(ex.porque) + '</p><button class="btn primary" data-act="avancar">' + (L.idx === n ? 'Concluir lição' : 'Continuar') + '</button></div>';
+      h += '<div class="sheet ok pad" role="status"><h3>' + ic('ok') + ['Muito bem!', 'Isso mesmo!', 'Acertou!', 'Ótimo trabalho!'][(L.idx + L.tent) % 4] + '</h3><p>' + fmt(ex.porque) + '</p>' + gabaritoExercicio(ex) + '<button class="btn primary" data-act="avancar">' + (L.idx === n ? 'Concluir lição' : 'Continuar') + '</button></div>';
     } else {
       var revelar = L.tent >= 2;
       h += '<div class="sheet no pad" role="status"><h3>' + ic('no') + 'Quase lá!</h3><p>' + fmt(!revelar && ex.pista ? ex.pista : ex.porque) + '</p>' +
-        (revelar ? '<p class="answer">Resposta: ' + esc(textoResposta(ex)) + '</p>' : '') +
+        (revelar ? gabaritoExercicio(ex) : '') +
         '<div class="btn-row">' + (revelar
           ? '<button class="btn primary" data-act="avancar">' + (L.idx === n ? 'Concluir lição' : 'Continuar') + '</button><button class="btn soft" data-act="repetir">Tentar de novo</button>'
           : '<button class="btn primary" data-act="repetir">Tentar de novo</button>') + '</div></div>';
@@ -597,7 +601,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad" style="display:flex;flex-direction:column;align-items:center;gap:4px"><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.0.0</p></div>';
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.0.1</span><p>Os exercícios agora permitem rever a explicação e um exemplo de código. O gabarito comentado aparece depois da resposta, junto ao retorno do exercício.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.0.1</p></div>
     return h;
   }
 
