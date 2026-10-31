@@ -290,28 +290,29 @@
   /* ---------- Telas ---------- */
   function telaInicio() {
     var alvo = alvoContinuar(), p = S.hojeQtd, meta = S.config.meta;
-    var h = '<header class="pad home-header"><div class="home-welcome"><span class="eyebrow">' + saudacao() + ', ' + esc(S.nome || 'Aprendiz') + '</span><h1 class="title-xl">O que vamos aprender hoje?</h1><p>Um passo de cada vez já é progresso.</p></div>' + (S.foto ? '<img class="home-avatar" src="' + S.foto + '" alt="Sua foto de perfil">' : '<span class="home-mascot">' + mascote('feliz', 54) + '</span>') + '</header>';
-    h += '<section class="pad home-stats" aria-label="Seu progresso"><div class="home-stat fire"><span>' + ic('flame') + '</span><strong>' + S.streak + '</strong><small>' + (S.streak === 1 ? 'dia seguido' : 'dias seguidos') + '</small></div><div class="home-stat points"><span>' + ic('bolt') + '</span><strong>' + S.xp + '</strong><small>pontos</small></div><div class="home-stat level"><span>' + ic('star') + '</span><strong>' + nivel() + '</strong><small>nível</small></div></section>';
+    var h = '<header class="top pad"><div class="stack"><span class="eyebrow">' + saudacao() + '</span><h1 class="title-xl">Olá, ' + esc(S.nome || 'Aprendiz') + '!</h1></div>' + (S.foto ? '<img class="home-avatar" src="' + S.foto + '" alt="Sua foto de perfil">' : mascote('feliz', 64)) + '</header>';
+    h += '<div class="chips pad"><span class="pill fire">' + ic('flame') + S.streak + (S.streak === 1 ? ' dia' : ' dias') + '</span><span class="pill bolt">' + ic('bolt') + S.xp + ' pontos</span><span class="pill">' + ic('star') + 'Nível ' + nivel() + '</span></div>';
+    var dicasPc = ['Use Ctrl + Z para desfazer uma ação que acabou de fazer. Funciona em muitos editores e aplicativos.','Faça cópias dos arquivos importantes em outro local ou na nuvem. Assim, um problema no computador não apaga tudo.','Antes de clicar num link recebido por mensagem, confira quem enviou e para onde o endereço realmente aponta.','Use nomes claros para arquivos e pastas. Exemplo: trabalho-historia-outubro.docx.'];
+    h += '<div class="pad"><div class="tip tip-card">' + ic('bulb') + '<div><strong>Dica de computador</strong><br>' + dicasPc[(new Date().getDate() + S.hojeQtd) % dicasPc.length] + '</div></div></div>';
     if (retorno) {
       h += '<div class="pad"><div class="notice">' + ic('sparkle') + '<div><strong>Que bom ter você de volta!</strong><br>Sua sequência recomeça hoje, sem pressa. Você já estudou em ' + S.diasEstudo + ' dias e isso continua valendo.</div></div></div>';
     }
     if (alvo) {
       var i = LIC[alvo], tot = totais(i.d);
-      h += '<section class="pad"><article class="home-resume"><div class="home-resume-top"><span class="home-resume-label">✦ SEU PRÓXIMO PASSO</span><span class="home-resume-time">' + i.l.minutos + ' min</span></div><div><p class="home-resume-course">' + esc(i.t.nome) + ' <span>·</span> ' + esc(i.m.nome) + '</p><h2>' + esc(i.l.titulo) + '</h2></div><div class="home-resume-progress"><span>Progresso da disciplina</span><strong>' + tot.pct + '%</strong></div><div class="bar"><i style="width:' + tot.pct + '%"></i></div><button class="btn home-resume-button" data-act="comecar" data-id="' + alvo + '" data-from="inicio">' + ic('play') + 'Continuar estudando</button><span class="home-resume-xp">+' + i.l.xp + ' pontos ao concluir</span></article></section>';
+      h += '<div class="pad"><div class="hero"><span class="kicker">Continue de onde parou</span><div><h2>' + esc(i.l.titulo) + '</h2><p class="meta">' + esc(i.t.nome) + ' · ' + esc(i.m.nome) + '</p></div>' +
+        '<div class="tagrow"><span class="tag">' + ic('bolt') + ' +' + i.l.xp + ' pontos</span><span class="tag">' + i.l.minutos + ' min</span></div>' +
+        bar(tot.pct) + '<button class="btn light" data-act="comecar" data-id="' + alvo + '" data-from="inicio">' + ic('play') + 'Continuar aprendendo</button></div></div>';
     } else {
-      h += '<section class="pad"><article class="home-resume home-resume-done"><span class="home-resume-label">✦ JORNADA CONCLUÍDA</span><h2>Você terminou todas as lições!</h2><p>Que tal revisar o que aprendeu ou começar um novo assunto?</p><button class="btn home-resume-button" data-act="tab" data-t="disciplinas">Explorar disciplinas</button></article></section>';
+      h += '<div class="pad"><div class="hero"><span class="kicker">Tudo concluído</span><h2>Você terminou todas as lições da demonstração!</h2><button class="btn light" data-act="tab" data-t="disciplinas">Rever as disciplinas</button></div></div>';
     }
     var pct = Math.min(100, Math.round((p / meta) * 100));
-    h += '<section class="pad"><div class="home-goal"><div class="home-goal-icon">' + ic(p >= meta ? 'check' : 'sparkle') + '</div><div class="home-goal-content"><div class="home-goal-heading"><strong>Meta de hoje</strong><span>' + Math.min(p, meta) + ' / ' + meta + (meta === 1 ? ' lição' : ' lições') + '</span></div><div class="bar"><i style="width:' + pct + '%"></i></div><small>' + (p >= meta ? 'Meta cumprida. Mandou bem! 🎉' : 'Finalize uma lição curta para completar sua meta.') + '</small></div></div></section>';
-    h += '<section class="pad home-subject-section"><div class="section-h"><div><span class="eyebrow">ESCOLHA UM CAMINHO</span><h2 class="title-md">Suas disciplinas</h2></div><button class="linkbtn" data-act="tab" data-t="disciplinas">Ver todas</button></div><div class="home-subjects">';
+    h += '<div class="pad"><div class="card"><div class="section-h"><strong>Meta de hoje</strong><span class="small muted">' + Math.min(p, meta) + ' de ' + meta + (meta === 1 ? ' lição' : ' lições') + '</span></div><div style="height:10px"></div>' + bar(pct) + '<p class="small muted" style="margin-top:10px">' + (p >= meta ? 'Meta cumprida. Continue se quiser, o ritmo é seu.' : 'Uma lição curta já conta como um bom dia de estudo.') + '</p></div></div>';
+    h += '<div class="pad list"><div class="section-h"><h2 class="title-md">Suas disciplinas</h2><button class="linkbtn" data-act="tab" data-t="disciplinas">Ver todas</button></div>';
     DISC.forEach(function (d) {
       var t = totais(d);
-      h += '<button class="home-subject" data-act="disc" data-id="' + d.id + '"><span class="home-subject-icon">' + ic(d.icone) + '</span><span class="home-subject-info"><strong>' + esc(d.nome) + '</strong><small>' + t.ok + ' de ' + t.tot + ' lições</small></span><span class="home-subject-arrow" aria-hidden="true">→</span><span class="bar"><i style="width:' + t.pct + '%"></i></span></button>';
+      h += '<button class="disc" data-act="disc" data-id="' + d.id + '"><span class="badge-ic">' + ic(d.icone) + '</span><span style="min-width:0"><span class="name">' + esc(d.nome) + '</span>' + bar(t.pct) + '</span><span class="pct">' + t.pct + '%</span></button>';
     });
-    h += '</div></section>';
-    var dicasPc = ['Use Ctrl + Z para desfazer uma ação que acabou de fazer. Funciona em muitos editores e aplicativos.','Faça cópias dos arquivos importantes em outro local ou na nuvem. Assim, um problema no computador não apaga tudo.','Antes de clicar num link recebido por mensagem, confira quem enviou e para onde o endereço realmente aponta.','Use nomes claros para arquivos e pastas. Exemplo: trabalho-historia-outubro.docx.'];
-    h += '<section class="pad"><div class="home-tip">' + ic('bulb') + '<div><span>DICA RÁPIDA</span><p>' + dicasPc[(new Date().getDate() + S.hojeQtd) % dicasPc.length] + '</p></div></div></section>';
-    return h;
+    return h + '</div>';
   }
 
   function telaDisciplinas() {
@@ -600,7 +601,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.0.6</span><p>A página inicial foi reorganizada para destacar a próxima lição, a meta diária e as disciplinas, com cartões e animações novas.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.0.6</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.0.7</span><p>A página inicial voltou ao visual anterior após seu feedback.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.0.7</p></div>'
     return h;
   }
 
