@@ -16,7 +16,7 @@ content/
 
 ## Versão do app
 
-A versão atual aparece discretamente no canto inferior do app. Ao preparar cada atualização que será enviada ao GitHub, atualize a versão no rodapé do perfil e nas notas de lançamento em `app.js`, além da meta `app-version` em `index.html`. Use o formato `vMAJOR.MINOR.PATCH` (por exemplo, `v1.0.2` para `v1.0.3`). Assim, depois do `git pull`, a versão visível confirma qual atualização está instalada.
+A versão atual aparece discretamente no canto inferior do app. Ao preparar cada atualização que será enviada ao GitHub, atualize a versão no rodapé do perfil e nas notas de lançamento em `app.js`, além da meta `app-version` em `index.html`. Use o formato `vMAJOR.MINOR.PATCH` (por exemplo, `v1.0.3` para `v1.0.4`). Assim, depois do `git pull`, a versão visível confirma qual atualização está instalada.
 
 ## Como adicionar conteúdo
 
