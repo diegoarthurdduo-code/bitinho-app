@@ -361,8 +361,10 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 .edit-profile { position: relative; overflow: hidden; display: inline-flex; align-items: center; padding: 9px 15px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--fg); font-size: 13px; font-weight: 700; cursor: pointer; }
 .edit-profile input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .profile-hero { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 24px 0 8px; }
-.profile-avatar { width: 116px; height: 116px; border-radius: 50%; border: 4px solid var(--surface); box-shadow: 0 0 0 2px var(--accent); }
-.profile-avatar .mascot { width: 76px; height: 76px; }
+.profile-avatar { width: 148px; height: 148px; border-radius: 50%; border: 4px solid var(--surface); box-shadow: 0 0 0 2px var(--accent), 0 14px 28px rgba(60, 30, 140, .20); transform: perspective(700px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)); transition: transform .16s ease-out, box-shadow .2s ease; will-change: transform; touch-action: pan-y; }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.profile-avatar:hover { box-shadow: 0 0 0 3px var(--accent), 0 20px 38px rgba(60, 30, 140, .26); }
+.profile-avatar .mascot { width: 96px; height: 96px; }
 .profile-name-row { display: flex; align-items: center; justify-content: center; gap: 7px; width: min(100%, 360px); margin-top: 18px; }
 .profile-name { width: auto; max-width: 100%; text-align: center; border-bottom: 0; font-size: clamp(28px, 8vw, 38px); }
 .profile-level-dot { display: grid; place-items: center; flex: none; width: 25px; height: 25px; border: 2px solid var(--accent); color: var(--accent); border-radius: 50%; font-size: 15px; }

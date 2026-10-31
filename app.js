@@ -601,7 +601,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.0.2</span><p>Os exercícios agora permitem rever a explicação e um exemplo de código. O gabarito comentado aparece depois da resposta, junto ao retorno do exercício. Também corrigimos a inicialização do app.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.0.2</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.0.3</span><p>A foto de perfil ficou maior, ganhou interação 3D e também aparece no topo da página inicial.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.0.3</p></div>'
     return h;
   }
 
@@ -674,6 +674,15 @@
     if (nome) nome.addEventListener('keydown', function (e) { if (e.key === 'Enter') nome.blur(); });
     ['apelido', 'bio', 'nota'].forEach(function (id) { var field = document.getElementById(id); if (!field) return; field.addEventListener('input', function () { S[id] = field.value; salvar(); if (id === 'bio') { var count = document.getElementById('bioCount'), bio = document.querySelector('.profile-bio'); if (count) count.textContent = field.value.length; if (bio) bio.innerHTML = field.value ? esc(field.value).replace(/\n/g, '<br>') : '<span>Adicione uma bio para contar um pouco sobre você.</span>'; } else { var preview = document.querySelector(id === 'nota' ? '.profile-note-bubble' : '.profile-nickname'); if (preview) { preview.textContent = id === 'apelido' ? (field.value ? '@' + field.value : '') : field.value; preview.hidden = !field.value; } } }); });
     var foto=document.getElementById('fotoPerfil'); if(foto) foto.addEventListener('change',function(){var f=foto.files&&foto.files[0];if(!f)return;if(f.size>1500000){toast('Escolha uma imagem de até 1,5 MB.');return;}var rd=new FileReader();rd.onload=function(){S.foto=rd.result;salvar();render(null);};rd.readAsDataURL(f);});
+    var avatar3d = document.querySelector('.profile-avatar');
+    if (avatar3d) {
+      avatar3d.addEventListener('pointermove', function (e) {
+        var r = avatar3d.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        avatar3d.style.setProperty('--tilt-x', ((.5 - y) * 28) + 'deg');
+        avatar3d.style.setProperty('--tilt-y', ((x - .5) * 28) + 'deg');
+      });
+      avatar3d.addEventListener('pointerleave', function () { avatar3d.style.setProperty('--tilt-x', '0deg'); avatar3d.style.setProperty('--tilt-y', '0deg'); });
+    }
   }
 
   /* ---------- Eventos ---------- */
