@@ -243,6 +243,24 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 .l-body { flex: 1; min-height: 0; overflow-y: auto; padding-block: 12px 20px; display: flex; flex-direction: column; gap: 16px; animation: inFade .3s ease; }
 .l-body > * { flex: none; }
 .l-body.static { animation: none; }
+.exercise-review, .exercise-answer { overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.exercise-review summary, .exercise-answer summary { display: grid; grid-template-columns: 26px minmax(0, 1fr) 18px; gap: 9px; align-items: center; padding: 12px; list-style: none; cursor: pointer; }
+.exercise-review summary::-webkit-details-marker, .exercise-answer summary::-webkit-details-marker { display: none; }
+.exercise-review summary > span:first-child, .exercise-answer summary > span:first-child { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); }
+.exercise-review summary > span:nth-child(2), .exercise-answer summary > span:nth-child(2) { display: grid; gap: 2px; }
+.exercise-review summary strong, .exercise-answer summary strong { font-size: 13px; }
+.exercise-review summary small, .exercise-answer summary small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.exercise-review summary > b, .exercise-answer summary > b { color: var(--accent); transition: transform .2s ease; }
+.exercise-review[open] summary > b, .exercise-answer[open] summary > b { transform: rotate(180deg); }
+.exercise-review-body, .exercise-answer-body { display: grid; gap: 10px; padding: 0 12px 12px; animation: inFade .22s ease; }
+.exercise-review-body h3 { font-size: 15px; }
+.exercise-review-body .prose { display: grid; gap: 8px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.exercise-review-body .code { margin: 0; }
+.exercise-example-label { color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+.exercise-answer { border-color: color-mix(in srgb, var(--ok) 30%, var(--line)); background: color-mix(in srgb, var(--ok-bg) 35%, var(--surface)); }
+.exercise-answer-body { color: var(--muted); font-size: 13px; line-height: 1.55; }
+.exercise-answer-body pre { overflow-x: auto; margin: 0; padding: 11px 12px; border-radius: 11px; color: var(--code-fg); background: var(--code-bg); font: 12px/1.65 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.exercise-answer-body p + p { margin-top: 2px; }
 .l-foot { flex: none; padding-top: 12px; padding-bottom: 14px; border-top: 1px solid var(--line); background: var(--bg); }
 .speech { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; align-items: end; }
 .speech .bubble { background: var(--surface); border: 1px solid var(--line); border-radius: 18px 18px 18px 6px; padding: 12px 14px; font-weight: 600; margin-bottom: 8px; }

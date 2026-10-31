@@ -402,6 +402,23 @@
     return h;
   }
 
+  function apoioExercicio(l, ex) {
+    var intro = l.intro || {}, h = '';
+    h += '<details class="exercise-review"><summary><span>📘</span><span><strong>Rever a explicação</strong><small>Abra para consultar o conceito e um exemplo</small></span><b aria-hidden="true">⌄</b></summary><div class="exercise-review-body">';
+    if (intro.titulo) h += '<h3>' + esc(intro.titulo) + '</h3>';
+    if (intro.paragrafos) h += '<div class="prose">' + intro.paragrafos.map(function (p) { return '<p>' + fmt(p) + '</p>'; }).join('') + '</div>';
+    if (intro.codigo) h += '<div class="exercise-example-label">Exemplo de código</div>' + cartaoCodigo(intro.codigo);
+    if (intro.dica) h += '<div class="tip">' + ic('bulb') + '<div>' + fmt(intro.dica) + '</div></div>';
+    h += '</div></details>';
+    var resposta = textoResposta(ex);
+    h += '<details class="exercise-answer"><summary><span>✅</span><span><strong>Ver gabarito explicado</strong><small>Confira a resposta quando quiser</small></span><b aria-hidden="true">⌄</b></summary><div class="exercise-answer-body">';
+    if (ex.tipo === 'desafio' || ex.lang) h += '<pre><code>' + esc(resposta || 'Consulte a explicação acima e tente novamente.') + '</code></pre>';
+    else h += '<p><strong>Resposta:</strong> ' + esc(resposta || 'Consulte a explicação acima e tente novamente.') + '</p>';
+    if (ex.porque) h += '<p>' + fmt(ex.porque) + '</p>';
+    h += '</div></details>';
+    return h;
+  }
+
   function telaLicao() {
     var L = ui.lesson, info = LIC[L.id], l = info.l, ex = exAtual(), n = l.exercicios.length;
     var h = '<div class="l-top pad"><button class="xbtn" data-act="sair" aria-label="Sair da lição">' + ic('close') + '</button>' + bar(pctLicao(), L.prevPct) + '<span class="pts">' + ic('bolt') + l.xp + '</span></div>';
@@ -411,6 +428,7 @@
     else if (ex.tipo === 'lacunas') h += viewLacunas(ex, L);
     else if (ex.tipo === 'ordenar') h += viewOrdenar(ex, L);
     else h += viewDesafio(ex, L);
+    if (ex) h += apoioExercicio(l, ex);
     h += '</div>';
     if (!ex) {
       h += '<div class="l-foot pad"><button class="btn primary" data-act="avancar">Entendi, vamos praticar</button></div>';
