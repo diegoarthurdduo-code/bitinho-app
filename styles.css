@@ -616,6 +616,13 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 }
 .tab:active .pillbg { transform: scale(.9); }
 
+/* Resposta visual consistente em todos os botões do app */
+button { transition: transform .18s cubic-bezier(.2,.8,.2,1), filter .18s ease, box-shadow .18s ease, background-color .18s ease, border-color .18s ease, color .18s ease; }
+button:not(:disabled):active { transform: scale(.97); }
+@media (hover: hover) {
+  button:not(:disabled):hover { filter: brightness(1.045); }
+}
+
 .toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 14px); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-weight: 600; font-size: 14px; z-index: 50; max-width: calc(100% - 32px); animation: inFade .25s ease; }
 
 @media (prefers-reduced-motion: reduce) {
