@@ -26,6 +26,10 @@ A versão atual aparece discretamente no canto inferior do app. Ao preparar cada
 
 **Nova disciplina:** crie `content/minha-disciplina.js` com `window.BITINHO.disciplinas.push({ id, ordem, nome, icone, descricao, trilhas })`, depois inclua um `<script>` em `index.html` antes de `app.js`. Ícones disponíveis: `code`, `folder`, `sparkle` (outros em `app.js`, objeto `P`).
 
+## Apostila
+
+Cada linguagem (HTML e Python) tem 10 capítulos (5 básicos e 5 intermediários), gerados a partir de `conteudoApostila` em `app.js`. Cada capítulo traz Explicação, Exemplo (código com notas ligadas às linhas e etapas), Passo a passo, Dicas e cuidados e Revisão. Para acrescentar entrada/saída e erros comuns a um capítulo, adicione uma entrada em `extrasApostila` com a chave `lang-b1` (básico) ou `lang-i1` (intermediário). O progresso de leitura fica em `S.apostila`.
+
 ## Tipos de exercício
 
 | tipo | campos principais |

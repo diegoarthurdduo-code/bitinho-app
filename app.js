@@ -111,6 +111,7 @@
     calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/>',
     book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/>',
     compass: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+    terminal: '<rect x="3" y="4.5" width="18" height="15" rx="3"/><path d="M7 10l3 2.5L7 15M12.5 15H17"/>',
     ok: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',
     no: '<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>'
   };
@@ -561,24 +562,110 @@
     }
     return (achadas.length ? achadas.slice(0, 3) : linhas.slice(0, 2)).join('\n');
   }
+  /* ---------- Apostila: capítulos, código anotado e navegação ---------- */
+  var apEstado = { cap: 0, aberto: false, etapa: {}, nota: {} };
+  var APOSTILA_MARCA = { html: { nome: 'HTML', arq: 'index.html', icone: 'code' }, python: { nome: 'Python', arq: 'exemplo.py', icone: 'terminal' } };
+  var extrasApostila = {
+    'python-b1': { saida: 'Olá, mundo!\n5', erros: [['print("Olá, mundo!)', 'Faltou fechar as aspas: o Python não sabe onde o texto termina.', 'print("Olá, mundo!")'], ['Print("Olá")', 'Python diferencia maiúsculas de minúsculas. O comando é print.', 'print("Olá")']] },
+    'python-b3': { entrada: 'Qual é seu nome? Lia\nQual é sua idade? 15', saida: 'Olá, Lia\nNo ano que vem você terá 16', erros: [['idade = input("Idade: ")\nprint(idade + 1)', 'input() devolve texto. Somar texto com número causa um TypeError.', 'idade = int(input("Idade: "))\nprint(idade + 1)']] },
+    'python-i1': { entrada: 'Sua idade: 17', saida: 'Pode votar, mas não é obrigatório', erros: [['if idade >= 18\n    print("Maior")', 'Faltaram os dois-pontos no fim da linha do if.', 'if idade >= 18:\n    print("Maior")'], ['if idade = 18:', 'O = guarda um valor. Para comparar, use ==.', 'if idade == 18:']] },
+    'html-b1': { saida: 'O navegador mostra o título “Olá, mundo!” e o parágrafo. A aba se chama “Minha página”.', erros: [['<p>Olá', 'A tag foi aberta e nunca fechada; o resto da página pode sair errado.', '<p>Olá</p>'], ['<h1>Título</h2>', 'A tag de fechamento precisa ter o mesmo nome da abertura.', '<h1>Título</h1>']] },
+    'html-b3': { erros: [['<img src="bitinho.png">', 'Sem alt, leitores de tela não descrevem a imagem.', '<img src="bitinho.png" alt="Mascote Bitinho">'], ['<a>Visite</a>', 'Sem href, o link não leva a lugar nenhum.', '<a href="https://exemplo.com">Visite</a>']] },
+    'html-i2': { erros: [['<label>E-mail</label>\n<input type="email">', 'O rótulo não está ligado ao campo (falta for e id).', '<label for="email">E-mail</label>\n<input id="email" type="email">']] }
+  };
+  function capitulosApostila(lang) {
+    var out = [];
+    ['basico', 'intermediario'].forEach(function (n) { conteudoApostila[n][lang].forEach(function (t, i) { out.push({ nivel: n, t: t, id: lang + '-' + n.charAt(0) + (i + 1), titulo: t.titulo.replace(/^\d+\.\s*/, '') }); }); });
+    return out;
+  }
+  function apLido(id) { return !!(S.apostila && S.apostila[id]); }
+  function posLiteral(l, lit) { var m = new RegExp((/^\w/.test(lit) ? '(?<![\\w])' : '') + lit.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).exec(l); return m ? m.index : -1; }
+  function literalDaParte(p) { return p[0].replace(/\s*\.\.\.[\s\S]*$/, '').trim(); }
+  function linhasDaParte(parte, linhas, lang) {
+    var rotulo = parte[0], achadas = [];
+    if (lang === 'html') {
+      var tags = (rotulo.match(/<\/?[a-z][\w-]*/gi) || []).map(function (t) { return t.replace(/^<\/?/, '').toLowerCase(); });
+      var attrs = rotulo.match(/\b(?:href|src|alt|class|id|for|name|type|lang|charset|target|rel|rows|required|autocomplete)\b/gi) || [];
+      linhas.forEach(function (l, i) { if (tags.some(function (tg) { return new RegExp('<\\/?' + tg + '(?:\\s|>|/)', 'i').test(l); }) || attrs.some(function (a) { return new RegExp('\\b' + a + '\\s*=', 'i').test(l); })) achadas.push(i); });
+    } else {
+      var lit = literalDaParte(parte), exatas = lit.length > 1 ? linhas.map(function (l, i) { return posLiteral(l, lit) >= 0 ? i : -1; }).filter(function (i) { return i >= 0; }) : [];
+      if (exatas.length) return exatas;
+      var termos = (rotulo.match(/[A-Za-z_][A-Za-z_0-9]*|==|!=|>=|<=|[+\-*\/%]+/g) || []).filter(function (t) { return t.length > 2 || /^(==|!=|>=|<=|[+\-*\/%]+)$/.test(t); });
+      linhas.forEach(function (l, i) { if (termos.some(function (t) { return l.indexOf(t) >= 0; })) achadas.push(i); });
+    }
+    return achadas;
+  }
+  function destacarTermos(txt, partes) {
+    var lits = [];
+    partes.forEach(function (p) { var l = literalDaParte(p).replace(/\(.*$/, ''); if (/^[A-Za-z_][\w]*$/.test(l) && l.length > 1 && lits.indexOf(l) < 0) lits.push(l); });
+    if (!lits.length) return esc(txt);
+    lits.sort(function (a, b) { return b.length - a.length; });
+    var vistos = {}, re = new RegExp('(?<![\\wÀ-ÿ])(' + lits.join('|') + ')(\\(\\))?(?![\\wÀ-ÿ])', 'g');
+    return esc(txt).replace(re, function (t, a) { if (vistos[a]) return t; vistos[a] = 1; return '<code class="ap-term">' + t + '</code>'; });
+  }
+  function linhaAnotada(linha, lang, u) {
+    if (!u) return realcar(linha, lang) || ' ';
+    var p = posLiteral(linha, u.lit);
+    return realcar(linha.slice(0, p), lang) + '<span class="ap-ann">' + realcar(u.lit, lang) + '</span>' + realcar(linha.slice(p + u.lit.length), lang);
+  }
+  function blocoCodigo(txt, cls) { return '<pre class="' + cls + '"><code>' + esc(txt) + '</code></pre>'; }
+  function codigoAnotado(c, lang) {
+    var t = c.t, m = APOSTILA_MARCA[lang], linhas = t.codigo.split('\n'), n = linhas.length;
+    var E = n >= 7 ? 4 : n >= 4 ? 3 : n >= 2 ? 2 : 1, chunk = Math.ceil(n / E); E = Math.ceil(n / chunk);
+    var etapa = Math.min(apEstado.etapa[c.id] || E, E), ativa = apEstado.nota[c.id] || 0, pins = linhas.map(function () { return []; }), under = {};
+    var alvos = t.partes.map(function (p, k) {
+      var idx = linhasDaParte(p, linhas, lang).slice(0, 2), lit = literalDaParte(p);
+      idx.forEach(function (i) { pins[i].push(k + 1); if (!under[i] && lit.length > 1 && posLiteral(linhas[i], lit) >= 0) under[i] = { lit: lit }; });
+      return idx;
+    });
+    var corpo = linhas.map(function (l, i) {
+      var st = Math.floor(i / chunk) + 1;
+      return '<div class="ap-ln' + (st > etapa ? ' later' : st === etapa && E > 1 ? ' novo' : '') + (ativa && pins[i].indexOf(ativa) >= 0 ? ' on' : '') + '"><b>' + (i + 1) + '</b><code>' + linhaAnotada(l, lang, under[i]) + '</code><span class="ap-pins">' + pins[i].map(function (k) { return '<i>' + k + '</i>'; }).join('') + '</span></div>';
+    }).join('');
+    var a = (etapa - 1) * chunk + 1, b = Math.min(n, etapa * chunk);
+    var entram = t.partes.filter(function (p, k) { return alvos[k].length && alvos[k][0] + 1 >= a && alvos[k][0] + 1 <= b; }).map(function (p) { return '<code>' + esc(literalDaParte(p)) + '</code>'; });
+    var legenda = E === 1 ? 'Código completo.' : etapa === E ? '<strong>Etapa ' + etapa + ' de ' + E + ' · código completo.</strong> Entram as linhas ' + a + '–' + b + (entram.length ? ': ' + entram.join(', ') : '') + '.' : '<strong>Etapa ' + etapa + ' de ' + E + '.</strong> ' + (etapa === 1 ? 'Começamos com' : 'Agora entram') + ' as linhas ' + a + '–' + b + (entram.length ? ': ' + entram.join(', ') : '') + '. As linhas apagadas vêm depois.';
+    var botoes = E > 1 ? '<div class="ap-etapas" role="group" aria-label="Etapas do código"><small>Etapa</small>' + Array.apply(null, Array(E)).map(function (_, e) { return '<button type="button" class="' + (e + 1 === etapa ? 'on' : '') + '" data-act="apostilaEtapa" data-id="' + c.id + '" data-e="' + (e + 1) + '" aria-pressed="' + (e + 1 === etapa) + '">' + (e + 1) + '</button>'; }).join('') + '</div>' : '';
+    var cartao = '<div class="ap-code"><div class="ap-code-bar">' + ic(m.icone) + '<span>' + m.arq + '</span>' + botoes + '</div><pre class="ap-lines">' + corpo + '</pre><p class="ap-etapa-cap" aria-live="polite">' + legenda + '</p></div>';
+    var notas = '<ol class="ap-notes">' + t.partes.map(function (p, k) {
+      return '<li><button type="button" class="ap-note' + (ativa === k + 1 ? ' on' : '') + '" data-act="apostilaNota" data-id="' + c.id + '" data-n="' + (k + 1) + '" aria-pressed="' + (ativa === k + 1) + '"><b class="ap-note-n">' + (k + 1) + '</b><span><u>' + esc(p[0]) + '</u><span>' + esc(p[1]) + '</span></span><small class="ap-arrow">' + (alvos[k].length ? '→ linha ' + alvos[k].map(function (i) { return i + 1; }).join(' e ') : 'vale para o código todo') + '</small></button></li>';
+    }).join('') + '</ol>';
+    return { cartao: cartao, notas: notas };
+  }
+  function capituloHTML(c, cur, caps, lang) {
+    var t = c.t, m = APOSTILA_MARCA[lang], ex = extrasApostila[c.id] || {}, cod = codigoAnotado(c, lang), lido = apLido(c.id);
+    var sec = function (n, titulo, corpo) { return '<section class="ap-sec"><h3><b>' + n + '</b>' + titulo + '</h3>' + corpo + '</section>'; };
+    var h = '<article class="ap-chap" id="cap-' + c.id + '"><header class="ap-chap-head"><div class="ap-kicker"><span class="ap-lang">' + ic(m.icone) + m.nome + '</span><span class="soft-tag">Capítulo ' + (cur + 1) + ' de ' + caps.length + ' · ' + (c.nivel === 'basico' ? 'Básico' : 'Intermediário') + '</span></div><h2>' + esc(c.titulo) + '</h2></header>';
+    h += sec(1, 'Explicação', '<p class="ap-text">' + destacarTermos(t.objetivo, t.partes) + '</p>');
+    h += sec(2, 'Exemplo', cod.cartao + '<p class="ap-hint">Os números nos círculos ligam cada linha à explicação abaixo. Toque em uma explicação para destacar as linhas dela.</p>' + (ex.entrada || ex.saida ? '<div class="ap-io">' + (ex.entrada ? '<div><small>Entrada (o que a pessoa digita)</small>' + blocoCodigo(ex.entrada, 'ap-io-in') + '</div>' : '') + (ex.saida ? '<div><small>Resultado na tela</small>' + blocoCodigo(ex.saida, 'ap-io-out') + '</div>' : '') + '</div>' : '') + '<div class="ap-call ap-result"><strong>' + ic('ok') + 'Resultado esperado</strong><span>' + esc(t.resultado) + '</span></div>');
+    h += sec(3, 'Passo a passo', '<p class="ap-text">Cada quadro explica uma parte do código. Use as etapas do exemplo para ver o programa crescer aos poucos.</p>' + cod.notas);
+    var erros = (ex.erros || []).map(function (e) { return '<div class="ap-err"><strong>' + ic('no') + 'Erro comum</strong>' + blocoCodigo(e[0], 'bad') + '<p>' + esc(e[1]) + '</p><strong class="okk">' + ic('ok') + 'Como corrigir</strong>' + blocoCodigo(e[2], 'good') + '</div>'; }).join('');
+    h += sec(4, 'Dicas e cuidados', '<div class="ap-call ap-tip"><strong>' + ic('bulb') + 'Dica importante</strong><span>' + esc(t.dica) + '</span></div>' + erros);
+    h += sec(5, 'Revisão', '<div class="ap-call ap-review"><strong>' + ic('book') + 'Em poucas palavras</strong><ul>' + t.partes.slice(0, 3).map(function (p) { return '<li><b>' + esc(p[0]) + '</b> — ' + esc(p[1].split(/(?<=\.)\s/)[0]) + '</li>'; }).join('') + '</ul></div><div class="ap-call ap-practice"><strong>' + ic('target') + 'Hora de praticar</strong><span>' + esc(t.pratica) + '</span></div><button type="button" class="btn ' + (lido ? 'soft' : '') + ' ap-done" data-act="apostilaConcluir" data-id="' + c.id + '">' + (lido ? 'Capítulo estudado · desmarcar' : 'Marcar capítulo como estudado') + '</button>');
+    var ant = cur > 0 ? '<button type="button" class="btn soft" data-act="apostilaCap" data-v="' + (cur - 1) + '">← ' + esc(caps[cur - 1].titulo) + '</button>' : '<span></span>';
+    var prox = cur < caps.length - 1 ? '<button type="button" class="btn" data-act="apostilaCap" data-v="' + (cur + 1) + '">' + esc(caps[cur + 1].titulo) + ' →</button>' : '<span></span>';
+    return h + '<nav class="ap-pager" aria-label="Capítulo anterior e próximo">' + ant + prox + '</nav></article>';
+  }
   function telaApostila() {
-    var h = '<header class="pad apostila-head"><span class="eyebrow">Guia de estudo passo a passo</span><h1 class="title-xl">Apostila</h1><p class="muted">Aprenda com calma: escolha uma tecnologia, avance pelos capítulos e entenda cada parte do código.</p></header>';
+    var h = '<header class="pad apostila-head"><span class="eyebrow">Guia de estudo passo a passo</span><h1 class="title-xl">Apostila</h1><p class="muted">Escolha uma linguagem para ver os capítulos.</p></header>';
     if (!temaApostila) {
-      h += '<section class="pad apostila-chooser"><div><span class="soft-tag">ETAPA 1 DE 2</span><h2 class="title-lg" style="margin-top:8px">O que você quer estudar?</h2><p class="muted" style="margin-top:6px">Escolha uma opção. Depois você poderá selecionar o capítulo básico ou intermediário.</p></div><div class="technology-cards">' + [
-        ['html', '🌐', 'HTML', 'Monte páginas com títulos, textos, imagens, links e formulários.', 'Você vai aprender a estruturar conteúdo para a web.'],
-        ['python', '🐍', 'Python', 'Crie programas, faça cálculos, tome decisões e automatize tarefas.', 'Você vai aprender a dar instruções ao computador.']
+      h += '<section class="pad apostila-chooser"><div><span class="soft-tag">ETAPA 1 DE 2</span><h2 class="title-lg" style="margin-top:8px">O que você quer estudar?</h2><p class="muted" style="margin-top:6px">Escolha uma opção. Depois você segue pelos capítulos, do básico ao intermediário.</p></div><div class="technology-cards">' + [
+        ['html', ic('code'), 'HTML', 'Monte páginas com títulos, textos, imagens, links e formulários.', 'Você vai aprender a estruturar conteúdo para a web.'],
+        ['python', ic('terminal'), 'Python', 'Crie programas, faça cálculos, tome decisões e automatize tarefas.', 'Você vai aprender a dar instruções ao computador.']
       ].map(function (x) { return '<button class="technology-card ' + x[0] + '" data-act="apostilaTema" data-v="' + x[0] + '"><span class="technology-emoji">' + x[1] + '</span><span class="technology-title">' + x[2] + '</span><span class="technology-copy">' + x[3] + '</span><span class="technology-foot">' + x[4] + '</span><span class="technology-cta">Escolher ' + x[2] + ' →</span></button>'; }).join('') + '</div></section>';
       return h;
     }
-    var cap = conteudoApostila[capituloApostila], lista = cap[temaApostila];
-    h += '<section class="pad apostila-chooser"><div class="apostila-path"><span class="soft-tag">ETAPA 2 DE 2 · ' + (temaApostila === 'html' ? '🌐 HTML' : '🐍 PYTHON') + '</span><button class="linkbtn" data-act="apostilaEscolherTecnologia">Trocar tecnologia</button></div><div><h2 class="title-md">Agora escolha seu capítulo</h2><p class="muted" style="margin-top:5px">Você pode começar do início ou ir direto ao conteúdo intermediário.</p></div><div class="chapter-tabs" role="tablist" aria-label="Capítulos">' + [['basico', 'Capítulo 1', 'Básico', 'Fundamentos explicados desde o começo.'], ['intermediario', 'Capítulo 2', 'Intermediário', 'Combine os fundamentos e crie soluções maiores.']].map(function (x) { return '<button role="tab" aria-selected="' + (capituloApostila === x[0]) + '" class="chapter-tab' + (capituloApostila === x[0] ? ' on' : '') + '" data-act="apostilaCapitulo" data-v="' + x[0] + '"><span>' + x[1] + '</span><strong>' + x[2] + '</strong><small>' + x[3] + '</small><b class="chapter-open">' + (capituloApostila === x[0] ? 'Estudando agora' : 'Abrir capítulo →') + '</b></button>'; }).join('') + '</div><p class="chapter-summary">' + esc(cap.resumo) + '</p></section>';
-    h += '<div class="pad apostila-section-title"><h2 class="title-md">Aulas do capítulo</h2><p class="muted">Toque em um tópico para abrir ou fechar. O primeiro já começa aberto para você ver como funciona.</p></div>';
-    h += '<div class="pad list apostila-lessons">';
-    lista.forEach(function (x, i) {
-      var aberto = i === 0, painel = '<div class="topic-content"><div class="learning-goal"><strong>🎯 O que você vai aprender</strong><p>' + esc(x.objetivo) + '</p></div><div class="editor-shot"><div class="editor-top"><span>● <i>●</i> <b>●</b></span><span>' + (temaApostila === 'python' ? 'exemplo.py' : 'index.html') + '</span><span>Leia com atenção</span></div><pre>' + esc(x.codigo) + '</pre></div><section class="partes-explicadas"><h3>Vamos entender cada parte</h3><p class="muted">Abra qualquer item: você verá a explicação e um trecho do código que mostra essa ideia.</p><ol class="concept-list">' + x.partes.map(function (p, n) { var exemploParte = trechoDoConceito(p, x.codigo, temaApostila); return '<li><details class="concept-detail"><summary><b class="concept-step">' + (n + 1) + '</b><span class="concept-summary-text"><u>' + esc(p[0]) + '</u><span>' + esc(p[1]) + '</span></span><span class="concept-action"><small>Ver código</small><b aria-hidden="true">⌄</b></span></summary><div class="concept-example-panel"><div class="concept-example"><small>Exemplo de código para esta parte</small><pre><code>' + esc(exemploParte) + '</code></pre></div></div></details></li>'; }).join('') + '</ol></section><div class="apostila-result"><strong>✅ Resultado esperado</strong><p>' + esc(x.resultado) + '</p></div><div class="practice-note"><strong>✍️ Hora de praticar</strong><p>' + esc(x.pratica) + '</p></div><div class="tip"><strong>💡 Dica importante</strong><p>' + esc(x.dica) + '</p></div></div>';
-      h += '<article class="apostila-topic' + (aberto ? ' open' : '') + '"><button class="topic-toggle" type="button" data-act="apostilaToggle" aria-expanded="' + aberto + '"><span class="topic-toggle-number">' + String(i + 1).padStart(2, '0') + '</span><span class="topic-toggle-text"><strong>' + esc(x.titulo.replace(/^\d+\.\s*/, '')) + '</strong><small>' + esc(x.objetivo) + '</small></span><span class="topic-toggle-icon" aria-hidden="true">⌄</span></button><div class="topic-panel' + (aberto ? ' expanded' : '') + '"><div class="topic-panel-inner">' + painel + '</div></div></article>';
-    });
-    h += '</div>';
+    var lang = temaApostila, m = APOSTILA_MARCA[lang], caps = capitulosApostila(lang), cur = Math.min(apEstado.cap, caps.length - 1), c = caps[cur];
+    var cap = conteudoApostila[c.nivel], lista = cap[lang]; capituloApostila = c.nivel;
+    var barra = '<div class="ap-top"><span class="ap-top-title">' + ic(m.icone) + m.nome + '</span><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a página anterior">' + ic('close') + '</button></div>';
+    if (!apEstado.aberto) {
+      var lidos = caps.filter(function (x) { return apLido(x.id); }).length, pct = Math.round(lidos / caps.length * 100);
+      return barra + '<section class="pad ap-pick"><div class="ap-pick-head"><span class="soft-tag">ESCOLHA O CAPÍTULO</span><h1 class="title-xl">Qual capítulo de ' + m.nome + ' você quer estudar?</h1><p class="ap-pick-sub">Toque em um capítulo para abrir o conteúdo.</p></div><div class="ap-progress"><div class="ap-progress-top"><span>' + lidos + ' de ' + caps.length + ' capítulos estudados</span><b>' + pct + '%</b></div>' + bar(pct) + '</div><div class="ap-pick-list">' + caps.map(function (x, k) {
+        var lido = apLido(x.id);
+        return (k === 0 || caps[k - 1].nivel !== x.nivel ? '<h2 class="ap-pick-group">' + (x.nivel === 'basico' ? 'Parte 1 · Básico' : 'Parte 2 · Intermediário') + '</h2>' : '') + '<button type="button" class="ap-cap-card' + (lido ? ' done' : '') + '" data-act="apostilaCap" data-v="' + k + '"><span class="ap-cap-num" aria-hidden="true">' + ic('book') + '</span><span class="ap-cap-text"><strong>' + esc(x.titulo) + '</strong><small>' + esc(x.t.objetivo) + '</small></span><span class="ap-cap-state">' + (lido ? 'Estudado ✓' : 'Abrir →') + '</span></button>';
+      }).join('') + '</div></section>';
+    }
+    h = barra + '<div class="pad">' + capituloHTML(c, cur, caps, lang) + '</div>';
     h += '<div class="pad apostila-section-title mindmap-bottom-title"><span class="soft-tag">REVISÃO VISUAL</span><h2 class="title-md">Mapa mental do capítulo</h2><p class="muted">Chegou ao final das aulas? Explore os ramos para revisar os conceitos, os mini tópicos e o código animado.</p><section class="mindmap"><div class="mindmap-hub"><span>🧠 MAPA MENTAL</span><strong>' + (temaApostila === 'html' ? 'HTML' : 'Python') + ' · ' + cap.nome + '</strong><small>Explore cinco ideias e veja um exemplo de cada uma</small></div><div class="mindmap-roots">' + mapaMentalApostila[capituloApostila][temaApostila].map(function (m, n) { var exemplo = lista[n] || lista[0]; return '<details class="mindmap-node" data-map-node="' + n + '"><summary><span class="mindmap-icon">' + m.icone + '</span><span class="mindmap-label"><strong>' + esc(m.titulo) + '</strong><small>' + esc(m.resumo) + '</small></span><span class="mindmap-plus" aria-hidden="true">+</span></summary><div class="mindmap-details"><div class="mini-topics">' + m.mini.map(function (tag) { return '<span>' + esc(tag) + '</span>'; }).join('') + '</div><p><b>💡 Um passo além:</b> ' + esc(m.extra) + '</p><div class="map-code-window"><div class="map-code-toolbar"><span class="map-code-dots"><i></i><i></i><i></i></span><strong>' + (temaApostila === 'html' ? 'index.html' : 'exemplo.py') + '</strong><span class="map-code-status" aria-live="polite">O código aparece ao abrir este ramo</span></div><pre class="map-code-screen"><code class="map-code-output"></code><i class="map-code-caret" aria-hidden="true"></i></pre><pre class="map-code-source" hidden>' + esc(exemplo.codigo) + '</pre></div><small class="map-code-caption">Exemplo do tópico: ' + esc(exemplo.titulo.replace(/^\d+\.\s*/, '')) + '</small></div></details>'; }).join('') + '</div><div class="mindmap-footer">Dica de estudo <span>Abra um ramo, veja o código surgir letra por letra e depois encontre o mesmo exemplo na aula correspondente.</span></div></section></div>';
     return h;
   }
@@ -601,7 +688,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.0.8</span><p>A barra inferior ganhou botões maiores e animação ao selecionar. Os cartões de disciplinas estão maiores, sem borda visível e com destaque ao passar o mouse.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.0.8</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.1.3</span><p>Apostila com capítulos organizados, cartões revisados e cabeçalho roxo com texto branco.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.1.3</p></div>'
     return h;
   }
 
@@ -636,6 +723,7 @@
     APP.className = S.config.plataforma;
     APP.innerHTML = '<div class="' + cls + (anim ? ' enter-' + anim : '') + '" id="screen">' + corpo + '</div>' + (semAbas ? '' : abas());
     if (ui.screen === 'apostila' && temaApostila) {
+      var chipOn = APP.querySelector('.ap-chip.on'), chipBox = chipOn && chipOn.parentNode; if (chipBox) chipBox.scrollLeft = chipOn.offsetLeft - chipBox.clientWidth / 2 + chipOn.offsetWidth / 2;
       var mapaNos = APP.querySelectorAll('.mindmap-node');
       function escreverCodigoMapa(no) {
         var fonte = no.querySelector('.map-code-source'), saida = no.querySelector('.map-code-output'), estadoCodigo = no.querySelector('.map-code-status');
@@ -693,9 +781,13 @@
     switch (a) {
       case 'tab': ui.tab = el.dataset.t; ir(el.dataset.t, {}, 'fade'); break;
       case 'abrirApostila': ir('apostila', {}, 'fwd'); break;
-      case 'apostilaCapitulo': capituloApostila = el.dataset.v; render(null); break;
-      case 'apostilaTema': temaApostila = el.dataset.v; render(null); break;
-      case 'apostilaEscolherTecnologia': temaApostila = ''; render(null); break;
+      case 'apostilaCap': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(9, parseInt(el.dataset.v, 10) || 0)); render(null); var telaAp = document.getElementById('screen'); if (telaAp) telaAp.scrollTop = 0; break;
+      case 'apostilaVoltar': if (apEstado.aberto) apEstado.aberto = false; else temaApostila = ''; render(null); var telaV = document.getElementById('screen'); if (telaV) telaV.scrollTop = 0; break;
+      case 'apostilaEtapa': apEstado.etapa[el.dataset.id] = parseInt(el.dataset.e, 10); render(null); break;
+      case 'apostilaNota': var nNota = parseInt(el.dataset.n, 10); apEstado.nota[el.dataset.id] = apEstado.nota[el.dataset.id] === nNota ? 0 : nNota; render(null); break;
+      case 'apostilaConcluir': S.apostila = S.apostila || {}; if (S.apostila[el.dataset.id]) delete S.apostila[el.dataset.id]; else S.apostila[el.dataset.id] = 1; salvar(); render(null); break;
+      case 'apostilaTema': temaApostila = el.dataset.v; apEstado.aberto = false; render(null); break;
+      case 'apostilaEscolherTecnologia': temaApostila = ''; apEstado.aberto = false; render(null); break;
       case 'apostilaToggle':
         var topico = el.closest('.apostila-topic'), painelTopico = topico && topico.querySelector('.topic-panel');
         if (topico && painelTopico) { var abrirTopico = !topico.classList.contains('open'); topico.classList.toggle('open', abrirTopico); painelTopico.classList.toggle('expanded', abrirTopico); el.setAttribute('aria-expanded', String(abrirTopico)); }
