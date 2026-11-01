@@ -688,11 +688,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-<<<<<<< HEAD
     h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.1.3</span><p>Apostila com capítulos organizados, cartões revisados e cabeçalho roxo com texto branco.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.1.3</p></div>'
-=======
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.0.9</span><p>Todos os botões agora têm um efeito sutil ao toque e ao passar o mouse, além das animações específicas da barra inferior.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.0.9</p></div>'
->>>>>>> eb09c3ad18a9bfb29c2f82c38b579d92b99c3549
     return h;
   }
 
