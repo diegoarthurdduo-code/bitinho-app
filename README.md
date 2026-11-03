@@ -28,7 +28,7 @@ A versão atual aparece discretamente no canto inferior do app. Ao preparar cada
 
 ## Apostila
 
-Cada linguagem (HTML e Python) tem 10 capítulos (5 básicos e 5 intermediários), gerados a partir de `conteudoApostila` em `app.js`. Cada capítulo traz Explicação, Exemplo (código com notas ligadas às linhas e etapas), Passo a passo, Dicas e cuidados e Revisão. Para acrescentar entrada/saída e erros comuns a um capítulo, adicione uma entrada em `extrasApostila` com a chave `lang-b1` (básico) ou `lang-i1` (intermediário). O progresso de leitura fica em `S.apostila`.
+Cada linguagem (HTML e Python) tem 15 capítulos: cinco básicos, cinco intermediários e cinco avançados, gerados a partir de `conteudoApostila` em `app.js`. Cada capítulo traz Explicação, Exemplo (código com notas ligadas às linhas e etapas), Passo a passo, Dicas e cuidados, Revisão e mapa mental. Os capítulos avançados estão ligados às lições práticas 5–9 de HTML e 7–11 de Python. Para acrescentar entrada/saída e erros comuns a um capítulo, adicione uma entrada em `extrasApostila` com a chave `lang-b1`, `lang-i1` ou `lang-a1` (avançado). O progresso de leitura fica em `S.apostila`; capítulos avançados liberam acessórios próprios do Bitinho.
 
 ## Tipos de exercício
 
@@ -38,6 +38,8 @@ Cada linguagem (HTML e Python) tem 10 capítulos (5 básicos e 5 intermediários
 | `lacunas` | `modelo` com `{{0}}`, `{{1}}`…, `banco`, `respostas`, `lang` (`html`, `python` ou `frase`), `porque` |
 | `ordenar` | `etapas` (já na ordem correta; o app embaralha), `lang`, `porque` |
 | `desafio` | `aceita` (lista de expressões regulares), `solucao`, `dica`, `lang`, `porque` |
+| `prever` | `codigo`, `opcoes` de resultado, `certa` (índice), `lang`, `porque` |
+| `corrigir` | `codigo` com erro, `opcoes` de correção, `certa` (índice), `lang`, `porque` |
 
 `pista` (opcional) aparece no primeiro erro. `porque` explica a resposta certa.
 
@@ -51,6 +53,10 @@ Cada linguagem (HTML e Python) tem 10 capítulos (5 básicos e 5 intermediários
 ## Para virar app nativo
 
 A lógica de conteúdo (`content/*.js`) é dados puros e pode ser reaproveitada em React Native ou Flutter, ou empacotada com Capacitor.
+
+## Versão 1.3.0
+
+A Apostila passa a oferecer 15 capítulos por linguagem: 5 básicos, 5 intermediários e 5 avançados, incluindo novos mapas mentais e exemplos anotados. Cada capítulo avançado se conecta a uma lição prática desbloqueável e libera um visual novo para o Bitinho. As lições novas trazem exercícios de previsão de saída e correção de código junto aos formatos existentes. Gabarito e explicação aparecem depois da resposta.
 
 ## Versão 1.2.2
 

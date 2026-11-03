@@ -138,6 +138,11 @@
     { id: 'cap8', nome: 'Chapéu de Mago', emoji: '🧙', capitulo: 8, svg: '<path d="M19 21L28 3q3-5 7 0l15 18z" fill="#8662ed" stroke="#4b319d" stroke-width="2.5"/><path d="M18 21h34v5H18z" fill="#ffd45b"/><path d="M31 10l2 3 3-2" fill="none" stroke="#fff" stroke-width="2"/>' },
     { id: 'cap9', nome: 'Mochila Dragão', emoji: '🐲', capitulo: 9, svg: '<path d="M13 31q-8 5-2 13l8-4m35-9q8 5 2 13l-8-4" fill="none" stroke="#ff8d4d" stroke-width="4" stroke-linecap="round"/><path d="M21 53q13 8 26 0" fill="none" stroke="#ff8d4d" stroke-width="4" stroke-linecap="round"/>' },
     { id: 'cap10', nome: 'Look de Formatura', emoji: '🎉', capitulo: 10, svg: '<path d="M16 23l18-15 18 15H16z" fill="#343047" stroke="#191627" stroke-width="2"/><path d="M34 9v16m0 0q7 2 8-3" fill="none" stroke="#ffd45b" stroke-width="2.5"/><circle cx="43" cy="21" r="2.5" fill="#ffd45b"/>' },
+    { id: 'cap11', nome: 'Estilista CSS', emoji: '🎨', capitulo: 11, svg: '<path d="M18 18h32v25H18z" fill="#a78bfa" stroke="#5837a7" stroke-width="2.5"/><path d="M25 26h18M25 32h13M25 38h8" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>' },
+    { id: 'cap12', nome: 'Mestre dos Seletores', emoji: '🎯', capitulo: 12, svg: '<circle cx="34" cy="33" r="22" fill="#f472b6" stroke="#9d286c" stroke-width="2.5"/><circle cx="34" cy="33" r="13" fill="none" stroke="#fff" stroke-width="3"/><circle cx="34" cy="33" r="4" fill="#fff"/>' },
+    { id: 'cap13', nome: 'Guardião Responsivo', emoji: '📱', capitulo: 13, svg: '<rect x="21" y="8" width="26" height="50" rx="6" fill="#38bdf8" stroke="#155e91" stroke-width="3"/><path d="M27 17h14M27 23h14M28 48h12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>' },
+    { id: 'cap14', nome: 'Herói Acessível', emoji: '♿', capitulo: 14, svg: '<circle cx="34" cy="34" r="22" fill="#34d399" stroke="#167a63" stroke-width="2.5"/><path d="M24 34l7 7 14-16" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>' },
+    { id: 'cap15', nome: 'Lenda do Portfólio', emoji: '🚀', capitulo: 15, svg: '<path d="M34 8q17 10 14 31L34 53 20 39Q17 18 34 8z" fill="#fb923c" stroke="#a94419" stroke-width="2.5"/><circle cx="34" cy="27" r="6" fill="#fff"/><path d="M22 39l-7 9 13-3m20-6 7 9-13-3" fill="#ffcf5c" stroke="#a94419" stroke-width="2"/>' },
     { id: 'bonus_html', nome: 'Mestre HTML', emoji: '🌐', exclusiva: true, desafio: 'html', svg: '<path d="M15 24q19-9 38 0l-3 29q-16 9-32 0z" fill="#ff8c52" stroke="#b44c23" stroke-width="2.5"/><path d="M24 33h20M24 40h16M24 47h11" stroke="#fff4e8" stroke-width="2.5" stroke-linecap="round"/>' },
     { id: 'bonus_python', nome: 'Mestre Python', emoji: '🐍', exclusiva: true, desafio: 'python', svg: '<path d="M17 30q0-12 17-12h8q11 0 11 10v6H30q-13 0-13 11v-15z" fill="#ffd45b" stroke="#a8751d" stroke-width="2.5"/><path d="M51 39q0 12-17 12h-8q-11 0-11-10v-6h23q13 0 13-11z" fill="#62a9ff" stroke="#3267b4" stroke-width="2.5"/><circle cx="42" cy="24" r="1.8" fill="#342657"/><circle cx="26" cy="47" r="1.8" fill="#342657"/>' },
     { id: 'bonus_logica', nome: 'Guardião da Lógica', emoji: '🛡️', exclusiva: true, desafio: 'logica', svg: '<path d="M34 13l20 7v14q-2 14-20 21Q16 48 14 34V20z" fill="#6cdb9b" stroke="#258b58" stroke-width="2.5"/><path d="M25 34l6 6 12-14" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>' },
@@ -148,6 +153,10 @@
     var base = SKINS_BITINHO[i + 1];
     SKINS_BITINHO.push({ id: 'pycap' + (i + 1), nome: nome + ' Python', emoji: base.emoji, capitulo: i + 11, svg: base.svg, variantePython: true });
   });
+  ['Estilista CSS', 'Mestre dos Seletores', 'Guardião Responsivo', 'Herói Acessível', 'Lenda do Portfólio'].forEach(function (nome, i) {
+    var base = SKINS_BITINHO[11 + i];
+    SKINS_BITINHO.push({ id: 'pycap' + (i + 11), nome: nome + ' Python', emoji: base.emoji, capitulo: i + 21, svg: base.svg, variantePython: true });
+  });
   var DESAFIOS_SKIN = [
     { id: 'html', titulo: 'Estrutura HTML', pergunta: 'Qual tag cria um parágrafo em uma página?', opcoes: ['<p>', '<img>', '<head>'], certa: 0, explicacao: 'A tag <p> representa um parágrafo de texto.', dica: 'Pense na tag cujo nome vem de “paragraph”.' },
     { id: 'python', titulo: 'Saída em Python', pergunta: 'Qual comando mostra uma mensagem na tela?', opcoes: ['input("Olá")', 'print("Olá")', 'show("Olá")'], certa: 1, explicacao: 'print() escreve o valor no terminal. input() faz o caminho inverso: recebe texto.', dica: 'O nome do comando parece com “imprimir”.' },
@@ -156,10 +165,10 @@
     { id: 'codexa', titulo: 'Laço de repetição', pergunta: 'Qual estrutura em Python repete um bloco para cada item de uma sequência?', opcoes: ['for', 'if', 'def'], certa: 0, explicacao: 'for percorre os itens de uma sequência e executa o bloco para cada um deles.', dica: 'A palavra em inglês significa “para cada”.' }
   ];
   function skinPorId(id) { return SKINS_BITINHO.find(function (s) { return s.id === id; }) || SKINS_BITINHO[0]; }
-  function skinCapitulo(id) { var m = /^(html|python)-(b|i)([1-5])$/.exec(id); if (!m) return 0; var n = m[2] === 'b' ? Number(m[3]) : Number(m[3]) + 5; return m[1] === 'python' ? n + 10 : n; }
+  function skinCapitulo(id) { var m = /^(html|python)-(b|i|a)([1-5])$/.exec(id); if (!m) return 0; var n = m[2] === 'b' ? Number(m[3]) : m[2] === 'i' ? Number(m[3]) + 5 : Number(m[3]) + 10; return m[1] === 'python' ? n + 10 : n; }
   function sincronizarSkinsCapitulos() {
     var ids = S.apostila || {}, mudou = false;
-    Object.keys(ids).forEach(function (id) { var n = skinCapitulo(id), skin = n && (n > 10 ? 'pycap' + (n - 10) : 'cap' + n); if (skin && !S.skinsBitinho[skin]) { S.skinsBitinho[skin] = true; mudou = true; } });
+    Object.keys(ids).forEach(function (id) { var n = skinCapitulo(id), linguagem = id.indexOf('python-') === 0, skin = n && (linguagem ? 'pycap' + (n - 10) : 'cap' + n); if (skin && !S.skinsBitinho[skin]) { S.skinsBitinho[skin] = true; mudou = true; } });
     if (mudou) salvar();
   }
 
@@ -290,14 +299,14 @@
   function respostaCompleta() {
     var L = ui.lesson, ex = exAtual();
     if (!ex) return true;
-    if (ex.tipo === 'multipla') return L.sel !== null;
+    if (['multipla', 'prever', 'corrigir'].indexOf(ex.tipo) >= 0) return L.sel !== null;
     if (ex.tipo === 'lacunas') return L.slots.every(function (s) { return s !== null; });
     if (ex.tipo === 'ordenar') return L.ordem.length === ex.etapas.length;
     return L.texto.trim().length > 0;
   }
   function conferir() {
     var L = ui.lesson, ex = exAtual(), ok = false;
-    if (ex.tipo === 'multipla') ok = L.sel === ex.certa;
+    if (['multipla', 'prever', 'corrigir'].indexOf(ex.tipo) >= 0) ok = L.sel === ex.certa;
     else if (ex.tipo === 'lacunas') ok = L.slots.every(function (b, i) { return ex.banco[b] === ex.respostas[i]; });
     else if (ex.tipo === 'ordenar') ok = L.ordem.every(function (p, i) { return p === i; });
     else {
@@ -309,7 +318,7 @@
     L.fb = { ok: ok };
   }
   function textoResposta(ex) {
-    if (ex.tipo === 'multipla') return ex.opcoes[ex.certa];
+    if (['multipla', 'prever', 'corrigir'].indexOf(ex.tipo) >= 0) return ex.opcoes[ex.certa];
     if (ex.tipo === 'lacunas') return ex.respostas.join('  ·  ');
     if (ex.tipo === 'ordenar') return ex.etapas.map(function (e) { return e.trim(); }).join('  →  ');
     return ex.solucao;
@@ -418,6 +427,18 @@
     });
     return h + '</div>';
   }
+  function viewPrever(ex, L) {
+    var h = '<span class="eyebrow">🔍 Preveja a saída</span><h2 class="q">' + fmt(ex.enunciado) + '</h2>';
+    h += cartaoCodigo({ arquivo: ex.arquivo || 'programa', lang: ex.lang || 'python', texto: ex.codigo });
+    h += '<div class="opts">' + ex.opcoes.map(function (o, i) { var cls = L.sel === i ? ' sel' : ''; if (L.fb) { if (L.fb.ok && i === ex.certa) cls = ' right'; else if (!L.fb.ok && L.sel === i) cls = ' wrong'; } return '<button class="opt' + cls + '" data-act="opt" data-i="' + i + '"' + (L.fb ? ' disabled' : '') + '><span class="k">' + 'ABCD'[i] + '</span><span>' + fmt(o) + '</span></button>'; }).join('') + '</div>';
+    return h;
+  }
+  function viewCorrigir(ex, L) {
+    var h = '<span class="eyebrow">🛠️ Encontre e corrija o erro</span><h2 class="q">' + fmt(ex.enunciado) + '</h2>';
+    h += cartaoCodigo({ arquivo: ex.arquivo || 'trecho-com-erro', lang: ex.lang || 'python', texto: ex.codigo });
+    h += '<span class="small muted">Escolha a versão corrigida:</span><div class="code-fixes">' + ex.opcoes.map(function (o, i) { var cls = L.sel === i ? ' sel' : ''; if (L.fb) { if (L.fb.ok && i === ex.certa) cls = ' right'; else if (!L.fb.ok && L.sel === i) cls = ' wrong'; } return '<button class="code-fix' + cls + '" data-act="opt" data-i="' + i + '"' + (L.fb ? ' disabled' : '') + '><span class="k">' + 'ABCD'[i] + '</span><pre><code>' + esc(o) + '</code></pre></button>'; }).join('') + '</div>';
+    return h;
+  }
   function viewLacunas(ex, L) {
     var slotFn = function (n) {
       var b = L.slots[n];
@@ -500,6 +521,8 @@
     h += '<div class="l-body pad' + (ui.keepAnim ? '' : ' static') + '">';
     if (!ex) h += viewIntro(l);
     else if (ex.tipo === 'multipla') h += viewMultipla(ex, L);
+    else if (ex.tipo === 'prever') h += viewPrever(ex, L);
+    else if (ex.tipo === 'corrigir') h += viewCorrigir(ex, L);
     else if (ex.tipo === 'lacunas') h += viewLacunas(ex, L);
     else if (ex.tipo === 'ordenar') h += viewOrdenar(ex, L);
     else h += viewDesafio(ex, L);
@@ -580,7 +603,24 @@
         { titulo: '4. Conectar HTML e CSS com classes', objetivo: 'HTML define o que cada conteúdo significa; CSS controla como ele aparece. Uma class cria um nome que o CSS pode usar para aplicar o mesmo estilo em vários elementos.', codigo: '<h2 class="titulo-card">Minha meta</h2>\n<p class="titulo-card">Estudar toda semana.</p>\n\n/* No arquivo styles.css */\n.titulo-card {\n  color: purple;\n  font-weight: bold;\n}', partes: [['class="titulo-card"', 'Marca os elementos HTML que receberão esse estilo. A class pode ser reutilizada.'], ['.titulo-card', 'O ponto no início indica ao CSS que estamos selecionando uma classe com esse nome.'], ['{ ... }', 'As chaves guardam as regras de aparência que serão aplicadas.'], ['color: purple;', 'Muda a cor do texto. O ponto e vírgula encerra esta declaração.'], ['font-weight: bold;', 'Deixa o texto mais forte, normalmente em negrito.'], ['HTML e CSS', 'O HTML organiza o conteúdo; o CSS cuida da apresentação visual.']], resultado: 'Os elementos que têm class="titulo-card" ficam roxos e em negrito, sem repetir as regras de estilo em cada tag.', pratica: 'Crie uma classe destaque, aplique-a a um parágrafo e defina cor, fundo e espaçamento no CSS.', dica: 'O nome da classe no HTML precisa combinar exatamente com o seletor no CSS. Não coloque ponto no atributo class; o ponto só aparece no seletor CSS.' },
         { titulo: '5. Acessibilidade e formulários bem explicados', objetivo: 'Uma página acessível pode ser compreendida e usada por mais pessoas, inclusive quem navega por teclado ou usa leitor de tela. Formulários precisam indicar claramente o que esperam.', codigo: '<label for="nome">Seu nome</label>\n<input id="nome" name="nome" type="text" autocomplete="name">\n\n<label for="mensagem">Sua mensagem</label>\n<textarea id="mensagem" name="mensagem" rows="4"></textarea>\n<button type="submit">Enviar</button>', partes: [['<label>', 'É o rótulo visível que explica o que preencher.'], ['for="nome" e id="nome"', 'Esses valores iguais conectam o rótulo ao campo. Clicar no rótulo também foca o campo.'], ['name', 'Identifica o dado quando o formulário for processado.'], ['autocomplete="name"', 'Ajuda o navegador a sugerir o nome salvo pela própria pessoa.'], ['<textarea>', 'Cria um campo de texto com várias linhas para mensagens maiores.'], ['rows="4"', 'Sugere a altura inicial do campo em linhas de texto.'], ['Foco pelo teclado', 'Um campo deve poder ser alcançado com Tab e mostrar visualmente onde o foco está.']], resultado: 'Cada campo tem um rótulo associado, e a pessoa consegue entender o que preencher antes de enviar.', pratica: 'Crie um formulário de contato com nome, e-mail e mensagem. Associe cada campo ao seu label.', dica: 'Não use somente o placeholder como rótulo: ele desaparece enquanto a pessoa digita. Mantenha uma label visível.' }
       ]
-    }
+    },
+    avancado: {
+      nome: 'Avançado', resumo: 'Aplique os fundamentos em componentes completos, organize melhor seus projetos e aprenda a resolver problemas reais.',
+      html: [
+        { titulo: '1. CSS: cores, texto e espaçamento', objetivo: 'HTML organiza o conteúdo e CSS define sua aparência. Uma folha de estilos externa permite manter cores, fontes e espaçamentos consistentes em várias páginas.', codigo: '<link rel="stylesheet" href="estilos.css">\n\n.cartao {\n  color: #24123f;\n  background: #eee5ff;\n  padding: 16px;\n  border-radius: 12px;\n}', partes: [['rel="stylesheet"', 'Informa que o arquivo conectado contém regras de estilo CSS.'], ['href="estilos.css"', 'Aponta para a folha CSS; o caminho precisa estar correto.'], ['.cartao', 'Seleciona no HTML os elementos cuja classe é cartao.'], ['color e background', 'Definem respectivamente a cor do texto e o fundo.'], ['padding', 'Cria espaço interno entre o conteúdo e as bordas do elemento.'], ['border-radius', 'Arredonda os cantos do cartão.']], resultado: 'Ao conectar a folha e usar class="cartao", o elemento recebe texto roxo, fundo claro, espaço interno e cantos arredondados.', pratica: 'Crie um cartão com uma classe própria e altere a cor, o fundo, o espaçamento interno e o arredondamento.', dica: 'O seletor .classe precisa corresponder ao valor da class no HTML. Salve os dois arquivos na pasta esperada pelo caminho href.' },
+        { titulo: '2. Seletores e cascata do CSS', objetivo: 'Seletores escolhem quais elementos recebem estilos. Quando duas regras atingem o mesmo elemento, a cascata considera prioridade, especificidade e ordem para decidir qual valor prevalece.', codigo: '<h1 class="titulo">Meu projeto</h1>\n<p id="resumo">Uma ideia em construção.</p>\n\n.titulo { color: rebeccapurple; }\n#resumo { color: #444; }\np { line-height: 1.6; }', partes: [['.titulo', 'O ponto seleciona qualquer elemento que tenha class="titulo".'], ['#resumo', 'O sinal # seleciona o elemento cujo id é resumo; ids devem ser únicos na página.'], ['p', 'Seleciona todas as tags p.'], ['Especificidade', 'Um seletor de id costuma ter prioridade maior que um de classe; classe supera o seletor simples da tag.'], ['Cascata', 'Regras empatadas podem ser resolvidas pela ordem: a declaração posterior prevalece.']], resultado: 'O título fica roxo, o resumo cinza e todos os parágrafos recebem espaçamento entre linhas.', pratica: 'Estilize um título por classe, um aviso por id e todos os parágrafos com uma regra de tag.', dica: 'Prefira classes reutilizáveis para componentes. Evite acumular ids e !important; isso dificulta ajustar a aparência depois.' },
+        { titulo: '3. Layout responsivo com Flexbox', objetivo: 'Um layout responsivo se adapta ao espaço disponível. Flexbox organiza itens em linhas ou colunas e permite que eles quebrem para outra linha em telas estreitas.', codigo: '<div class="lista-cartoes">\n  <article>HTML</article>\n  <article>Python</article>\n  <article>Projetos</article>\n</div>\n\n.lista-cartoes {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n}', partes: [['display: flex', 'Ativa o modelo flexível no elemento pai.'], ['flex-wrap: wrap', 'Permite que itens passem para a linha seguinte quando faltar espaço.'], ['gap: 12px', 'Cria uma distância uniforme entre os itens sem margens extras.'], ['Elemento pai', 'A classe de layout fica no contêiner; os articles são os itens organizados por ele.'], ['Responsividade', 'O layout pode ocupar uma linha em telas largas e várias em telas estreitas.']], resultado: 'Os cartões ficam lado a lado quando há espaço e quebram para outra linha conforme a tela diminui.', pratica: 'Monte três cartões e faça com que eles se reorganizem em telas menores usando flex-wrap e gap.', dica: 'Confira o resultado em uma tela estreita. Não fixe larguras maiores que o celular; use max-width e medidas flexíveis quando fizer sentido.' },
+        { titulo: '4. Formulários acessíveis e validação', objetivo: 'Formulários bons explicam cada campo, validam formatos simples e ajudam a pessoa a corrigir dados antes do envio. A validação do navegador melhora a experiência, mas não substitui validações no servidor.', codigo: '<form>\n  <label for="email">E-mail</label>\n  <input id="email" name="email" type="email" required>\n  <button type="submit">Enviar</button>\n</form>', partes: [['label for e input id', 'Os valores iguais ligam o rótulo ao campo e ajudam leitores de tela e navegação por toque.'], ['name="email"', 'É o nome usado para identificar o dado quando o formulário for processado.'], ['type="email"', 'Pede um formato de e-mail e ativa validação básica do navegador.'], ['required', 'Impede o envio vazio pelo próprio navegador.'], ['Validação no servidor', 'Um sistema real também precisa validar os dados no servidor, pois regras do navegador podem ser contornadas.']], resultado: 'O campo recebe um rótulo conectado, indica que espera um e-mail e avisa quando estiver vazio.', pratica: 'Crie um formulário de inscrição com nome, e-mail e botão. Conecte cada label ao id e escolha os tipos apropriados.', dica: 'Mostre instruções claras e mensagens específicas. Nunca confie somente na validação visual do navegador para proteger dados.' },
+        { titulo: '5. Projeto final: página de portfólio', objetivo: 'Um projeto final reúne estrutura, semântica, acessibilidade e estilo. Planeje as seções antes de escrever o código e teste a navegação no teclado e em telas pequenas.', codigo: '<header><h1>Portfólio da Lia</h1></header>\n<main>\n  <section aria-labelledby="sobre">\n    <h2 id="sobre">Sobre mim</h2>\n    <p>Estou aprendendo desenvolvimento web.</p>\n  </section>\n  <a href="projetos.html">Ver projetos</a>\n</main>\n<footer>Feito para aprender</footer>', partes: [['header', 'Apresenta o site ou a introdução da página.'], ['main', 'Agrupa o conteúdo principal e deve aparecer uma vez como região principal.'], ['section e aria-labelledby', 'Agrupam um assunto e conectam a região ao seu título.'], ['a href', 'Cria um link com destino. O texto precisa explicar para onde ele leva.'], ['footer', 'Apresenta informações de encerramento.'], ['Teste final', 'Confira títulos em ordem, descrições de imagens, links e navegação por teclado.']], resultado: 'A página tem regiões com significado, um título conectado à seção e um link com destino identificável.', pratica: 'Crie uma página de portfólio com apresentação, habilidades, dois projetos e contato. Use tags semânticas e uma classe CSS para os cartões.', dica: 'Antes de adicionar detalhes visuais, confira se a estrutura faz sentido lendo apenas os títulos, textos e links.' }
+      ],
+      python: [
+        { titulo: '1. Listas: consultar, alterar e percorrer', objetivo: 'Listas guardam vários valores em uma sequência. Você pode acessar um item pelo índice, adicionar dados com append() e percorrer tudo com for.', codigo: 'materias = ["HTML", "Python"]\nmaterias.append("Projetos")\nfor posicao, materia in enumerate(materias, start=1):\n    print(posicao, materia)', partes: [['[ ... ]', 'Cria uma lista que mantém os itens em uma sequência.'], ['append()', 'Adiciona um novo item ao final da lista.'], ['for', 'Percorre a lista e executa o bloco para cada elemento.'], ['enumerate()', 'Fornece o índice e o valor de cada item; start=1 começa a contagem em um.'], ['Indentação', 'Marca o bloco que será repetido para cada matéria.']], resultado: 'A lista recebe Projetos e o laço mostra 1 HTML, 2 Python e 3 Projetos.', pratica: 'Guarde quatro tarefas numa lista, adicione uma quinta com append() e mostre cada uma numerada.', dica: 'Índices comuns começam em zero. enumerate() evita criar e atualizar um contador manual em muitas situações.' },
+        { titulo: '2. Dicionários: organizar dados nomeados', objetivo: 'Dicionários guardam pares de chave e valor. Use-os quando cada informação tem um nome, como campos de perfil, notas ou configurações.', codigo: 'aluno = {\n    "nome": "Lia",\n    "pontos": 80,\n    "ativo": True\n}\naluno["pontos"] += 10\nprint(aluno["nome"], aluno["pontos"])', partes: [['{ chave: valor }', 'As chaves organizam campos identificados por nomes.'], ['"nome"', 'É uma chave de texto que identifica um valor no dicionário.'], ['aluno["pontos"]', 'Acessa o valor guardado sob a chave pontos.'], ['+= 10', 'Soma dez ao valor atual e guarda o resultado no mesmo campo.'], ['Valor ausente', 'Antes de acessar uma chave que pode não existir, use get() ou teste se ela está no dicionário.']], resultado: 'O programa encontra Lia, soma dez aos pontos e mostra Lia 90.', pratica: 'Crie um dicionário de livro com título, autor e páginas. Atualize um campo e mostre os dados.', dica: 'Use listas para uma sequência de itens parecidos e dicionários para atributos com nomes. Eles podem ser combinados quando cada item precisa de vários campos.' },
+        { titulo: '3. Funções com parâmetros e resultados', objetivo: 'Funções ajudam a dividir um problema em tarefas reutilizáveis. Parâmetros recebem dados, return devolve um valor e a chamada da função usa o resultado.', codigo: 'def calcular_media(notas):\n    total = sum(notas)\n    return total / len(notas)\n\nmedia = calcular_media([8, 9, 7])\nprint(round(media, 1))', partes: [['def', 'Começa a definição da função.'], ['notas', 'Parâmetro: nome local que recebe o valor enviado na chamada.'], ['sum() e len()', 'Calculam, respectivamente, a soma dos itens e a quantidade de itens.'], ['return', 'Entrega o resultado para quem chamou a função.'], ['calcular_media([...])', 'Chama a função com uma lista e guarda o valor devolvido.'], ['round(media, 1)', 'Arredonda a média para uma casa decimal.']], resultado: 'A função calcula 24 dividido por 3 e mostra 8.0.', pratica: 'Escreva uma função que receba preço e quantidade e devolva o total da compra.', dica: 'Pense na função como uma tarefa com entrada e saída. Evite misturar várias responsabilidades em uma única função enorme.' },
+        { titulo: '4. Tratar erros e validar entradas', objetivo: 'Erros de entrada podem acontecer mesmo quando o programa está correto. try e except permitem tratar casos esperados e orientar a pessoa sem esconder falhas importantes.', codigo: 'texto = input("Digite sua idade: ")\ntry:\n    idade = int(texto)\nexcept ValueError:\n    print("Digite um número inteiro.")\nelse:\n    print("Idade registrada:", idade)', partes: [['try', 'Envolve a operação que pode falhar.'], ['int(texto)', 'Converte o texto para inteiro e pode gerar ValueError se não for número válido.'], ['except ValueError', 'Trata especificamente esse tipo de erro e mostra uma orientação.'], ['else', 'Roda se nenhuma exceção foi lançada dentro do try.'], ['Validar entrada', 'Explique o formato esperado e permita tentar novamente quando isso fizer sentido.']], resultado: 'Se a entrada for letras, aparece uma orientação. Se for 15, o programa registra a idade.', pratica: 'Peça um número e trate ValueError com uma mensagem que explique como corrigir a entrada.', dica: 'Trate apenas erros que você sabe como resolver. Um except genérico pode esconder problemas de programação que precisam ser corrigidos.' },
+        { titulo: '5. Projeto final: quiz de perguntas', objetivo: 'Um quiz usa uma coleção de perguntas, um laço para exibi-las, uma condição para conferir cada resposta e uma variável para acompanhar os pontos.', codigo: 'perguntas = [\n    {"texto": "2 + 2?", "resposta": "4"},\n    {"texto": "Tag de parágrafo?", "resposta": "<p>"}\n]\npontos = 0\nfor pergunta in perguntas:\n    resposta = input(pergunta["texto"] + " ")\n    if resposta.strip().lower() == pergunta["resposta"].lower():\n        pontos += 1\nprint("Pontuação:", pontos, "/", len(perguntas))', partes: [['Lista de dicionários', 'Cada pergunta é um dicionário; a lista mantém todas as perguntas do quiz.'], ['for pergunta in perguntas', 'Visita cada pergunta uma vez.'], ['input()', 'Recebe a resposta digitada pela pessoa.'], ['strip() e lower()', 'Removem espaços nas pontas e ignoram diferenças entre maiúsculas e minúsculas.'], ['if e +=', 'Comparam a resposta e aumentam os pontos quando está correta.'], ['len(perguntas)', 'Conta quantas perguntas foram aplicadas para mostrar o resultado.']], resultado: 'O quiz apresenta duas perguntas, soma um ponto para cada resposta certa e mostra a pontuação final.', pratica: 'Adicione mais duas perguntas, mostre quantas foram acertadas e exiba uma mensagem diferente conforme a pontuação.', dica: 'Teste respostas certas, erradas e com espaços extras. Um projeto fica mais confiável quando você pensa nos casos diferentes antes de terminar.' }
+      ]
+    },
   };
   var mapaMentalApostila = {
     basico: {
@@ -614,6 +654,22 @@
         { icone: '🎨', titulo: 'Separar conteúdo e aparência', resumo: 'Classes conectam elementos HTML a regras CSS.', mini: ['class no HTML', '.classe no CSS', 'seletor', 'propriedade e valor'], extra: 'Use HTML para organizar e nomear o conteúdo. Use CSS para definir cor, espaço, tamanho, alinhamento e adaptação a diferentes telas.' },
         { icone: '♿', titulo: 'Acessibilidade', resumo: 'Rótulos e foco claro ajudam mais pessoas a usar a página.', mini: ['label visível', 'id + for', 'autocomplete', 'teclado e foco'], extra: 'Teste percorrer os controles com Tab. Uma pessoa deve conseguir entender cada campo e perceber qual elemento está selecionado.' }
       ]
+    },
+    avancado: {
+      python: [
+        { icone: '📚', titulo: 'Listas em ação', resumo: 'Percorra, consulte e atualize coleções.', mini: ['append()', 'enumerate()', 'índices', 'for'], extra: 'Listas mantêm itens em sequência. Escolha entre acessar por índice, percorrer com for ou acrescentar itens conforme o programa funciona.' },
+        { icone: '🗝️', titulo: 'Dados nomeados', resumo: 'Use dicionários quando cada valor tem um rótulo.', mini: ['chave e valor', 'get()', 'atualizar dados', 'listas de registros'], extra: 'Um dicionário ajuda a representar objetos do cotidiano, como uma conta, um livro ou uma pergunta de quiz.' },
+        { icone: '🧱', titulo: 'Funções reutilizáveis', resumo: 'Transforme entradas em resultados com return.', mini: ['parâmetros', 'argumentos', 'return', 'responsabilidade única'], extra: 'Funções pequenas tornam um projeto mais fácil de ler. Você pode calcular um valor numa função e decidir fora dela o que fazer com o resultado.' },
+        { icone: '🛟', titulo: 'Erros tratados', resumo: 'Antecipe entradas inválidas e explique como corrigir.', mini: ['try', 'except', 'ValueError', 'else'], extra: 'Trate os erros previsíveis perto da operação que pode falhar. Uma mensagem clara ajuda a pessoa a corrigir a entrada.' },
+        { icone: '🏁', titulo: 'Projeto: quiz', resumo: 'Combine perguntas, laços, condições e pontuação.', mini: ['lista de perguntas', 'input()', 'comparação', 'pontuação'], extra: 'O projeto final transforma conceitos isolados num programa completo. Teste diferentes respostas, dados vazios e espaços a mais.' }
+      ],
+      html: [
+        { icone: '🎨', titulo: 'Conectar HTML e CSS', resumo: 'Crie uma folha externa e estilos reutilizáveis.', mini: ['link rel stylesheet', 'class', 'color', 'padding'], extra: 'Separe estrutura e aparência. Um arquivo CSS compartilhado mantém as páginas do projeto consistentes.' },
+        { icone: '🎯', titulo: 'Selecionar elementos', resumo: 'Entenda classes, ids e regras que se sobrepõem.', mini: ['seletor de tag', '.classe', '#id', 'especificidade'], extra: 'Quando um estilo inesperado aparece, confira quais seletores alcançam o elemento e compare sua prioridade.' },
+        { icone: '📱', titulo: 'Layout que se adapta', resumo: 'Organize cartões que se reorganizam em telas estreitas.', mini: ['display: flex', 'flex-wrap', 'gap', 'teste mobile'], extra: 'Flexbox organiza itens dentro de um contêiner. A quebra de linha ajuda a interface a caber em diferentes larguras.' },
+        { icone: '♿', titulo: 'Formulário confiável', resumo: 'Combine rótulos visíveis, tipos e validação.', mini: ['label + id', 'name', 'required', 'servidor também valida'], extra: 'A validação do navegador é uma ajuda de interface. Aplicações que recebem dados também precisam verificá-los no servidor.' },
+        { icone: '🚀', titulo: 'Projeto: portfólio', resumo: 'Planeje uma página semântica e acessível.', mini: ['header e main', 'section nomeada', 'links claros', 'teste com teclado'], extra: 'Leia a página sem olhar os estilos e navegue com Tab. A ordem do conteúdo e o foco precisam fazer sentido.' }
+      ]
     }
   };
   function trechoDoConceito(parte, codigo, linguagem) {
@@ -639,7 +695,9 @@
     'html-b1': 'html-1', 'html-b2': 'html-2', 'html-b3': 'html-3', 'html-b4': 'html-4', 'html-b5': 'html-3',
     'html-i1': 'html-4', 'html-i2': 'html-1', 'html-i3': 'html-4', 'html-i4': 'html-2', 'html-i5': 'html-1',
     'python-b1': 'py-1', 'python-b2': 'py-2', 'python-b3': 'py-2', 'python-b4': 'py-3', 'python-b5': 'py-2',
-    'python-i1': 'py-4', 'python-i2': 'py-5', 'python-i3': 'py-6', 'python-i4': 'py-2', 'python-i5': 'py-4'
+    'python-i1': 'py-4', 'python-i2': 'py-5', 'python-i3': 'py-6', 'python-i4': 'py-2', 'python-i5': 'py-4',
+    'html-a1': 'html-5', 'html-a2': 'html-6', 'html-a3': 'html-7', 'html-a4': 'html-8', 'html-a5': 'html-9',
+    'python-a1': 'py-7', 'python-a2': 'py-8', 'python-a3': 'py-9', 'python-a4': 'py-10', 'python-a5': 'py-11'
   };
   var extrasApostila = {
     'python-b1': { saida: 'Olá, mundo!\n5', erros: [['print("Olá, mundo!)', 'Faltou fechar as aspas: o Python não sabe onde o texto termina.', 'print("Olá, mundo!")'], ['Print("Olá")', 'Python diferencia maiúsculas de minúsculas. O comando é print.', 'print("Olá")']] },
@@ -651,7 +709,7 @@
   };
   function capitulosApostila(lang) {
     var out = [];
-    ['basico', 'intermediario'].forEach(function (n) { conteudoApostila[n][lang].forEach(function (t, i) { out.push({ nivel: n, t: t, id: lang + '-' + n.charAt(0) + (i + 1), titulo: t.titulo.replace(/^\d+\.\s*/, '') }); }); });
+    ['basico', 'intermediario', 'avancado'].forEach(function (n) { conteudoApostila[n][lang].forEach(function (t, i) { out.push({ nivel: n, t: t, id: lang + '-' + n.charAt(0) + (i + 1), titulo: t.titulo.replace(/^\d+\.\s*/, '') }); }); });
     return out;
   }
   function apLido(id) { return !!(S.apostila && S.apostila[id]); }
@@ -712,7 +770,8 @@
     var t = c.t, m = APOSTILA_MARCA[lang], ex = extrasApostila[c.id] || {}, cod = codigoAnotado(c, lang), lido = apLido(c.id);
     var sec = function (n, titulo, corpo) { return '<section class="ap-sec"><h3><b>' + n + '</b>' + titulo + '</h3>' + corpo + '</section>'; };
     var licaoId = APOSTILA_LICOES[c.id], licaoRelacionada = licaoId && LIC[licaoId];
-    var h = '<article class="ap-chap" id="cap-' + c.id + '"><header class="ap-chap-head"><div class="ap-kicker"><span class="ap-lang">' + ic(m.icone) + m.nome + '</span><span class="soft-tag">Capítulo ' + (cur + 1) + ' de ' + caps.length + ' · ' + (c.nivel === 'basico' ? 'Básico' : 'Intermediário') + '</span></div><h2>' + esc(c.titulo) + '</h2></header>';
+    var nomeNivel = c.nivel === 'basico' ? 'Básico' : c.nivel === 'intermediario' ? 'Intermediário' : 'Avançado';
+    var h = '<article class="ap-chap" id="cap-' + c.id + '"><header class="ap-chap-head"><div class="ap-kicker"><span class="ap-lang">' + ic(m.icone) + m.nome + '</span><span class="soft-tag">Capítulo ' + (cur + 1) + ' de ' + caps.length + ' · ' + nomeNivel + '</span></div><h2>' + esc(c.titulo) + '</h2></header>';
     h += sec(1, 'Explicação', '<p class="ap-text">' + destacarTermos(t.objetivo, t.partes) + '</p>');
     h += sec(2, 'Exemplo', cod.cartao + '<p class="ap-hint">Os números nos círculos ligam cada linha à explicação abaixo. Toque em uma explicação para destacar as linhas dela.</p>' + (ex.entrada || ex.saida ? '<div class="ap-io">' + (ex.entrada ? '<div><small>Entrada (o que a pessoa digita)</small>' + blocoCodigo(ex.entrada, 'ap-io-in') + '</div>' : '') + (ex.saida ? '<div><small>Resultado na tela</small>' + blocoCodigo(ex.saida, 'ap-io-out') + '</div>' : '') + '</div>' : '') + '<div class="ap-call ap-result"><strong>' + ic('ok') + 'Resultado esperado</strong><span>' + esc(t.resultado) + '</span></div>');
     h += sec(3, 'Passo a passo', '<p class="ap-text">Cada quadro explica uma parte do código. Use as etapas do exemplo para ver o programa crescer aos poucos.</p>' + cod.notas);
@@ -726,7 +785,7 @@
   function telaApostila() {
     var h = '<header class="pad apostila-head"><span class="eyebrow">Guia de estudo passo a passo</span><h1 class="title-xl">Apostila</h1><p class="muted">Escolha uma linguagem para ver os capítulos.</p></header>';
     if (!temaApostila) {
-      h += '<section class="pad apostila-chooser"><div><span class="soft-tag">ETAPA 1 DE 2</span><h2 class="title-lg" style="margin-top:8px">O que você quer estudar?</h2><p class="muted" style="margin-top:6px">Escolha uma opção. Depois você segue pelos capítulos, do básico ao intermediário.</p></div><div class="technology-cards">' + [
+      h += '<section class="pad apostila-chooser"><div><span class="soft-tag">ETAPA 1 DE 2</span><h2 class="title-lg" style="margin-top:8px">O que você quer estudar?</h2><p class="muted" style="margin-top:6px">Escolha uma opção. Depois explore capítulos básicos, intermediários e avançados.</p></div><div class="technology-cards">' + [
         ['html', ic('code'), 'HTML', 'Monte páginas com títulos, textos, imagens, links e formulários.', 'Você vai aprender a estruturar conteúdo para a web.'],
         ['python', ic('terminal'), 'Python', 'Crie programas, faça cálculos, tome decisões e automatize tarefas.', 'Você vai aprender a dar instruções ao computador.']
       ].map(function (x) { return '<button class="technology-card ' + x[0] + '" data-act="apostilaTema" data-v="' + x[0] + '"><span class="technology-emoji">' + x[1] + '</span><span class="technology-title">' + x[2] + '</span><span class="technology-copy">' + x[3] + '</span><span class="technology-foot">' + x[4] + '</span><span class="technology-cta">Escolher ' + x[2] + ' →</span></button>'; }).join('') + '</div></section>';
@@ -741,7 +800,8 @@
       var retomar = ultimo >= 0 ? '<button type="button" class="ap-resume" data-act="apostilaRetomar" data-v="' + ultimo + '"><span>▶</span><span><strong>Continuar de onde parou</strong><small>Capítulo ' + (ultimo + 1) + ' · ' + esc(caps[ultimo].titulo) + '</small></span><b>→</b></button>' : '';
       return barra + '<section class="pad ap-pick"><div class="ap-pick-head"><span class="soft-tag">ESCOLHA O CAPÍTULO</span><h1 class="title-xl">Qual capítulo de ' + m.nome + ' você quer estudar?</h1><p class="ap-pick-sub">Toque em um capítulo para abrir o conteúdo.</p></div><div class="ap-progress"><div class="ap-progress-top"><span>' + lidos + ' de ' + caps.length + ' capítulos estudados</span><b>' + pct + '%</b></div>' + bar(pct) + '</div>' + retomar + '<div class="ap-pick-list">' + caps.map(function (x, k) {
         var lido = apLido(x.id);
-        return (k === 0 || caps[k - 1].nivel !== x.nivel ? '<h2 class="ap-pick-group">' + (x.nivel === 'basico' ? 'Parte 1 · Básico' : 'Parte 2 · Intermediário') + '</h2>' : '') + '<button type="button" class="ap-cap-card' + (lido ? ' done' : '') + '" data-act="apostilaCap" data-v="' + k + '"><span class="ap-cap-num" aria-hidden="true">' + ic('book') + '</span><span class="ap-cap-text"><strong>' + esc(x.titulo) + '</strong><small>' + esc(x.t.objetivo) + '</small></span><span class="ap-cap-state">' + (lido ? 'Estudado ✓' : 'Abrir →') + '</span></button>';
+      var grupo = x.nivel === 'basico' ? 'Parte 1 · Básico' : x.nivel === 'intermediario' ? 'Parte 2 · Intermediário' : 'Parte 3 · Avançado';
+        return (k === 0 || caps[k - 1].nivel !== x.nivel ? '<h2 class="ap-pick-group">' + grupo + '</h2>' : '') + '<button type="button" class="ap-cap-card' + (lido ? ' done' : '') + '" data-act="apostilaCap" data-v="' + k + '"><span class="ap-cap-num" aria-hidden="true">' + ic('book') + '</span><span class="ap-cap-text"><strong>' + esc(x.titulo) + '</strong><small>' + esc(x.t.objetivo) + '</small></span><span class="ap-cap-state">' + (lido ? 'Estudado ✓' : 'Abrir →') + '</span></button>';
       }).join('') + '</div></section>';
     }
     h = barra + '<div class="pad">' + capituloHTML(c, cur, caps, lang) + '</div>';
@@ -767,7 +827,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.2.2</span><p>Os cards das skins do Bitinho ganharam cores mais vivas e animações ao passar o mouse. Ao tentar usar uma skin bloqueada, aparece um aviso com o que fazer para desbloqueá-la.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.2.2</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.0</span><p>Apostila ampliada com 5 capítulos avançados novos de HTML e 5 de Python, cada um ligado a uma lição prática e a um visual novo do Bitinho. As lições ganharam exercícios para prever a saída do código e encontrar correções, além de múltipla escolha, lacunas, ordenação e desafios. As respostas continuam acompanhadas de gabarito e explicação.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.0</p></div>'
     return h;
   }
 
@@ -778,9 +838,10 @@
     h += '<div class="pad bitinho-wardrobe-head"><div><span class="eyebrow">RECOMPENSAS DA APOSTILA</span><h2 class="title-md">Roupinhas por capítulo</h2></div><span class="small muted">1 visual novo a cada etapa</span></div><section class="pad skin-grid">';
     SKINS_BITINHO.filter(function (s) { return !s.exclusiva; }).forEach(function (s) {
       var on = !!S.skinsBitinho[s.id], equipped = S.skinEquipada === s.id;
-      var numeroCapitulo = s.capitulo > 10 ? s.capitulo - 10 : s.capitulo > 5 ? s.capitulo - 5 : s.capitulo;
-      var faixaCapitulo = (s.capitulo > 5 && s.capitulo <= 10) || s.capitulo > 15 ? 'intermediário' : 'básico';
-      var linguagemCapitulo = s.capitulo > 10 ? 'Python' : 'HTML';
+      var skinPython = s.id.indexOf('pycap') === 0;
+      var numeroCapitulo = skinPython ? s.capitulo - 10 : s.capitulo;
+      var faixaCapitulo = numeroCapitulo > 10 ? 'avançado' : numeroCapitulo > 5 ? 'intermediário' : 'básico';
+      var linguagemCapitulo = skinPython ? 'Python' : 'HTML';
       var unlock = s.capitulo ? 'Conclua o capítulo ' + numeroCapitulo + ' de ' + linguagemCapitulo + ' · ' + faixaCapitulo : 'Disponível desde o início';
       var erro = skinErroId === s.id && !on ? '<div class="skin-unowned-error" role="alert"><strong>Você não possui essa skin.</strong><span>Para conseguir: ' + esc(unlock) + '.</span></div>' : '';
       h += '<article class="skin-card' + (on ? ' unlocked' : ' locked') + (equipped ? ' equipped' : '') + '"><div class="skin-card-art' + (on ? '' : ' is-locked') + '">' + mascote('feliz', 62, s.id) + (on ? '' : '<span class="skin-lock">' + ic('lock') + '</span>') + '</div><div class="skin-card-copy"><strong>' + esc(s.nome) + '</strong><small>' + (on ? (equipped ? 'Em uso no Bitinho' : 'Visual desbloqueado') : esc(unlock)) + '</small></div>' + erro + (on ? '<button class="skin-equip' + (equipped ? ' on' : '') + '" data-act="skinEquipar" data-id="' + s.id + '"' + (equipped ? ' disabled' : '') + '>' + (equipped ? 'Em uso ✓' : 'Usar visual') + '</button>' : '<button class="skin-equip skin-locked-action" data-act="skinEquipar" data-id="' + s.id + '">' + ic('lock') + ' Ver como desbloquear</button>') + '</article>';
@@ -1052,8 +1113,8 @@
         respostaSkinSel = null; feedbackSkin = null; render('fwd');
         break;
       case 'abrirApostila': ir('apostila', {}, 'fwd'); break;
-      case 'apostilaCap': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(9, parseInt(el.dataset.v, 10) || 0)); S.apostilaRetomar = { lang: temaApostila, cap: apEstado.cap }; salvar(); render(null); var telaAp = document.getElementById('screen'); if (telaAp) telaAp.scrollTop = 0; break;
-      case 'apostilaRetomar': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(9, parseInt(el.dataset.v, 10) || 0)); render(null); var telaRetomar = document.getElementById('screen'); if (telaRetomar) telaRetomar.scrollTop = 0; break;
+      case 'apostilaCap': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(capitulosApostila(temaApostila).length - 1, parseInt(el.dataset.v, 10) || 0)); S.apostilaRetomar = { lang: temaApostila, cap: apEstado.cap }; salvar(); render(null); var telaAp = document.getElementById('screen'); if (telaAp) telaAp.scrollTop = 0; break;
+      case 'apostilaRetomar': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(capitulosApostila(temaApostila).length - 1, parseInt(el.dataset.v, 10) || 0)); render(null); var telaRetomar = document.getElementById('screen'); if (telaRetomar) telaRetomar.scrollTop = 0; break;
       case 'apostilaPraticar': if (LIC[el.dataset.id]) iniciarLicao(el.dataset.id, { screen: 'apostila', params: {} }); break;
       case 'apostilaCopiar': var blocoAp = el.closest('.ap-code'), fonteAp = blocoAp && blocoAp.querySelector('.ap-code-source'); if (fonteAp) copiarTexto(fonteAp.value); break;
       case 'apostilaVoltar': if (apEstado.aberto) apEstado.aberto = false; else temaApostila = ''; render(null); var telaV = document.getElementById('screen'); if (telaV) telaV.scrollTop = 0; break;
@@ -1061,8 +1122,8 @@
       case 'apostilaNota': var nNota = parseInt(el.dataset.n, 10); apEstado.nota[el.dataset.id] = apEstado.nota[el.dataset.id] === nNota ? 0 : nNota; render(null); break;
       case 'apostilaConcluir':
         S.apostila = S.apostila || {};
-        var capituloConcluido = !S.apostila[el.dataset.id], numeroSkinCapitulo = skinCapitulo(el.dataset.id);
-        var skinCapituloId = numeroSkinCapitulo > 10 ? 'pycap' + (numeroSkinCapitulo - 10) : 'cap' + numeroSkinCapitulo;
+        var capituloConcluido = !S.apostila[el.dataset.id], numeroSkinCapitulo = skinCapitulo(el.dataset.id), capituloPython = el.dataset.id.indexOf('python-') === 0;
+        var skinCapituloId = capituloPython ? 'pycap' + (numeroSkinCapitulo - 10) : 'cap' + numeroSkinCapitulo;
         var jaTinhaSkinCapitulo = !!S.skinsBitinho[skinCapituloId];
         if (capituloConcluido) S.apostila[el.dataset.id] = 1; else delete S.apostila[el.dataset.id];
         sincronizarSkinsCapitulos(); salvar(); render(null);
