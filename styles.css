@@ -844,3 +844,17 @@ button:not(:disabled):active { transform: scale(.97); }
 .ap-top-title, .ap-top-title .ic { color: #fff; }
 .ap-close { color: #fff; background: rgba(255,255,255,.16); box-shadow: none; }
 .ap-close:hover { background: rgba(255,255,255,.25); box-shadow: none; }
+.ap-copy { margin-left: auto; padding: 6px 10px; border: 1px solid rgba(217,207,252,.28); border-radius: 9px; color: #fff; background: rgba(154,116,255,.16); font: 700 10px var(--font-body); white-space: nowrap; }
+.ap-copy:hover { background: rgba(154,116,255,.3); }
+.ap-resume { display: grid; grid-template-columns: 34px minmax(0,1fr) 22px; gap: 10px; align-items: center; width: 100%; padding: 13px 15px; border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line)); border-radius: 17px; color: var(--fg); background: var(--accent-soft); text-align: left; }
+.ap-resume > span:first-child { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: #fff; background: var(--accent); }
+.ap-resume > span:nth-child(2) { display: grid; gap: 3px; }
+.ap-resume strong { font-size: 13px; }
+.ap-resume small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.ap-resume > b { color: var(--accent); font-size: 18px; }
+.ap-practice-link { justify-content: flex-start; min-height: 58px; text-align: left; }
+.ap-practice-link > span { display: grid; gap: 3px; }
+.ap-practice-link small { font-size: 10px; font-weight: 500; opacity: .76; }
+.exercise-step-hint { position: relative; align-items: flex-start; padding-top: 25px; }
+.hint-step-label { position: absolute; top: 7px; left: 14px; color: var(--accent-deep); font-size: 9px; font-weight: 900; letter-spacing: .08em; }
+@media (prefers-reduced-motion: reduce) { .ap-resume, .ap-copy, .ap-practice-link { transition: none !important; } }

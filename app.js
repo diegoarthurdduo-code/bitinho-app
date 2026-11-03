@@ -399,7 +399,16 @@
     var codigo = ex.lang !== 'frase';
     var h = '<span class="eyebrow">Desafio prático</span><h2 class="q">' + fmt(ex.enunciado) + '</h2>';
     h += '<div class="input-wrap' + (codigo ? ' code-in' : '') + '"><textarea id="resposta" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="' + esc(ex.placeholder || '') + '" aria-label="Sua resposta"' + (L.fb ? ' disabled' : '') + '>' + esc(L.texto) + '</textarea></div>';
-    h += L.hint ? '<div class="tip">' + ic('bulb') + '<div>' + fmt(ex.dica) + '</div></div>' : '<button class="hintbtn" data-act="dica">' + ic('bulb') + 'Preciso de uma dica</button>';
+    return h;
+  }
+
+  function viewDicas(l, ex, L) {
+    var introdica = l.intro && l.intro.dica || '';
+    var pistas = [ex.pista || introdica, ex.dica || ''].filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+    if (!pistas.length) return '';
+    var n = Math.min(Number(L.hint) || 0, pistas.length), h = '';
+    for (var i = 0; i < n; i++) h += '<div class="tip exercise-step-hint"><span class="hint-step-label">DICA ' + (i + 1) + '</span>' + ic('bulb') + '<div>' + fmt(pistas[i]) + '</div></div>';
+    if (n < pistas.length) h += '<button class="hintbtn" data-act="dica">' + ic('bulb') + (n ? 'Mostrar próxima dica' : 'Preciso de uma dica') + '</button>';
     return h;
   }
 
@@ -424,6 +433,19 @@
     return h;
   }
 
+  function copiarTexto(texto) {
+    function fallback() {
+      var campo = document.createElement('textarea');
+      campo.value = texto; campo.setAttribute('readonly', ''); campo.style.position = 'fixed'; campo.style.opacity = '0';
+      document.body.appendChild(campo); campo.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
+      campo.remove(); toast(ok ? 'Código copiado!' : 'Não foi possível copiar o código.');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).then(function () { toast('Código copiado!'); }).catch(fallback);
+    else fallback();
+  }
+
   function telaLicao() {
     var L = ui.lesson, info = LIC[L.id], l = info.l, ex = exAtual(), n = l.exercicios.length;
     var h = '<div class="l-top pad"><button class="xbtn" data-act="sair" aria-label="Sair da lição">' + ic('close') + '</button>' + bar(pctLicao(), L.prevPct) + '<span class="pts">' + ic('bolt') + l.xp + '</span></div>';
@@ -433,7 +455,7 @@
     else if (ex.tipo === 'lacunas') h += viewLacunas(ex, L);
     else if (ex.tipo === 'ordenar') h += viewOrdenar(ex, L);
     else h += viewDesafio(ex, L);
-    if (ex) h += apoioExercicio(l);
+    if (ex) h += viewDicas(l, ex, L) + apoioExercicio(l);
     h += '</div>';
     if (!ex) {
       h += '<div class="l-foot pad"><button class="btn primary" data-act="avancar">Entendi, vamos praticar</button></div>';
@@ -565,6 +587,12 @@
   /* ---------- Apostila: capítulos, código anotado e navegação ---------- */
   var apEstado = { cap: 0, aberto: false, etapa: {}, nota: {} };
   var APOSTILA_MARCA = { html: { nome: 'HTML', arq: 'index.html', icone: 'code' }, python: { nome: 'Python', arq: 'exemplo.py', icone: 'terminal' } };
+  var APOSTILA_LICOES = {
+    'html-b1': 'html-1', 'html-b2': 'html-2', 'html-b3': 'html-3', 'html-b4': 'html-4', 'html-b5': 'html-3',
+    'html-i1': 'html-4', 'html-i2': 'html-1', 'html-i3': 'html-4', 'html-i4': 'html-2', 'html-i5': 'html-1',
+    'python-b1': 'py-1', 'python-b2': 'py-2', 'python-b3': 'py-2', 'python-b4': 'py-3', 'python-b5': 'py-2',
+    'python-i1': 'py-4', 'python-i2': 'py-5', 'python-i3': 'py-6', 'python-i4': 'py-2', 'python-i5': 'py-4'
+  };
   var extrasApostila = {
     'python-b1': { saida: 'Olá, mundo!\n5', erros: [['print("Olá, mundo!)', 'Faltou fechar as aspas: o Python não sabe onde o texto termina.', 'print("Olá, mundo!")'], ['Print("Olá")', 'Python diferencia maiúsculas de minúsculas. O comando é print.', 'print("Olá")']] },
     'python-b3': { entrada: 'Qual é seu nome? Lia\nQual é sua idade? 15', saida: 'Olá, Lia\nNo ano que vem você terá 16', erros: [['idade = input("Idade: ")\nprint(idade + 1)', 'input() devolve texto. Somar texto com número causa um TypeError.', 'idade = int(input("Idade: "))\nprint(idade + 1)']] },
@@ -626,7 +654,7 @@
     var entram = t.partes.filter(function (p, k) { return alvos[k].length && alvos[k][0] + 1 >= a && alvos[k][0] + 1 <= b; }).map(function (p) { return '<code>' + esc(literalDaParte(p)) + '</code>'; });
     var legenda = E === 1 ? 'Código completo.' : etapa === E ? '<strong>Etapa ' + etapa + ' de ' + E + ' · código completo.</strong> Entram as linhas ' + a + '–' + b + (entram.length ? ': ' + entram.join(', ') : '') + '.' : '<strong>Etapa ' + etapa + ' de ' + E + '.</strong> ' + (etapa === 1 ? 'Começamos com' : 'Agora entram') + ' as linhas ' + a + '–' + b + (entram.length ? ': ' + entram.join(', ') : '') + '. As linhas apagadas vêm depois.';
     var botoes = E > 1 ? '<div class="ap-etapas" role="group" aria-label="Etapas do código"><small>Etapa</small>' + Array.apply(null, Array(E)).map(function (_, e) { return '<button type="button" class="' + (e + 1 === etapa ? 'on' : '') + '" data-act="apostilaEtapa" data-id="' + c.id + '" data-e="' + (e + 1) + '" aria-pressed="' + (e + 1 === etapa) + '">' + (e + 1) + '</button>'; }).join('') + '</div>' : '';
-    var cartao = '<div class="ap-code"><div class="ap-code-bar">' + ic(m.icone) + '<span>' + m.arq + '</span>' + botoes + '</div><pre class="ap-lines">' + corpo + '</pre><p class="ap-etapa-cap" aria-live="polite">' + legenda + '</p></div>';
+    var cartao = '<div class="ap-code"><div class="ap-code-bar">' + ic(m.icone) + '<span>' + m.arq + '</span>' + botoes + '<button type="button" class="ap-copy" data-act="apostilaCopiar">Copiar código</button></div><pre class="ap-lines">' + corpo + '</pre><p class="ap-etapa-cap" aria-live="polite">' + legenda + '</p><textarea class="ap-code-source" aria-hidden="true" tabindex="-1" readonly hidden>' + esc(t.codigo) + '</textarea></div>';
     var notas = '<ol class="ap-notes">' + t.partes.map(function (p, k) {
       return '<li><button type="button" class="ap-note' + (ativa === k + 1 ? ' on' : '') + '" data-act="apostilaNota" data-id="' + c.id + '" data-n="' + (k + 1) + '" aria-pressed="' + (ativa === k + 1) + '"><b class="ap-note-n">' + (k + 1) + '</b><span><u>' + esc(p[0]) + '</u><span>' + esc(p[1]) + '</span></span><small class="ap-arrow">' + (alvos[k].length ? '→ linha ' + alvos[k].map(function (i) { return i + 1; }).join(' e ') : 'vale para o código todo') + '</small></button></li>';
     }).join('') + '</ol>';
@@ -635,13 +663,14 @@
   function capituloHTML(c, cur, caps, lang) {
     var t = c.t, m = APOSTILA_MARCA[lang], ex = extrasApostila[c.id] || {}, cod = codigoAnotado(c, lang), lido = apLido(c.id);
     var sec = function (n, titulo, corpo) { return '<section class="ap-sec"><h3><b>' + n + '</b>' + titulo + '</h3>' + corpo + '</section>'; };
+    var licaoId = APOSTILA_LICOES[c.id], licaoRelacionada = licaoId && LIC[licaoId];
     var h = '<article class="ap-chap" id="cap-' + c.id + '"><header class="ap-chap-head"><div class="ap-kicker"><span class="ap-lang">' + ic(m.icone) + m.nome + '</span><span class="soft-tag">Capítulo ' + (cur + 1) + ' de ' + caps.length + ' · ' + (c.nivel === 'basico' ? 'Básico' : 'Intermediário') + '</span></div><h2>' + esc(c.titulo) + '</h2></header>';
     h += sec(1, 'Explicação', '<p class="ap-text">' + destacarTermos(t.objetivo, t.partes) + '</p>');
     h += sec(2, 'Exemplo', cod.cartao + '<p class="ap-hint">Os números nos círculos ligam cada linha à explicação abaixo. Toque em uma explicação para destacar as linhas dela.</p>' + (ex.entrada || ex.saida ? '<div class="ap-io">' + (ex.entrada ? '<div><small>Entrada (o que a pessoa digita)</small>' + blocoCodigo(ex.entrada, 'ap-io-in') + '</div>' : '') + (ex.saida ? '<div><small>Resultado na tela</small>' + blocoCodigo(ex.saida, 'ap-io-out') + '</div>' : '') + '</div>' : '') + '<div class="ap-call ap-result"><strong>' + ic('ok') + 'Resultado esperado</strong><span>' + esc(t.resultado) + '</span></div>');
     h += sec(3, 'Passo a passo', '<p class="ap-text">Cada quadro explica uma parte do código. Use as etapas do exemplo para ver o programa crescer aos poucos.</p>' + cod.notas);
     var erros = (ex.erros || []).map(function (e) { return '<div class="ap-err"><strong>' + ic('no') + 'Erro comum</strong>' + blocoCodigo(e[0], 'bad') + '<p>' + esc(e[1]) + '</p><strong class="okk">' + ic('ok') + 'Como corrigir</strong>' + blocoCodigo(e[2], 'good') + '</div>'; }).join('');
     h += sec(4, 'Dicas e cuidados', '<div class="ap-call ap-tip"><strong>' + ic('bulb') + 'Dica importante</strong><span>' + esc(t.dica) + '</span></div>' + erros);
-    h += sec(5, 'Revisão', '<div class="ap-call ap-review"><strong>' + ic('book') + 'Em poucas palavras</strong><ul>' + t.partes.slice(0, 3).map(function (p) { return '<li><b>' + esc(p[0]) + '</b> — ' + esc(p[1].split(/(?<=\.)\s/)[0]) + '</li>'; }).join('') + '</ul></div><div class="ap-call ap-practice"><strong>' + ic('target') + 'Hora de praticar</strong><span>' + esc(t.pratica) + '</span></div><button type="button" class="btn ' + (lido ? 'soft' : '') + ' ap-done" data-act="apostilaConcluir" data-id="' + c.id + '">' + (lido ? 'Capítulo estudado · desmarcar' : 'Marcar capítulo como estudado') + '</button>');
+    h += sec(5, 'Revisão', '<div class="ap-call ap-review"><strong>' + ic('book') + 'Em poucas palavras</strong><ul>' + t.partes.slice(0, 3).map(function (p) { return '<li><b>' + esc(p[0]) + '</b> — ' + esc(p[1].split(/(?<=\.)\s/)[0]) + '</li>'; }).join('') + '</ul></div><div class="ap-call ap-practice"><strong>' + ic('target') + 'Hora de praticar</strong><span>' + esc(t.pratica) + '</span></div>' + (licaoRelacionada ? '<button type="button" class="btn ap-practice-link" data-act="apostilaPraticar" data-id="' + licaoId + '">' + ic('play') + '<span>Praticar este tema<small>Exercícios relacionados: ' + esc(licaoRelacionada.l.titulo) + '</small></span></button>' : '') + '<button type="button" class="btn ' + (lido ? 'soft' : '') + ' ap-done" data-act="apostilaConcluir" data-id="' + c.id + '">' + (lido ? 'Capítulo estudado · desmarcar' : 'Marcar capítulo como estudado') + '</button>');
     var ant = cur > 0 ? '<button type="button" class="btn soft" data-act="apostilaCap" data-v="' + (cur - 1) + '">← ' + esc(caps[cur - 1].titulo) + '</button>' : '<span></span>';
     var prox = cur < caps.length - 1 ? '<button type="button" class="btn" data-act="apostilaCap" data-v="' + (cur + 1) + '">' + esc(caps[cur + 1].titulo) + ' →</button>' : '<span></span>';
     return h + '<nav class="ap-pager" aria-label="Capítulo anterior e próximo">' + ant + prox + '</nav></article>';
@@ -660,7 +689,9 @@
     var barra = '<div class="ap-top"><span class="ap-top-title">' + ic(m.icone) + m.nome + '</span><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a página anterior">' + ic('close') + '</button></div>';
     if (!apEstado.aberto) {
       var lidos = caps.filter(function (x) { return apLido(x.id); }).length, pct = Math.round(lidos / caps.length * 100);
-      return barra + '<section class="pad ap-pick"><div class="ap-pick-head"><span class="soft-tag">ESCOLHA O CAPÍTULO</span><h1 class="title-xl">Qual capítulo de ' + m.nome + ' você quer estudar?</h1><p class="ap-pick-sub">Toque em um capítulo para abrir o conteúdo.</p></div><div class="ap-progress"><div class="ap-progress-top"><span>' + lidos + ' de ' + caps.length + ' capítulos estudados</span><b>' + pct + '%</b></div>' + bar(pct) + '</div><div class="ap-pick-list">' + caps.map(function (x, k) {
+      var ultimo = S.apostilaRetomar && S.apostilaRetomar.lang === lang ? Math.max(0, Math.min(caps.length - 1, S.apostilaRetomar.cap)) : -1;
+      var retomar = ultimo >= 0 ? '<button type="button" class="ap-resume" data-act="apostilaRetomar" data-v="' + ultimo + '"><span>▶</span><span><strong>Continuar de onde parou</strong><small>Capítulo ' + (ultimo + 1) + ' · ' + esc(caps[ultimo].titulo) + '</small></span><b>→</b></button>' : '';
+      return barra + '<section class="pad ap-pick"><div class="ap-pick-head"><span class="soft-tag">ESCOLHA O CAPÍTULO</span><h1 class="title-xl">Qual capítulo de ' + m.nome + ' você quer estudar?</h1><p class="ap-pick-sub">Toque em um capítulo para abrir o conteúdo.</p></div><div class="ap-progress"><div class="ap-progress-top"><span>' + lidos + ' de ' + caps.length + ' capítulos estudados</span><b>' + pct + '%</b></div>' + bar(pct) + '</div>' + retomar + '<div class="ap-pick-list">' + caps.map(function (x, k) {
         var lido = apLido(x.id);
         return (k === 0 || caps[k - 1].nivel !== x.nivel ? '<h2 class="ap-pick-group">' + (x.nivel === 'basico' ? 'Parte 1 · Básico' : 'Parte 2 · Intermediário') + '</h2>' : '') + '<button type="button" class="ap-cap-card' + (lido ? ' done' : '') + '" data-act="apostilaCap" data-v="' + k + '"><span class="ap-cap-num" aria-hidden="true">' + ic('book') + '</span><span class="ap-cap-text"><strong>' + esc(x.titulo) + '</strong><small>' + esc(x.t.objetivo) + '</small></span><span class="ap-cap-state">' + (lido ? 'Estudado ✓' : 'Abrir →') + '</span></button>';
       }).join('') + '</div></section>';
@@ -688,7 +719,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão 1.1.3</span><p>Apostila com capítulos organizados, cartões revisados e cabeçalho roxo com texto branco.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.1.3</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão de teste 1.2.0-beta.1</span><p>Versão pessoal de teste: exercícios relacionados por capítulo, retomada da leitura, dicas em etapas e cópia de exemplos de código.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.2.0-beta.1</p></div>'
     return h;
   }
 
@@ -781,7 +812,10 @@
     switch (a) {
       case 'tab': ui.tab = el.dataset.t; ir(el.dataset.t, {}, 'fade'); break;
       case 'abrirApostila': ir('apostila', {}, 'fwd'); break;
-      case 'apostilaCap': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(9, parseInt(el.dataset.v, 10) || 0)); render(null); var telaAp = document.getElementById('screen'); if (telaAp) telaAp.scrollTop = 0; break;
+      case 'apostilaCap': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(9, parseInt(el.dataset.v, 10) || 0)); S.apostilaRetomar = { lang: temaApostila, cap: apEstado.cap }; salvar(); render(null); var telaAp = document.getElementById('screen'); if (telaAp) telaAp.scrollTop = 0; break;
+      case 'apostilaRetomar': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(9, parseInt(el.dataset.v, 10) || 0)); render(null); var telaRetomar = document.getElementById('screen'); if (telaRetomar) telaRetomar.scrollTop = 0; break;
+      case 'apostilaPraticar': if (LIC[el.dataset.id]) iniciarLicao(el.dataset.id, { screen: 'apostila', params: {} }); break;
+      case 'apostilaCopiar': var blocoAp = el.closest('.ap-code'), fonteAp = blocoAp && blocoAp.querySelector('.ap-code-source'); if (fonteAp) copiarTexto(fonteAp.value); break;
       case 'apostilaVoltar': if (apEstado.aberto) apEstado.aberto = false; else temaApostila = ''; render(null); var telaV = document.getElementById('screen'); if (telaV) telaV.scrollTop = 0; break;
       case 'apostilaEtapa': apEstado.etapa[el.dataset.id] = parseInt(el.dataset.e, 10); render(null); break;
       case 'apostilaNota': var nNota = parseInt(el.dataset.n, 10); apEstado.nota[el.dataset.id] = apEstado.nota[el.dataset.id] === nNota ? 0 : nNota; render(null); break;
@@ -799,7 +833,7 @@
       case 'travada': toast('Conclua a lição anterior para liberar esta.'); break;
       case 'comecar':
         var from = el.dataset.from;
-        iniciarLicao(el.dataset.id, from === 'trilha' ? { screen: 'trilha', params: { disc: el.dataset.d } } : { screen: from === 'perfil' ? 'perfil' : 'inicio', params: {} });
+        iniciarLicao(el.dataset.id, from === 'trilha' ? { screen: 'trilha', params: { disc: el.dataset.d } } : { screen: from === 'perfil' ? 'perfil' : from === 'apostila' ? 'apostila' : 'inicio', params: {} });
         break;
       case 'sair': ir(ui.from.screen, ui.from.params, 'back'); break;
       case 'fecharResultado': ir(ui.from.screen, ui.from.params, 'back'); break;
@@ -816,7 +850,7 @@
       case 'slot': if (!L.fb) { L.slots[parseInt(el.dataset.i, 10)] = null; render(null); } break;
       case 'poe': if (!L.fb) { L.ordem.push(parseInt(el.dataset.p, 10)); render(null); } break;
       case 'desfaz': if (!L.fb) { L.ordem.splice(parseInt(el.dataset.pos, 10), 1); render(null); } break;
-      case 'dica': L.hint = true; var ta = document.getElementById('resposta'); L.texto = ta ? ta.value : L.texto; render(null); break;
+      case 'dica': L.hint = Math.min(2, (Number(L.hint) || 0) + 1); var ta = document.getElementById('resposta'); L.texto = ta ? ta.value : L.texto; render(null); break;
       case 'lembrete': S.config.lembrete = !S.config.lembrete; salvar(); render(null); break;
       case 'meta': S.config.meta = parseInt(el.dataset.n, 10); salvar(); render(null); break;
       case 'tema': S.config.tema = el.dataset.v; salvar(); render(null); break;

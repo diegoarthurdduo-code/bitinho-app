@@ -51,3 +51,7 @@ Cada linguagem (HTML e Python) tem 10 capítulos (5 básicos e 5 intermediários
 ## Para virar app nativo
 
 A lógica de conteúdo (`content/*.js`) é dados puros e pode ser reaproveitada em React Native ou Flutter, ou empacotada com Capacitor.
+
+## Versão experimental
+
+A branch `teste/apostila-exercicios` reúne os recursos em avaliação: exercícios relacionados aos capítulos, retomada do último capítulo estudado, dicas graduais e cópia de exemplos de código. Para abrir esta versão após clonar o repositório, use `git fetch origin` e `git switch --track origin/teste/apostila-exercicios`.
