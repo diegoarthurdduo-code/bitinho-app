@@ -264,7 +264,8 @@
   /* ---------- Navegação ---------- */
   function ir(tela, params, anim) {
     ui.screen = tela; ui.params = params || {};
-    if (tela === 'inicio' || tela === 'disciplinas' || tela === 'apostila' || tela === 'bitinho' || tela === 'perfil') ui.tab = tela;
+    if (tela === 'inicio' || tela === 'disciplinas' || tela === 'apostila' || tela === 'perfil') ui.tab = tela;
+    if (tela === 'bitinho') ui.tab = 'inicio';
     if (tela === 'trilha') ui.tab = 'disciplinas';
     render(anim || 'fwd');
   }
@@ -347,7 +348,7 @@
   /* ---------- Telas ---------- */
   function telaInicio() {
     var alvo = alvoContinuar(), p = S.hojeQtd, meta = S.config.meta;
-    var bitinho = '<button type="button" class="home-mascot" data-act="bitinhoSurpresa" aria-label="Bitinho, tocar para ver uma surpresa"><span class="mascot-reaction-bubble" aria-hidden="true"></span><span class="mascot-sparkles" aria-hidden="true">✦　✧　✦</span>' + mascote('feliz', 64, S.skinEquipada) + '</button>';
+    var bitinho = '<button type="button" class="home-mascot" data-act="abrirBitinho" aria-label="Personalizar o Bitinho" title="Personalizar o Bitinho"><span class="mascot-reaction-bubble" aria-hidden="true"></span><span class="mascot-sparkles" aria-hidden="true">✦　✧　✦</span>' + mascote('feliz', 64, S.skinEquipada) + '<span class="home-mascot-caption">Personalizar</span></button>';
     var h = '<header class="top pad home-header"><div class="stack"><span class="eyebrow">' + saudacao() + '</span><h1 class="title-xl">Olá, ' + esc(S.nome || 'Aprendiz') + '!</h1><p class="home-subtitle">Sua próxima conquista começa com um passo.</p></div>' + bitinho + '</header>';
     h += '<div class="chips pad home-metrics"><span class="pill fire">' + ic('flame') + S.streak + (S.streak === 1 ? ' dia' : ' dias') + '</span><span class="pill bolt">' + ic('bolt') + S.xp + ' pontos</span><span class="pill">' + ic('star') + 'Nível ' + nivel() + '</span></div>';
     var dicasPc = ['Use Ctrl + Z para desfazer uma ação que acabou de fazer. Funciona em muitos editores e aplicativos.','Faça cópias dos arquivos importantes em outro local ou na nuvem. Assim, um problema no computador não apaga tudo.','Antes de clicar num link recebido por mensagem, confira quem enviou e para onde o endereço realmente aponta.','Use nomes claros para arquivos e pastas. Exemplo: trabalho-historia-outubro.docx.'];
@@ -827,7 +828,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.0</span><p>Apostila ampliada com 5 capítulos avançados novos de HTML e 5 de Python, cada um ligado a uma lição prática e a um visual novo do Bitinho. As lições ganharam exercícios para prever a saída do código e encontrar correções, além de múltipla escolha, lacunas, ordenação e desafios. As respostas continuam acompanhadas de gabarito e explicação.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.0</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.3</span><p>Agora você pode abrir a personalização tocando na foto do Bitinho na tela inicial. A barra inferior ficou mais simples, com quatro abas.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.3</p></div>'
     return h;
   }
 
@@ -881,9 +882,10 @@
   }
 
   function abas() {
-    var itens = [['inicio', 'Início', 'home'], ['disciplinas', 'Disciplinas', 'grid'], ['apostila', 'Apostila', 'book'], ['bitinho', 'Bitinho', 'sparkle'], ['perfil', 'Perfil', 'user']];
+    var itens = [['inicio', 'Início', 'home'], ['disciplinas', 'Disciplinas', 'grid'], ['apostila', 'Apostila', 'book'], ['perfil', 'Perfil', 'user']];
     return '<nav class="tabbar" aria-label="Navegação principal"><div class="tabbar-in pad">' + itens.map(function (i) {
-      return '<button class="tab' + (ui.tab === i[0] ? ' on' : '') + '" data-act="tab" data-t="' + i[0] + '"' + (ui.tab === i[0] ? ' aria-current="page"' : '') + '><span class="pillbg">' + ic(i[2]) + '</span>' + i[1] + '</button>';
+      var ativo = ui.screen !== 'bitinho' && ui.tab === i[0];
+      return '<button class="tab' + (ativo ? ' on' : '') + '" data-act="tab" data-t="' + i[0] + '"' + (ativo ? ' aria-current="page"' : '') + '><span class="pillbg">' + ic(i[2]) + '</span>' + i[1] + '</button>';
     }).join('') + '</div></nav>';
   }
 
@@ -1131,6 +1133,7 @@
     if (!el || el.disabled) return;
     var a = el.dataset.act, L = ui.lesson, ex;
     switch (a) {
+      case 'abrirBitinho': secaoBitinho = 'acessorios'; skinErroId = ''; ir('bitinho', {}, 'fwd'); break;
       case 'bitinhoSurpresa': animarBitinho(true); break;
       case 'tab': ui.tab = el.dataset.t; ir(el.dataset.t, {}, 'fade'); break;
       case 'bitinhoSecao': secaoBitinho = el.dataset.v; respostaSkinSel = null; feedbackSkin = null; skinErroId = ''; if (secaoBitinho === 'desafios') desafioSkinAtual = (DESAFIOS_SKIN.find(function (d) { return !S.desafiosBitinho[d.id]; }) || DESAFIOS_SKIN[0]).id; render('fade'); break;

@@ -617,7 +617,7 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 
 /* Barra de abas */
 .tabbar { flex: none; border-top: 0; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-.tabbar-in { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding-top: 9px; padding-bottom: max(9px, env(safe-area-inset-bottom, 0px)); }
+.tabbar-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding-top: 9px; padding-bottom: max(9px, env(safe-area-inset-bottom, 0px)); }
 .tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 64px; padding: 4px 0; color: var(--muted); font-size: 10.5px; font-weight: 700; white-space: nowrap; transition: color .2s ease; }
 .tab .ic { width: 26px; height: 26px; transition: transform .22s cubic-bezier(.2,.8,.2,1); }
 .tab .pillbg { display: grid; place-items: center; width: 54px; height: 34px; border-radius: 999px; background: transparent; transition: background .2s ease, transform .2s cubic-bezier(.2,.8,.2,1); }
@@ -1078,6 +1078,7 @@ button:not(:disabled):active { transform: scale(.97); }
 
 /* Bitinho: piscadas, reações espontâneas e surpresa ao toque */
 .home-mascot { position: relative; display: grid; place-items: center; flex: none; width: 68px; height: 68px; padding: 0; overflow: visible; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+.home-mascot-caption { position: absolute; z-index: 2; right: 50%; bottom: -5px; transform: translateX(50%); padding: 3px 7px; border: 1px solid var(--line); border-radius: 999px; color: var(--accent-deep); background: var(--surface); box-shadow: 0 2px 8px rgba(25, 20, 45, .12); font-size: 9px; font-weight: 800; line-height: 1; white-space: nowrap; }
 .home-mascot > .mascot { position: relative; z-index: 1; width: 64px; height: 64px; animation: bitinhoIdle 2.8s ease-in-out infinite; transform-origin: 50% 70%; }
 .home-mascot:hover > .mascot { filter: drop-shadow(0 7px 10px color-mix(in srgb, var(--accent) 36%, transparent)); }
 .home-mascot:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }

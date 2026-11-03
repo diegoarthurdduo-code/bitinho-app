@@ -54,6 +54,10 @@ Cada linguagem (HTML e Python) tem 15 capítulos: cinco básicos, cinco intermed
 
 A lógica de conteúdo (`content/*.js`) é dados puros e pode ser reaproveitada em React Native ou Flutter, ou empacotada com Capacitor.
 
+## Versão 1.3.3
+
+A personalização do Bitinho agora abre ao tocar no mascote da tela inicial. A barra inferior foi reduzida para quatro abas.
+
 ## Versão 1.3.0
 
 A Apostila passa a oferecer 15 capítulos por linguagem: 5 básicos, 5 intermediários e 5 avançados, incluindo novos mapas mentais e exemplos anotados. Cada capítulo avançado se conecta a uma lição prática desbloqueável e libera um visual novo para o Bitinho. As lições novas trazem exercícios de previsão de saída e correção de código junto aos formatos existentes. Gabarito e explicação aparecem depois da resposta.
