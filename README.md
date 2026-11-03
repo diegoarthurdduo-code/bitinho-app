@@ -52,6 +52,10 @@ Cada linguagem (HTML e Python) tem 10 capítulos (5 básicos e 5 intermediários
 
 A lógica de conteúdo (`content/*.js`) é dados puros e pode ser reaproveitada em React Native ou Flutter, ou empacotada com Capacitor.
 
+## Versão 1.2.2
+
+Os cards das skins do Bitinho agora têm fundos mais coloridos, brilho e animações de hover. As skins bloqueadas podem ser selecionadas para mostrar um aviso de acesso negado e as instruções para desbloqueá-las: concluir o capítulo correspondente da apostila ou resolver o desafio exclusivo. A área de visualização do mascote foi mantida.
+
 ## Versão 1.2.1
 
 A tela inicial conta com fundo interativo e reações do Bitinho. O mascote continua visível mesmo quando há uma foto de perfil, que fica na aba Perfil. A aba **Cantinho do Bitinho** reúne 20 visuais que são desbloqueados ao concluir capítulos de HTML e Python, além de cinco exercícios especiais que liberam skins exclusivas. Os acessórios e o progresso são salvos por conta neste aparelho. A tela de login também exibe a identidade da Codexa.
