@@ -73,7 +73,7 @@
   function salvar() { try { localStorage.setItem(dataKey(), JSON.stringify(S)); } catch (e) { /* sem armazenamento */ } }
 
   var ui = { tab: 'inicio', screen: 'inicio', params: {}, from: null, trilhaSel: {}, lesson: null, result: null };
-  var secaoBitinho = 'acessorios', respostaSkinSel = null, feedbackSkin = null, desafioSkinAtual = 'html';
+  var secaoBitinho = 'acessorios', respostaSkinSel = null, feedbackSkin = null, desafioSkinAtual = 'html', skinErroId = '';
   var fundoInterativo = { canvas: null, ctx: null, pontos: [], ondas: [], ponteiro: { x: -1000, y: -1000 }, largura: 0, altura: 0, escala: 1, quadro: 0, ultimoDesenho: 0, eventosLigados: false, movimentoReduzido: false };
   var reacaoBitinhoTimer = null, reacaoBitinhoLimpeza = null;
 
@@ -782,12 +782,16 @@
       var faixaCapitulo = (s.capitulo > 5 && s.capitulo <= 10) || s.capitulo > 15 ? 'intermediário' : 'básico';
       var linguagemCapitulo = s.capitulo > 10 ? 'Python' : 'HTML';
       var unlock = s.capitulo ? 'Conclua o capítulo ' + numeroCapitulo + ' de ' + linguagemCapitulo + ' · ' + faixaCapitulo : 'Disponível desde o início';
-      h += '<article class="skin-card' + (on ? ' unlocked' : ' locked') + (equipped ? ' equipped' : '') + '"><div class="skin-card-art' + (on ? '' : ' is-locked') + '">' + mascote('feliz', 62, s.id) + (on ? '' : '<span class="skin-lock">' + ic('lock') + '</span>') + '</div><div class="skin-card-copy"><strong>' + esc(s.nome) + '</strong><small>' + (on ? (equipped ? 'Em uso no Bitinho' : 'Visual desbloqueado') : esc(unlock)) + '</small></div>' + (on ? '<button class="skin-equip' + (equipped ? ' on' : '') + '" data-act="skinEquipar" data-id="' + s.id + '"' + (equipped ? ' disabled' : '') + '>' + (equipped ? 'Em uso ✓' : 'Usar visual') + '</button>' : '<span class="skin-progress-lock">' + ic('lock') + '</span>') + '</article>';
+      var erro = skinErroId === s.id && !on ? '<div class="skin-unowned-error" role="alert"><strong>Você não possui essa skin.</strong><span>Para conseguir: ' + esc(unlock) + '.</span></div>' : '';
+      h += '<article class="skin-card' + (on ? ' unlocked' : ' locked') + (equipped ? ' equipped' : '') + '"><div class="skin-card-art' + (on ? '' : ' is-locked') + '">' + mascote('feliz', 62, s.id) + (on ? '' : '<span class="skin-lock">' + ic('lock') + '</span>') + '</div><div class="skin-card-copy"><strong>' + esc(s.nome) + '</strong><small>' + (on ? (equipped ? 'Em uso no Bitinho' : 'Visual desbloqueado') : esc(unlock)) + '</small></div>' + erro + (on ? '<button class="skin-equip' + (equipped ? ' on' : '') + '" data-act="skinEquipar" data-id="' + s.id + '"' + (equipped ? ' disabled' : '') + '>' + (equipped ? 'Em uso ✓' : 'Usar visual') + '</button>' : '<button class="skin-equip skin-locked-action" data-act="skinEquipar" data-id="' + s.id + '">' + ic('lock') + ' Ver como desbloquear</button>') + '</article>';
     });
     h += '</section><div class="pad bitinho-wardrobe-head exclusive-wardrobe-title"><div><span class="eyebrow">PRÊMIOS DOS DESAFIOS</span><h2 class="title-md">Looks exclusivos</h2></div><span class="small muted">Só com os exercícios especiais</span></div><section class="pad skin-grid">';
     SKINS_BITINHO.filter(function (s) { return s.exclusiva; }).forEach(function (s) {
       var on = !!S.skinsBitinho[s.id], equipped = S.skinEquipada === s.id;
-      h += '<article class="skin-card exclusive-skin' + (on ? ' unlocked' : ' locked') + (equipped ? ' equipped' : '') + '"><div class="skin-card-art' + (on ? '' : ' is-locked') + '">' + mascote('feliz', 62, s.id) + (on ? '' : '<span class="skin-lock">' + ic('lock') + '</span>') + '</div><div class="skin-card-copy"><strong>' + esc(s.nome) + '</strong><small>' + (on ? (equipped ? 'Em uso no Bitinho' : 'Conquistado no desafio') : 'Resolva o desafio exclusivo') + '</small></div>' + (on ? '<button class="skin-equip' + (equipped ? ' on' : '') + '" data-act="skinEquipar" data-id="' + s.id + '"' + (equipped ? ' disabled' : '') + '>' + (equipped ? 'Em uso ✓' : 'Usar visual') + '</button>' : '<span class="skin-progress-lock">' + ic('lock') + '</span>') + '</article>';
+      var desafioPremio = DESAFIOS_SKIN.find(function (d) { return d.id === s.desafio; });
+      var comoGanhar = desafioPremio ? 'complete o desafio “' + desafioPremio.titulo + '” na aba Desafios do Bitinho' : 'complete os exercícios especiais na aba Desafios do Bitinho';
+      var erroPremio = skinErroId === s.id && !on ? '<div class="skin-unowned-error" role="alert"><strong>Você não possui essa skin.</strong><span>Para conseguir: ' + esc(comoGanhar) + '.</span></div>' : '';
+      h += '<article class="skin-card exclusive-skin' + (on ? ' unlocked' : ' locked') + (equipped ? ' equipped' : '') + '"><div class="skin-card-art' + (on ? '' : ' is-locked') + '">' + mascote('feliz', 62, s.id) + (on ? '' : '<span class="skin-lock">' + ic('lock') + '</span>') + '</div><div class="skin-card-copy"><strong>' + esc(s.nome) + '</strong><small>' + (on ? (equipped ? 'Em uso no Bitinho' : 'Conquistado no desafio') : 'Resolva o desafio exclusivo') + '</small></div>' + erroPremio + (on ? '<button class="skin-equip' + (equipped ? ' on' : '') + '" data-act="skinEquipar" data-id="' + s.id + '"' + (equipped ? ' disabled' : '') + '>' + (equipped ? 'Em uso ✓' : 'Usar visual') + '</button>' : '<button class="skin-equip skin-locked-action" data-act="skinEquipar" data-id="' + s.id + '">' + ic('lock') + ' Ver como desbloquear</button>') + '</article>';
     });
     return h + '</section>';
   }
@@ -1031,8 +1035,8 @@
     switch (a) {
       case 'bitinhoSurpresa': animarBitinho(true); break;
       case 'tab': ui.tab = el.dataset.t; ir(el.dataset.t, {}, 'fade'); break;
-      case 'bitinhoSecao': secaoBitinho = el.dataset.v; respostaSkinSel = null; feedbackSkin = null; if (secaoBitinho === 'desafios') desafioSkinAtual = (DESAFIOS_SKIN.find(function (d) { return !S.desafiosBitinho[d.id]; }) || DESAFIOS_SKIN[0]).id; render('fade'); break;
-      case 'skinEquipar': if (S.skinsBitinho[el.dataset.id]) { S.skinEquipada = el.dataset.id; salvar(); render(null); toast('Look equipado no Bitinho! ✨'); } break;
+      case 'bitinhoSecao': secaoBitinho = el.dataset.v; respostaSkinSel = null; feedbackSkin = null; skinErroId = ''; if (secaoBitinho === 'desafios') desafioSkinAtual = (DESAFIOS_SKIN.find(function (d) { return !S.desafiosBitinho[d.id]; }) || DESAFIOS_SKIN[0]).id; render('fade'); break;
+      case 'skinEquipar': if (S.skinsBitinho[el.dataset.id]) { S.skinEquipada = el.dataset.id; skinErroId = ''; salvar(); render(null); toast('Look equipado no Bitinho! ✨'); } else { skinErroId = el.dataset.id; render(null); } break;
       case 'skinResposta': if (!S.desafiosBitinho[desafioSkinAtual]) { respostaSkinSel = parseInt(el.dataset.v, 10); feedbackSkin = null; render(null); } break;
       case 'skinConferir':
         var desafioSkin = DESAFIOS_SKIN.find(function (d) { return d.id === desafioSkinAtual; });

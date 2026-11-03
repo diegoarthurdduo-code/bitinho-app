@@ -655,6 +655,36 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 .skin-card-copy { display: grid; gap: 3px; min-height: 48px; padding: 8px 1px 6px; }
 .skin-card-copy strong { overflow: hidden; font-size: 11px; line-height: 1.25; text-overflow: ellipsis; }
 .skin-card-copy small { color: var(--muted); font-size: 9px; line-height: 1.3; }
+.skin-card { position: relative; isolation: isolate; border-color: color-mix(in srgb, var(--accent) 22%, var(--line)); box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 6%, transparent); }
+.skin-card-art { min-height: 112px; background: radial-gradient(circle at 50% 40%, #fff8 0 2%, transparent 44%), linear-gradient(145deg, color-mix(in srgb, var(--accent) 45%, #4b2c9b), color-mix(in srgb, var(--accent) 17%, #241544) 70%); }
+.skin-grid > .skin-card:nth-child(6n + 1) .skin-card-art { background: radial-gradient(circle at 50% 35%, #fff8, transparent 45%), linear-gradient(145deg, #a855f7, #4821a8); }
+.skin-grid > .skin-card:nth-child(6n + 2) .skin-card-art { background: radial-gradient(circle at 50% 35%, #fff8, transparent 45%), linear-gradient(145deg, #ec4899, #7e228e); }
+.skin-grid > .skin-card:nth-child(6n + 3) .skin-card-art { background: radial-gradient(circle at 50% 35%, #fff8, transparent 45%), linear-gradient(145deg, #22d3ee, #2563a6); }
+.skin-grid > .skin-card:nth-child(6n + 4) .skin-card-art { background: radial-gradient(circle at 50% 35%, #fff8, transparent 45%), linear-gradient(145deg, #fbbf24, #d35a36); }
+.skin-grid > .skin-card:nth-child(6n + 5) .skin-card-art { background: radial-gradient(circle at 50% 35%, #fff8, transparent 45%), linear-gradient(145deg, #34d399, #167a72); }
+.skin-grid > .skin-card:nth-child(6n) .skin-card-art { background: radial-gradient(circle at 50% 35%, #fff8, transparent 45%), linear-gradient(145deg, #818cf8, #5437ad); }
+.skin-card-art::after { position: absolute; inset: -45% auto -45% -60%; z-index: 0; width: 38%; content: ""; background: linear-gradient(90deg, transparent, #fff5, transparent); transform: skewX(-18deg); transition: left .55s ease; pointer-events: none; }
+.skin-card-art > .mascot { position: relative; z-index: 1; filter: drop-shadow(0 7px 9px #160c3780); transition: transform .35s cubic-bezier(.2,.8,.2,1), filter .35s ease; }
+.skin-card.locked { opacity: .9; }
+.skin-card-art.is-locked > .mascot { filter: grayscale(.35) drop-shadow(0 7px 9px #160c3760); opacity: .8; }
+.skin-card.equipped { border-color: #b77bff; box-shadow: 0 0 0 1px #a855f755, 0 8px 26px #8b5cf633; }
+.skin-card.equipped .skin-card-art { box-shadow: inset 0 0 0 2px #fff5; }
+.skin-locked-action { display: flex; align-items: center; justify-content: center; gap: 5px; color: #ffe0e7; background: linear-gradient(100deg, #a52c56, #762c75); }
+.skin-locked-action:hover { color: #fff; background: linear-gradient(100deg, #c53565, #8e3b9f); }
+.skin-locked-action .ic { width: 13px; height: 13px; }
+.skin-unowned-error { display: grid; gap: 4px; padding: 9px 10px; border: 1px solid #fb718566; border-radius: 11px; color: #fecdd3; background: linear-gradient(135deg, #88133755, #4c051955); font-size: 10px; line-height: 1.4; animation: skinErrorIn .24s ease-out both; }
+.skin-unowned-error strong { color: #fda4af; font-size: 11px; }
+.skin-unowned-error span { color: #ffe4e6; }
+@keyframes skinErrorIn { from { opacity: 0; transform: translateY(-5px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .skin-card:hover { border-color: color-mix(in srgb, var(--accent) 72%, #fff); transform: translateY(-5px) scale(1.015); box-shadow: 0 12px 28px color-mix(in srgb, var(--accent) 22%, transparent); }
+  .skin-card:hover .skin-card-art::after { left: 125%; }
+  .skin-card:hover .skin-card-art > .mascot { transform: translateY(-5px) rotate(-4deg) scale(1.12); filter: drop-shadow(0 10px 13px #160c3780) saturate(1.2); }
+  .skin-card:nth-child(even):hover .skin-card-art > .mascot { transform: translateY(-5px) rotate(4deg) scale(1.12); }
+  .skin-card:hover .skin-lock { animation: skinLockWiggle .42s ease-in-out; }
+}
+@keyframes skinLockWiggle { 25% { transform: rotate(-12deg) scale(1.12); } 55% { transform: rotate(12deg) scale(1.12); } 80% { transform: rotate(-6deg); } }
+@media (prefers-reduced-motion: reduce) { .skin-card, .skin-card-art::after, .skin-card-art > .mascot, .skin-unowned-error { animation: none !important; transition: none !important; } }
 .skin-equip { min-height: 32px; padding: 6px 7px; border-radius: 10px; color: var(--accent-deep); background: var(--accent-soft); font-size: 10px; font-weight: 800; }
 .skin-equip.on { color: var(--ok); background: var(--ok-bg); cursor: default; }
 .skin-progress-lock { align-self: flex-end; display: grid; place-items: center; min-height: 28px; color: var(--muted); }
