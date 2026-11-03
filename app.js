@@ -101,7 +101,7 @@
   var P = {
     home: '<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     grid: '<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/>',
-    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
+    user: '<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.4 0-8 2.7-8 6v1h16v-1c0-3.3-3.6-6-8-6Z"/>',
     code: '<path d="M8 8l-5 4 5 4M16 8l5 4-5 4M14 5l-4 14"/>',
     folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
     sparkle: '<path d="M11 3l1.9 5.6L18.5 10.5l-5.6 1.9L11 18l-1.9-5.6L3.5 10.5l5.6-1.9z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>',
@@ -118,7 +118,7 @@
     retry: '<path d="M4 12a8 8 0 1 0 3-6.2M4 4v4.5h4.5"/>',
     target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
     calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/>',
-    book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/>',
+    book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Zm8-1v15"/>',
     compass: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
     terminal: '<rect x="3" y="4.5" width="18" height="15" rx="3"/><path d="M7 10l3 2.5L7 15M12.5 15H17"/>',
     ok: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',
@@ -787,9 +787,9 @@
     var h = '<header class="pad apostila-head"><span class="eyebrow">Guia de estudo passo a passo</span><h1 class="title-xl">Apostila</h1><p class="muted">Escolha uma linguagem para ver os capítulos.</p></header>';
     if (!temaApostila) {
       h += '<section class="pad apostila-chooser"><div><span class="soft-tag">ETAPA 1 DE 2</span><h2 class="title-lg" style="margin-top:8px">O que você quer estudar?</h2><p class="muted" style="margin-top:6px">Escolha uma opção. Depois explore capítulos básicos, intermediários e avançados.</p></div><div class="technology-cards">' + [
-        ['html', ic('code'), 'HTML', 'Monte páginas com títulos, textos, imagens, links e formulários.', 'Você vai aprender a estruturar conteúdo para a web.'],
-        ['python', ic('terminal'), 'Python', 'Crie programas, faça cálculos, tome decisões e automatize tarefas.', 'Você vai aprender a dar instruções ao computador.']
-      ].map(function (x) { return '<button class="technology-card ' + x[0] + '" data-act="apostilaTema" data-v="' + x[0] + '"><span class="technology-emoji">' + x[1] + '</span><span class="technology-title">' + x[2] + '</span><span class="technology-copy">' + x[3] + '</span><span class="technology-foot">' + x[4] + '</span><span class="technology-cta">Escolher ' + x[2] + ' →</span></button>'; }).join('') + '</div></section>';
+        ['html', ic('code'), 'HTML', 'Monte páginas com títulos, textos, imagens, links e formulários.', 'Você vai aprender a estruturar conteúdo para a web.', '#e87955'],
+        ['python', ic('terminal'), 'Python', 'Crie programas, faça cálculos, tome decisões e automatize tarefas.', 'Você vai aprender a dar instruções ao computador.', '#3979b8']
+      ].map(function (x) { return '<button class="technology-card ' + x[0] + '" style="--lang-color:' + x[5] + '" data-act="apostilaTema" data-v="' + x[0] + '"><span class="technology-emoji">' + x[1] + '</span><span class="technology-title">' + x[2] + '</span><span class="technology-copy">' + x[3] + '</span><span class="technology-foot">' + x[4] + '</span><span class="technology-cta">Escolher ' + x[2] + ' →</span></button>'; }).join('') + '</div></section>';
       return h;
     }
     var lang = temaApostila, m = APOSTILA_MARCA[lang], caps = capitulosApostila(lang), cur = Math.min(apEstado.cap, caps.length - 1), c = caps[cur];
@@ -797,12 +797,13 @@
     var barra = '<div class="ap-top"><span class="ap-top-title">' + ic(m.icone) + m.nome + '</span><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a página anterior">' + ic('close') + '</button></div>';
     if (!apEstado.aberto) {
       var lidos = caps.filter(function (x) { return apLido(x.id); }).length, pct = Math.round(lidos / caps.length * 100);
+      var coresCapitulos = ['#e87955', '#e0a33b', '#55a77b', '#3979b8', '#8b6cc1', '#cf6688', '#4c9b9a', '#bf7850', '#7386c3', '#9a9e3c', '#d06b4d', '#4f8fbe', '#8d66ac', '#5c9a71', '#bd6286'];
       var ultimo = S.apostilaRetomar && S.apostilaRetomar.lang === lang ? Math.max(0, Math.min(caps.length - 1, S.apostilaRetomar.cap)) : -1;
       var retomar = ultimo >= 0 ? '<button type="button" class="ap-resume" data-act="apostilaRetomar" data-v="' + ultimo + '"><span>▶</span><span><strong>Continuar de onde parou</strong><small>Capítulo ' + (ultimo + 1) + ' · ' + esc(caps[ultimo].titulo) + '</small></span><b>→</b></button>' : '';
       return barra + '<section class="pad ap-pick"><div class="ap-pick-head"><span class="soft-tag">ESCOLHA O CAPÍTULO</span><h1 class="title-xl">Qual capítulo de ' + m.nome + ' você quer estudar?</h1><p class="ap-pick-sub">Toque em um capítulo para abrir o conteúdo.</p></div><div class="ap-progress"><div class="ap-progress-top"><span>' + lidos + ' de ' + caps.length + ' capítulos estudados</span><b>' + pct + '%</b></div>' + bar(pct) + '</div>' + retomar + '<div class="ap-pick-list">' + caps.map(function (x, k) {
         var lido = apLido(x.id);
       var grupo = x.nivel === 'basico' ? 'Parte 1 · Básico' : x.nivel === 'intermediario' ? 'Parte 2 · Intermediário' : 'Parte 3 · Avançado';
-        return (k === 0 || caps[k - 1].nivel !== x.nivel ? '<h2 class="ap-pick-group">' + grupo + '</h2>' : '') + '<button type="button" class="ap-cap-card' + (lido ? ' done' : '') + '" data-act="apostilaCap" data-v="' + k + '"><span class="ap-cap-num" aria-hidden="true">' + ic('book') + '</span><span class="ap-cap-text"><strong>' + esc(x.titulo) + '</strong><small>' + esc(x.t.objetivo) + '</small></span><span class="ap-cap-state">' + (lido ? 'Estudado ✓' : 'Abrir →') + '</span></button>';
+        return (k === 0 || caps[k - 1].nivel !== x.nivel ? '<h2 class="ap-pick-group">' + grupo + '</h2>' : '') + '<button type="button" class="ap-cap-card' + (lido ? ' done' : '') + '" style="--cap-color:' + coresCapitulos[k % coresCapitulos.length] + '" data-act="apostilaCap" data-v="' + k + '"><span class="ap-cap-num" aria-hidden="true">' + ic('book') + '</span><span class="ap-cap-text"><strong>' + esc(x.titulo) + '</strong><small>' + esc(x.t.objetivo) + '</small></span><span class="ap-cap-state">' + (lido ? 'Estudado ✓' : 'Abrir →') + '</span></button>';
       }).join('') + '</div></section>';
     }
     h = barra + '<div class="pad">' + capituloHTML(c, cur, caps, lang) + '</div>';

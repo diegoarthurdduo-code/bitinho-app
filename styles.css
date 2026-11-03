@@ -1113,3 +1113,25 @@ button:not(:disabled):active { transform: scale(.97); }
 @media (prefers-reduced-motion: reduce) {
   .home-mascot .mascot, .mascot-reaction-bubble, .home-mascot .mascot-sparkles { animation: none !important; transition: none !important; }
 }
+
+/* Apostila: tons neutros com pequenos marcadores de cor */
+#screen:has(.apostila-head) { background: color-mix(in srgb, var(--bg) 94%, #64748b); }
+.technology-card.html, .technology-card.python { position: relative; overflow: hidden; border-color: var(--line); background: linear-gradient(145deg, var(--surface), color-mix(in srgb, #64748b 7%, var(--surface))) !important; }
+.technology-card.html::after, .technology-card.python::after { position: absolute; top: 12px; right: 12px; width: 9px; height: 9px; border-radius: 50%; background: var(--lang-color); content: ''; }
+.technology-card.html .technology-emoji, .technology-card.python .technology-emoji { color: var(--lang-color); background: color-mix(in srgb, var(--lang-color) 13%, var(--surface)); }
+.technology-card.html .technology-cta, .technology-card.python .technology-cta { color: var(--lang-color); }
+.ap-cap-card { position: relative; overflow: hidden; border: 1px solid var(--line); color: var(--fg); background: var(--surface) !important; box-shadow: 0 5px 16px rgba(35, 40, 55, .08); }
+.ap-cap-card:not(.done) { background: var(--surface) !important; }
+.ap-cap-card::after { position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--cap-color); content: ''; }
+.ap-cap-card.done { background: color-mix(in srgb, var(--ok) 8%, var(--surface)) !important; box-shadow: 0 5px 16px rgba(35, 75, 55, .07); }
+.ap-cap-num { color: var(--cap-color); background: color-mix(in srgb, var(--cap-color) 13%, var(--surface)); }
+.ap-cap-text strong { color: var(--fg); }
+.ap-cap-text small { color: var(--muted); }
+.ap-cap-state { color: var(--cap-color); background: color-mix(in srgb, var(--cap-color) 12%, var(--surface)); }
+.ap-cap-card.done .ap-cap-num, .ap-cap-card.done .ap-cap-state { color: var(--ok); }
+
+/* Barra inferior: ícones preenchidos e seleção mais nítida */
+.tabbar { border-top: 0; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.tab .ic { fill: currentColor; stroke: currentColor; stroke-width: 1.65; }
+.tab.on .ic { stroke-width: 1.9; }
+.ios .tab.on .ic { fill: currentColor; }
