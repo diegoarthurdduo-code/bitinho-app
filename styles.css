@@ -431,6 +431,9 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 .auth-screen { width: 100%; max-width: 480px; margin: auto; padding: 28px 20px; display: grid; gap: 24px; }
 .auth-brand { display: grid; justify-items: center; gap: 8px; text-align: center; }
 .auth-brand p { color: var(--muted); }
+.auth-credit { display: flex; justify-content: center; align-items: center; gap: 7px; min-height: 32px; color: var(--muted); font-size: 11px; letter-spacing: .02em; opacity: .82; }
+.auth-credit picture { display: flex; align-items: center; }
+.auth-credit img { display: block; width: 56px; height: 46px; object-fit: contain; }
 .auth-card { display: grid; gap: 14px; padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 26px; box-shadow: var(--shadow); }
 .auth-card h2 { font: 800 24px var(--font-display); }
 .auth-card label { display: grid; gap: 6px; font-weight: 700; font-size: 14px; }
