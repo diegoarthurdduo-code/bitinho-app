@@ -44,6 +44,9 @@
       hojeData: hoje(),
       hojeQtd: 0,
       concluidas: { 'html-1': { estrelas: 3 }, 'html-2': { estrelas: 2 } },
+      skinsBitinho: { classico: true },
+      desafiosBitinho: {},
+      skinEquipada: 'classico',
       ultima: { disc: 'programacao', trilha: 'html' },
       config: { tema: 'auto', plataforma: /Android/i.test(navigator.userAgent) ? 'android' : 'ios', lembrete: true, meta: 1 }
     };
@@ -55,6 +58,9 @@
     s.apelido = s.apelido || '';
     s.bio = s.bio || '';
     s.nota = s.nota || '';
+    s.skinsBitinho = Object.assign({ classico: true }, s.skinsBitinho || {});
+    s.desafiosBitinho = s.desafiosBitinho || {};
+    s.skinEquipada = s.skinEquipada || 'classico';
     s.config = Object.assign({ tema: 'auto', plataforma: 'ios', lembrete: true, meta: 1 }, s.config || {});
     return s;
   }
@@ -67,6 +73,9 @@
   function salvar() { try { localStorage.setItem(dataKey(), JSON.stringify(S)); } catch (e) { /* sem armazenamento */ } }
 
   var ui = { tab: 'inicio', screen: 'inicio', params: {}, from: null, trilhaSel: {}, lesson: null, result: null };
+  var secaoBitinho = 'acessorios', respostaSkinSel = null, feedbackSkin = null, desafioSkinAtual = 'html';
+  var fundoInterativo = { canvas: null, ctx: null, pontos: [], ondas: [], ponteiro: { x: -1000, y: -1000 }, largura: 0, altura: 0, escala: 1, quadro: 0, ultimoDesenho: 0, eventosLigados: false, movimentoReduzido: false };
+  var reacaoBitinhoTimer = null, reacaoBitinhoLimpeza = null;
 
   /* ---------- Utilidades ---------- */
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -117,22 +126,60 @@
   };
   function ic(n, cls) { return '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true">' + P[n] + '</svg>'; }
 
+  var SKINS_BITINHO = [
+    { id: 'classico', nome: 'Bitinho clássico', emoji: '✨', origem: 'Sempre disponível', svg: '' },
+    { id: 'cap1', nome: 'Aprendiz', emoji: '🎓', capitulo: 1, svg: '<path d="M17 17h34l-4-12H21z" fill="#29c3a6" stroke="#136b62" stroke-width="2"/><path d="M13 17q21 7 42 0v5q-21 8-42 0z" fill="#49e0bd" stroke="#136b62" stroke-width="2"/><path d="M48 8l4 4" stroke="#f6ce52" stroke-width="3"/>' },
+    { id: 'cap2', nome: 'Óculos Hacker', emoji: '🕶️', capitulo: 2, svg: '<path d="M17 29h12l2 7q-7 5-13 0zm22 0h12l-1 7q-6 5-13 0zM29 32h10" fill="#53e0c2" stroke="#10202e" stroke-width="2.5" stroke-linejoin="round"/>' },
+    { id: 'cap3', nome: 'Coroa de Bits', emoji: '👑', capitulo: 3, svg: '<path d="M18 19l-3-11 10 7 9-12 9 12 10-7-3 11z" fill="#ffd45b" stroke="#b87516" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 21h30" stroke="#fff0a6" stroke-width="2"/>' },
+    { id: 'cap4', nome: 'Faixa Ninja', emoji: '🥷', capitulo: 4, svg: '<path d="M13 25q21-6 42 0v8q-21-6-42 0z" fill="#ff647c" stroke="#9e2448" stroke-width="2"/><path d="M48 30q9 1 10 8l-8-2" fill="none" stroke="#ff647c" stroke-width="3" stroke-linecap="round"/>' },
+    { id: 'cap5', nome: 'Capacete Espacial', emoji: '🚀', capitulo: 5, svg: '<circle cx="34" cy="34" r="27" fill="none" stroke="#8de7ff" stroke-width="3" opacity=".88"/><path d="M13 42q20 13 42 0" fill="none" stroke="#d7faff" stroke-width="2"/>' },
+    { id: 'cap6', nome: 'Fone Criativo', emoji: '🎧', capitulo: 6, svg: '<path d="M12 32a22 22 0 0 1 44 0" fill="none" stroke="#ff8fc0" stroke-width="5"/><rect x="8" y="29" width="9" height="17" rx="4" fill="#ff8fc0"/><rect x="51" y="29" width="9" height="17" rx="4" fill="#ff8fc0"/>' },
+    { id: 'cap7', nome: 'Chifrinhos Pixel', emoji: '🐉', capitulo: 7, svg: '<path d="M19 21Q11 9 20 8l9 14m20-1Q57 9 48 8l-9 14" fill="#9be26d" stroke="#438839" stroke-width="2.5" stroke-linejoin="round"/>' },
+    { id: 'cap8', nome: 'Chapéu de Mago', emoji: '🧙', capitulo: 8, svg: '<path d="M19 21L28 3q3-5 7 0l15 18z" fill="#8662ed" stroke="#4b319d" stroke-width="2.5"/><path d="M18 21h34v5H18z" fill="#ffd45b"/><path d="M31 10l2 3 3-2" fill="none" stroke="#fff" stroke-width="2"/>' },
+    { id: 'cap9', nome: 'Mochila Dragão', emoji: '🐲', capitulo: 9, svg: '<path d="M13 31q-8 5-2 13l8-4m35-9q8 5 2 13l-8-4" fill="none" stroke="#ff8d4d" stroke-width="4" stroke-linecap="round"/><path d="M21 53q13 8 26 0" fill="none" stroke="#ff8d4d" stroke-width="4" stroke-linecap="round"/>' },
+    { id: 'cap10', nome: 'Look de Formatura', emoji: '🎉', capitulo: 10, svg: '<path d="M16 23l18-15 18 15H16z" fill="#343047" stroke="#191627" stroke-width="2"/><path d="M34 9v16m0 0q7 2 8-3" fill="none" stroke="#ffd45b" stroke-width="2.5"/><circle cx="43" cy="21" r="2.5" fill="#ffd45b"/>' },
+    { id: 'bonus_html', nome: 'Mestre HTML', emoji: '🌐', exclusiva: true, desafio: 'html', svg: '<path d="M15 24q19-9 38 0l-3 29q-16 9-32 0z" fill="#ff8c52" stroke="#b44c23" stroke-width="2.5"/><path d="M24 33h20M24 40h16M24 47h11" stroke="#fff4e8" stroke-width="2.5" stroke-linecap="round"/>' },
+    { id: 'bonus_python', nome: 'Mestre Python', emoji: '🐍', exclusiva: true, desafio: 'python', svg: '<path d="M17 30q0-12 17-12h8q11 0 11 10v6H30q-13 0-13 11v-15z" fill="#ffd45b" stroke="#a8751d" stroke-width="2.5"/><path d="M51 39q0 12-17 12h-8q-11 0-11-10v-6h23q13 0 13-11z" fill="#62a9ff" stroke="#3267b4" stroke-width="2.5"/><circle cx="42" cy="24" r="1.8" fill="#342657"/><circle cx="26" cy="47" r="1.8" fill="#342657"/>' },
+    { id: 'bonus_logica', nome: 'Guardião da Lógica', emoji: '🛡️', exclusiva: true, desafio: 'logica', svg: '<path d="M34 13l20 7v14q-2 14-20 21Q16 48 14 34V20z" fill="#6cdb9b" stroke="#258b58" stroke-width="2.5"/><path d="M25 34l6 6 12-14" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>' },
+    { id: 'bonus_pixel', nome: 'Lenda Pixel', emoji: '💎', exclusiva: true, desafio: 'pixel', svg: '<path d="M14 25l9-11h22l9 11-20 29z" fill="#8edbff" stroke="#3579c4" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 25h40M23 14l11 40 11-40" fill="none" stroke="#e7faff" stroke-width="2"/>' },
+    { id: 'bonus_codexa', nome: 'Estrela Codexa', emoji: '⭐', exclusiva: true, desafio: 'codexa', svg: '<path d="M34 12l6 14 15 1-12 10 4 15-13-8-13 8 4-15-12-10 15-1z" fill="#d6b0ff" stroke="#7649c9" stroke-width="2.5" stroke-linejoin="round"/><circle cx="34" cy="34" r="4" fill="#fff"/>' }
+  ];
+  ['Novato', 'Óculos de Código', 'Coroa Pixel', 'Ninja', 'Astronauta', 'Criador', 'Guardião', 'Mago', 'Dragão', 'Formando'].forEach(function (nome, i) {
+    var base = SKINS_BITINHO[i + 1];
+    SKINS_BITINHO.push({ id: 'pycap' + (i + 1), nome: nome + ' Python', emoji: base.emoji, capitulo: i + 11, svg: base.svg, variantePython: true });
+  });
+  var DESAFIOS_SKIN = [
+    { id: 'html', titulo: 'Estrutura HTML', pergunta: 'Qual tag cria um parágrafo em uma página?', opcoes: ['<p>', '<img>', '<head>'], certa: 0, explicacao: 'A tag <p> representa um parágrafo de texto.', dica: 'Pense na tag cujo nome vem de “paragraph”.' },
+    { id: 'python', titulo: 'Saída em Python', pergunta: 'Qual comando mostra uma mensagem na tela?', opcoes: ['input("Olá")', 'print("Olá")', 'show("Olá")'], certa: 1, explicacao: 'print() escreve o valor no terminal. input() faz o caminho inverso: recebe texto.', dica: 'O nome do comando parece com “imprimir”.' },
+    { id: 'logica', titulo: 'Decisão lógica', pergunta: 'Qual símbolo compara se dois valores são iguais em Python?', opcoes: ['=', '==', '=>'], certa: 1, explicacao: '= atribui um valor; == compara dois valores.', dica: 'Para comparar, use dois sinais de igual.' },
+    { id: 'pixel', titulo: 'Link seguro', pergunta: 'Qual atributo de HTML informa o destino de um link?', opcoes: ['src', 'href', 'alt'], certa: 1, explicacao: 'href guarda o endereço que será aberto quando a pessoa clicar no link.', dica: 'Ele aparece dentro da tag <a>.' },
+    { id: 'codexa', titulo: 'Laço de repetição', pergunta: 'Qual estrutura em Python repete um bloco para cada item de uma sequência?', opcoes: ['for', 'if', 'def'], certa: 0, explicacao: 'for percorre os itens de uma sequência e executa o bloco para cada um deles.', dica: 'A palavra em inglês significa “para cada”.' }
+  ];
+  function skinPorId(id) { return SKINS_BITINHO.find(function (s) { return s.id === id; }) || SKINS_BITINHO[0]; }
+  function skinCapitulo(id) { var m = /^(html|python)-(b|i)([1-5])$/.exec(id); if (!m) return 0; var n = m[2] === 'b' ? Number(m[3]) : Number(m[3]) + 5; return m[1] === 'python' ? n + 10 : n; }
+  function sincronizarSkinsCapitulos() {
+    var ids = S.apostila || {}, mudou = false;
+    Object.keys(ids).forEach(function (id) { var n = skinCapitulo(id), skin = n && (n > 10 ? 'pycap' + (n - 10) : 'cap' + n); if (skin && !S.skinsBitinho[skin]) { S.skinsBitinho[skin] = true; mudou = true; } });
+    if (mudou) salvar();
+  }
+
   /* ---------- Mascote: Bit ---------- */
-  function mascote(humor, tam) {
+  function mascote(humor, tam, skinId) {
     var olhos = humor === 'festa'
       ? '<path d="M22 31q4-6 8 0M38 31q4-6 8 0" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
       : '<g class="blink"><ellipse cx="27" cy="31" rx="4.6" ry="5.4" fill="#fff"/><ellipse cx="41" cy="31" rx="4.6" ry="5.4" fill="#fff"/><circle cx="28" cy="32" r="2.3" fill="#1b1033"/><circle cx="42" cy="32" r="2.3" fill="#1b1033"/></g>';
     var boca = humor === 'festa'
       ? '<path d="M27 42q7 9 14 0z" fill="#1b1033"/>'
       : '<path d="M28 42q6 5 12 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>';
-    return '<svg class="mascot ' + (humor === 'festa' ? '' : 'bob') + '" width="' + tam + '" height="' + tam + '" viewBox="0 0 68 68" role="img" aria-label="Bit, o mascote">' +
+    var classeVisual = skinId && skinPorId(skinId).variantePython ? ' skin-python-variant' : '';
+    return '<svg class="mascot ' + (humor === 'festa' ? '' : 'bob') + classeVisual + '" width="' + tam + '" height="' + tam + '" viewBox="0 0 68 68" role="img" aria-label="Bit, o mascote">' +
       '<path d="M34 12V6" stroke="#8d6bff" stroke-width="3" stroke-linecap="round"/><circle cx="34" cy="5" r="3.6" fill="#f2b01e"/>' +
       '<rect x="8" y="12" width="52" height="46" rx="18" fill="#6a3df0"/>' +
       '<rect x="8" y="12" width="52" height="46" rx="18" fill="none" stroke="#4a22c2" stroke-width="2"/>' +
       '<rect x="14" y="19" width="40" height="30" rx="13" fill="#2a1768"/>' +
       olhos + boca +
       '<circle cx="19" cy="42" r="3" fill="#ff8fc0" opacity=".55"/><circle cx="49" cy="42" r="3" fill="#ff8fc0" opacity=".55"/>' +
-      '<path d="M4 34h5M59 34h5" stroke="#8d6bff" stroke-width="4" stroke-linecap="round"/></svg>';
+      '<path d="M4 34h5M59 34h5" stroke="#8d6bff" stroke-width="4" stroke-linecap="round"/>' + (skinId && skinPorId(skinId).svg ? skinPorId(skinId).svg : '') + '</svg>';
   }
 
   /* ---------- Realce de código ---------- */
@@ -208,7 +255,7 @@
   /* ---------- Navegação ---------- */
   function ir(tela, params, anim) {
     ui.screen = tela; ui.params = params || {};
-    if (tela === 'inicio' || tela === 'disciplinas' || tela === 'apostila' || tela === 'perfil') ui.tab = tela;
+    if (tela === 'inicio' || tela === 'disciplinas' || tela === 'apostila' || tela === 'bitinho' || tela === 'perfil') ui.tab = tela;
     if (tela === 'trilha') ui.tab = 'disciplinas';
     render(anim || 'fwd');
   }
@@ -291,27 +338,28 @@
   /* ---------- Telas ---------- */
   function telaInicio() {
     var alvo = alvoContinuar(), p = S.hojeQtd, meta = S.config.meta;
-    var h = '<header class="top pad"><div class="stack"><span class="eyebrow">' + saudacao() + '</span><h1 class="title-xl">Olá, ' + esc(S.nome || 'Aprendiz') + '!</h1></div>' + (S.foto ? '<img class="home-avatar" src="' + S.foto + '" alt="Sua foto de perfil">' : mascote('feliz', 64)) + '</header>';
-    h += '<div class="chips pad"><span class="pill fire">' + ic('flame') + S.streak + (S.streak === 1 ? ' dia' : ' dias') + '</span><span class="pill bolt">' + ic('bolt') + S.xp + ' pontos</span><span class="pill">' + ic('star') + 'Nível ' + nivel() + '</span></div>';
+    var bitinho = S.foto ? '<img class="home-avatar" src="' + S.foto + '" alt="Sua foto de perfil">' : '<button type="button" class="home-mascot" data-act="bitinhoSurpresa" aria-label="Bitinho, tocar para ver uma surpresa"><span class="mascot-reaction-bubble" aria-hidden="true"></span><span class="mascot-sparkles" aria-hidden="true">✦　✧　✦</span>' + mascote('feliz', 64, S.skinEquipada) + '</button>';
+    var h = '<header class="top pad home-header"><div class="stack"><span class="eyebrow">' + saudacao() + '</span><h1 class="title-xl">Olá, ' + esc(S.nome || 'Aprendiz') + '!</h1><p class="home-subtitle">Sua próxima conquista começa com um passo.</p></div>' + bitinho + '</header>';
+    h += '<div class="chips pad home-metrics"><span class="pill fire">' + ic('flame') + S.streak + (S.streak === 1 ? ' dia' : ' dias') + '</span><span class="pill bolt">' + ic('bolt') + S.xp + ' pontos</span><span class="pill">' + ic('star') + 'Nível ' + nivel() + '</span></div>';
     var dicasPc = ['Use Ctrl + Z para desfazer uma ação que acabou de fazer. Funciona em muitos editores e aplicativos.','Faça cópias dos arquivos importantes em outro local ou na nuvem. Assim, um problema no computador não apaga tudo.','Antes de clicar num link recebido por mensagem, confira quem enviou e para onde o endereço realmente aponta.','Use nomes claros para arquivos e pastas. Exemplo: trabalho-historia-outubro.docx.'];
-    h += '<div class="pad"><div class="tip tip-card">' + ic('bulb') + '<div><strong>Dica de computador</strong><br>' + dicasPc[(new Date().getDate() + S.hojeQtd) % dicasPc.length] + '</div></div></div>';
+    h += '<div class="pad home-tip"><div class="tip tip-card">' + ic('bulb') + '<div><strong>Dica de computador</strong><br>' + dicasPc[(new Date().getDate() + S.hojeQtd) % dicasPc.length] + '</div></div></div>';
     if (retorno) {
       h += '<div class="pad"><div class="notice">' + ic('sparkle') + '<div><strong>Que bom ter você de volta!</strong><br>Sua sequência recomeça hoje, sem pressa. Você já estudou em ' + S.diasEstudo + ' dias e isso continua valendo.</div></div></div>';
     }
     if (alvo) {
       var i = LIC[alvo], tot = totais(i.d);
-      h += '<div class="pad"><div class="hero"><span class="kicker">Continue de onde parou</span><div><h2>' + esc(i.l.titulo) + '</h2><p class="meta">' + esc(i.t.nome) + ' · ' + esc(i.m.nome) + '</p></div>' +
+      h += '<div class="pad home-continue"><div class="hero"><span class="kicker">Continue de onde parou</span><div><h2>' + esc(i.l.titulo) + '</h2><p class="meta">' + esc(i.t.nome) + ' · ' + esc(i.m.nome) + '</p></div>' +
         '<div class="tagrow"><span class="tag">' + ic('bolt') + ' +' + i.l.xp + ' pontos</span><span class="tag">' + i.l.minutos + ' min</span></div>' +
         bar(tot.pct) + '<button class="btn light" data-act="comecar" data-id="' + alvo + '" data-from="inicio">' + ic('play') + 'Continuar aprendendo</button></div></div>';
     } else {
-      h += '<div class="pad"><div class="hero"><span class="kicker">Tudo concluído</span><h2>Você terminou todas as lições da demonstração!</h2><button class="btn light" data-act="tab" data-t="disciplinas">Rever as disciplinas</button></div></div>';
+      h += '<div class="pad home-continue"><div class="hero hero-complete"><span class="complete-mark" aria-hidden="true">✦</span><span class="kicker">Jornada concluída</span><h2>Você terminou todas as lições disponíveis!</h2><p class="meta">Seu esforço merece ser celebrado. Que tal revisar ou explorar outra disciplina?</p><button class="btn light" data-act="tab" data-t="disciplinas">Rever as disciplinas</button></div></div>';
     }
     var pct = Math.min(100, Math.round((p / meta) * 100));
-    h += '<div class="pad"><div class="card"><div class="section-h"><strong>Meta de hoje</strong><span class="small muted">' + Math.min(p, meta) + ' de ' + meta + (meta === 1 ? ' lição' : ' lições') + '</span></div><div style="height:10px"></div>' + bar(pct) + '<p class="small muted" style="margin-top:10px">' + (p >= meta ? 'Meta cumprida. Continue se quiser, o ritmo é seu.' : 'Uma lição curta já conta como um bom dia de estudo.') + '</p></div></div>';
-    h += '<div class="pad list"><div class="section-h"><h2 class="title-md">Suas disciplinas</h2><button class="linkbtn" data-act="tab" data-t="disciplinas">Ver todas</button></div>';
+    h += '<div class="pad home-goal-wrap"><section class="home-goal"><div class="home-goal-copy"><span class="eyebrow">UM POUCO POR DIA</span><strong>Meta de hoje</strong><span class="home-goal-count">' + Math.min(p, meta) + ' de ' + meta + (meta === 1 ? ' lição' : ' lições') + '</span><p>' + (p >= meta ? 'Meta cumprida. Continue no seu ritmo!' : 'Uma lição curta já conta como um bom dia de estudo.') + '</p></div><div class="home-goal-ring" style="--goal-pct:' + pct + '%" role="img" aria-label="' + pct + '% da meta diária concluída"><span>' + pct + '<small>%</small></span></div></section></div>';
+    h += '<div class="pad list home-disciplines"><div class="section-h"><div><span class="eyebrow">SEU APRENDIZADO</span><h2 class="title-md">Suas disciplinas</h2></div><button class="linkbtn" data-act="tab" data-t="disciplinas">Ver todas</button></div>';
     DISC.forEach(function (d) {
       var t = totais(d);
-      h += '<button class="disc" data-act="disc" data-id="' + d.id + '"><span class="badge-ic">' + ic(d.icone) + '</span><span style="min-width:0"><span class="name">' + esc(d.nome) + '</span>' + bar(t.pct) + '</span><span class="pct">' + t.pct + '%</span></button>';
+      h += '<button class="disc discipline-card" data-discipline="' + esc(d.id) + '" data-act="disc" data-id="' + d.id + '"><span class="badge-ic">' + ic(d.icone) + '</span><span style="min-width:0"><span class="name">' + esc(d.nome) + '</span>' + bar(t.pct) + '</span><span class="pct">' + t.pct + '%</span></button>';
     });
     return h + '</div>';
   }
@@ -320,7 +368,7 @@
     var h = '<header class="pad stack" style="display:flex;flex-direction:column;gap:4px"><span class="eyebrow">Escolha por onde começar</span><h1 class="title-xl">Disciplinas</h1></header><div class="pad list">';
     DISC.forEach(function (d) {
       var t = totais(d);
-      h += '<button class="discbig" data-act="disc" data-id="' + d.id + '"><span class="row"><span class="badge-ic">' + ic(d.icone) + '</span><span style="min-width:0"><span class="name">' + esc(d.nome) + '</span><span class="small muted" style="display:block;margin-top:4px">' + esc(d.descricao) + '</span></span></span>' +
+      h += '<button class="discbig discipline-card" data-discipline="' + esc(d.id) + '" data-act="disc" data-id="' + d.id + '"><span class="row"><span class="badge-ic">' + ic(d.icone) + '</span><span style="min-width:0"><span class="name">' + esc(d.nome) + '</span><span class="small muted" style="display:block;margin-top:4px">' + esc(d.descricao) + '</span></span></span>' +
         '<span class="trilha-tags">' + d.trilhas.map(function (tr) { return '<span class="soft-tag">' + esc(tr.nome) + '</span>'; }).join('') + '</span>' +
         '<span class="foot">' + bar(t.pct) + '<span>' + t.ok + '/' + t.tot + ' lições</span></span></button>';
     });
@@ -703,14 +751,14 @@
   function telaPerfil() {
     var xpNivel = S.xp % 100, ganhas = medalhasAtuais(), c = S.config;
     var concl = Object.keys(S.concluidas).length;
-    var h = '<header class="pad profile-head"><div class="profile-tools"><span class="profile-mark">BITINHO</span><label class="edit-profile">Editar foto<input id="fotoPerfil" type="file" accept="image/*" aria-label="Alterar foto de perfil"></label></div><div class="profile-hero"><label class="avatar avatar-upload profile-avatar" aria-label="Arraste para girar sua foto em 360 graus">' + (S.foto ? '<span class="spin-sides"><img class="spin-face spin-front" src="' + S.foto + '" alt="Foto de perfil"><img class="spin-face spin-back" src="' + S.foto + '" alt="" aria-hidden="true"></span>' : mascote('feliz',76)) + '</label><span class="profile-spin-hint">Arraste para girar 360°</span><div class="profile-note-bubble"' + (S.nota ? '' : ' hidden') + '>' + esc(S.nota) + '</div><div class="profile-name-row"><input class="nameinput profile-name" id="nome" value="' + esc(S.nome) + '" maxlength="20" aria-label="Seu nome" autocomplete="off"><span class="profile-level-dot" title="Nível ' + nivel() + '">✦</span></div><p class="profile-nickname"' + (S.apelido ? '' : ' hidden') + '>@' + esc(S.apelido) + '</p><p class="profile-bio">' + (S.bio ? esc(S.bio).replace(/\n/g, '<br>') : '<span>Adicione uma bio para contar um pouco sobre você.</span>') + '</p></div></header>';
+    var h = '<header class="pad profile-head"><div class="profile-tools"><span class="profile-mark">BITINHO</span><label class="edit-profile">Editar foto<input id="fotoPerfil" type="file" accept="image/*" aria-label="Alterar foto de perfil"></label></div><div class="profile-hero"><label class="avatar avatar-upload profile-avatar" aria-label="Arraste para girar sua foto em 360 graus">' + (S.foto ? '<span class="spin-sides"><img class="spin-face spin-front" src="' + S.foto + '" alt="Foto de perfil"><img class="spin-face spin-back" src="' + S.foto + '" alt="" aria-hidden="true"></span>' : mascote('feliz',76, S.skinEquipada)) + '</label><span class="profile-spin-hint">Arraste para girar 360°</span><div class="profile-note-bubble"' + (S.nota ? '' : ' hidden') + '>' + esc(S.nota) + '</div><div class="profile-name-row"><input class="nameinput profile-name" id="nome" value="' + esc(S.nome) + '" maxlength="20" aria-label="Seu nome" autocomplete="off"><span class="profile-level-dot" title="Nível ' + nivel() + '">✦</span></div><p class="profile-nickname"' + (S.apelido ? '' : ' hidden') + '>@' + esc(S.apelido) + '</p><p class="profile-bio">' + (S.bio ? esc(S.bio).replace(/\n/g, '<br>') : '<span>Adicione uma bio para contar um pouco sobre você.</span>') + '</p></div></header>';
     h += '<section class="pad profile-editor"><div class="section-h"><h2 class="title-md">Sobre você</h2><span class="small muted">Personalize seu perfil</span></div><label class="profile-field"><span>Apelido</span><input id="apelido" value="' + esc(S.apelido) + '" maxlength="24" placeholder="Como quer ser chamado?" autocomplete="off"></label><label class="profile-field"><span>Bio</span><textarea id="bio" maxlength="160" rows="3" placeholder="Conte um pouco sobre você...">' + esc(S.bio) + '</textarea><small><span id="bioCount">' + S.bio.length + '</span>/160</small></label><label class="profile-field"><span>Nota temporária</span><input id="nota" value="' + esc(S.nota) + '" maxlength="32" placeholder="Ex.: estudando HTML hoje ✨" autocomplete="off"><small>Aparece ao lado da sua foto.</small></label></section>';
     h += '<div class="pad"><button class="btn soft" data-act="abrirApostila">Abrir Apostila de Python e HTML</button></div>';
     h += '<div class="pad"><div class="card level"><div class="row"><span>Nível ' + nivel() + '</span><span class="muted">' + xpNivel + '/100 pontos</span></div>' + bar(xpNivel) + '<span class="small muted">Faltam ' + (100 - xpNivel) + ' pontos para o nível ' + (nivel() + 1) + '.</span></div></div>';
     h += '<div class="pad grid2"><div class="stat">' + ic('flame') + '<div><b>' + S.streak + '</b><span>sequência atual</span></div></div><div class="stat">' + ic('calendar') + '<div><b>' + S.diasEstudo + '</b><span>dias estudados</span></div></div><div class="stat">' + ic('bolt') + '<div><b>' + S.xp + '</b><span>pontos</span></div></div><div class="stat">' + ic('check') + '<div><b>' + concl + '</b><span>lições concluídas</span></div></div></div>';
     h += '<div class="pad list"><h2 class="title-md">Progresso por disciplina</h2>';
-    DISC.forEach(function (d) { var t = totais(d); h += '<div class="disc" style="cursor:default"><span class="badge-ic">' + ic(d.icone) + '</span><span style="min-width:0"><span class="name">' + esc(d.nome) + '</span>' + bar(t.pct) + '</span><span class="pct">' + t.pct + '%</span></div>'; });
-    h += '</div><div class="pad list"><div class="section-h"><h2 class="title-md">Conquistas</h2><span class="small muted">' + ganhas.length + ' de ' + MEDALHAS.length + '</span></div><div class="badges">';
+    DISC.forEach(function (d) { var t = totais(d); h += '<div class="disc discipline-card" data-discipline="' + esc(d.id) + '" style="cursor:default"><span class="badge-ic">' + ic(d.icone) + '</span><span style="min-width:0"><span class="name">' + esc(d.nome) + '</span>' + bar(t.pct) + '</span><span class="pct">' + t.pct + '%</span></div>'; });
+    h += '</div><div class="pad list"><div class="section-h"><div><span class="eyebrow">SUAS VITÓRIAS</span><h2 class="title-md">Conquistas</h2></div><span class="small muted">' + ganhas.length + ' de ' + MEDALHAS.length + '</span></div>' + (!ganhas.length ? '<p class="empty-copy">Complete uma lição para desbloquear seu primeiro emblema. Cada passo conta! ✨</p>' : '') + '<div class="badges">';
     MEDALHAS.forEach(function (m) { var on = ganhas.indexOf(m.id) >= 0; h += '<div class="medal' + (on ? '' : ' off') + '" title="' + esc(m.desc) + '"><span class="m">' + ic(on ? m.icone : 'lock') + '</span><b>' + esc(m.nome) + '</b></div>'; });
     h += '</div></div>';
     h += '<div class="pad list"><h2 class="title-md">Configurações</h2><div class="settings">' +
@@ -719,15 +767,181 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão de teste 1.2.0-beta.1</span><p>Versão pessoal de teste: exercícios relacionados por capítulo, retomada da leitura, dicas em etapas e cópia de exemplos de código.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.2.0-beta.1</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span><b aria-hidden="true">⌄</b></summary><div class="release-notes-body"><span class="release-version">Versão de teste 1.2.0-beta.3</span><p>Novo Cantinho do Bitinho com acessórios desbloqueáveis por capítulo, 5 desafios exclusivos com skins especiais e opção para equipar cada visual.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.2.0-beta.3</p></div>'
     return h;
   }
 
+  function telaAcessoriosBitinho() {
+    sincronizarSkinsCapitulos();
+    var desbloqueadas = SKINS_BITINHO.filter(function (s) { return S.skinsBitinho[s.id]; }).length;
+    var h = '<section class="pad bitinho-showcase"><div class="bitinho-preview-orbit"><span class="orbit-star">✦</span>' + mascote('feliz', 104, S.skinEquipada) + '</div><div><span class="eyebrow">SEU COMPANHEIRO DE ESTUDO</span><h2>' + esc(skinPorId(S.skinEquipada).nome) + '</h2><p>Desbloqueie looks estudando e complete desafios especiais.</p></div><span class="bitinho-collection-count">' + desbloqueadas + '<small>/' + SKINS_BITINHO.length + ' looks</small></span></section>';
+    h += '<div class="pad bitinho-wardrobe-head"><div><span class="eyebrow">RECOMPENSAS DA APOSTILA</span><h2 class="title-md">Roupinhas por capítulo</h2></div><span class="small muted">1 visual novo a cada etapa</span></div><section class="pad skin-grid">';
+    SKINS_BITINHO.filter(function (s) { return !s.exclusiva; }).forEach(function (s) {
+      var on = !!S.skinsBitinho[s.id], equipped = S.skinEquipada === s.id;
+      var numeroCapitulo = s.capitulo > 10 ? s.capitulo - 10 : s.capitulo > 5 ? s.capitulo - 5 : s.capitulo;
+      var faixaCapitulo = (s.capitulo > 5 && s.capitulo <= 10) || s.capitulo > 15 ? 'intermediário' : 'básico';
+      var linguagemCapitulo = s.capitulo > 10 ? 'Python' : 'HTML';
+      var unlock = s.capitulo ? 'Conclua o capítulo ' + numeroCapitulo + ' de ' + linguagemCapitulo + ' · ' + faixaCapitulo : 'Disponível desde o início';
+      h += '<article class="skin-card' + (on ? ' unlocked' : ' locked') + (equipped ? ' equipped' : '') + '"><div class="skin-card-art' + (on ? '' : ' is-locked') + '">' + mascote('feliz', 62, s.id) + (on ? '' : '<span class="skin-lock">' + ic('lock') + '</span>') + '</div><div class="skin-card-copy"><strong>' + esc(s.nome) + '</strong><small>' + (on ? (equipped ? 'Em uso no Bitinho' : 'Visual desbloqueado') : esc(unlock)) + '</small></div>' + (on ? '<button class="skin-equip' + (equipped ? ' on' : '') + '" data-act="skinEquipar" data-id="' + s.id + '"' + (equipped ? ' disabled' : '') + '>' + (equipped ? 'Em uso ✓' : 'Usar visual') + '</button>' : '<span class="skin-progress-lock">' + ic('lock') + '</span>') + '</article>';
+    });
+    h += '</section><div class="pad bitinho-wardrobe-head exclusive-wardrobe-title"><div><span class="eyebrow">PRÊMIOS DOS DESAFIOS</span><h2 class="title-md">Looks exclusivos</h2></div><span class="small muted">Só com os exercícios especiais</span></div><section class="pad skin-grid">';
+    SKINS_BITINHO.filter(function (s) { return s.exclusiva; }).forEach(function (s) {
+      var on = !!S.skinsBitinho[s.id], equipped = S.skinEquipada === s.id;
+      h += '<article class="skin-card exclusive-skin' + (on ? ' unlocked' : ' locked') + (equipped ? ' equipped' : '') + '"><div class="skin-card-art' + (on ? '' : ' is-locked') + '">' + mascote('feliz', 62, s.id) + (on ? '' : '<span class="skin-lock">' + ic('lock') + '</span>') + '</div><div class="skin-card-copy"><strong>' + esc(s.nome) + '</strong><small>' + (on ? (equipped ? 'Em uso no Bitinho' : 'Conquistado no desafio') : 'Resolva o desafio exclusivo') + '</small></div>' + (on ? '<button class="skin-equip' + (equipped ? ' on' : '') + '" data-act="skinEquipar" data-id="' + s.id + '"' + (equipped ? ' disabled' : '') + '>' + (equipped ? 'Em uso ✓' : 'Usar visual') + '</button>' : '<span class="skin-progress-lock">' + ic('lock') + '</span>') + '</article>';
+    });
+    return h + '</section>';
+  }
+  function telaDesafiosSkin() {
+    var feitos = DESAFIOS_SKIN.filter(function (d) { return S.desafiosBitinho[d.id]; }).length;
+    var atual = DESAFIOS_SKIN.find(function (d) { return d.id === desafioSkinAtual; });
+    if (!atual || (S.desafiosBitinho[atual.id] && !(feedbackSkin && feedbackSkin.id === atual.id))) atual = DESAFIOS_SKIN.find(function (d) { return !S.desafiosBitinho[d.id]; });
+    var h = '<section class="pad skin-quest-intro"><span class="quest-sparkle">✦</span><span class="eyebrow">MISSÕES SECRETAS DO BITINHO</span><h2 class="title-lg">Exercícios valendo skins</h2><p>Responda um desafio de cada vez. Acertou? O Bitinho ganha um visual que só existe nesta aba.</p><div class="quest-progress"><span>' + feitos + ' de ' + DESAFIOS_SKIN.length + ' skins conquistadas</span><b>' + Math.round(feitos / DESAFIOS_SKIN.length * 100) + '%</b></div>' + bar(Math.round(feitos / DESAFIOS_SKIN.length * 100)) + '</section>';
+    if (!atual) return h + '<section class="pad quest-complete"><div>🏆</div><h3>Você conquistou todos os looks secretos!</h3><p>O Bitinho está orgulhoso da sua dedicação. Volte ao guarda-roupa para equipar sua coleção.</p><button class="btn primary" data-act="bitinhoSecao" data-v="acessorios">Ver meus acessórios</button></section>';
+    var premio = skinPorId('bonus_' + atual.id), sel = respostaSkinSel;
+    var foiResolvido = !!S.desafiosBitinho[atual.id], mostrarAcerto = feedbackSkin && feedbackSkin.id === atual.id && feedbackSkin.correta;
+    h += '<section class="pad"><article class="skin-quest-card"><div class="skin-quest-top"><span class="quest-number">DESAFIO ' + String(feitos + (foiResolvido ? 0 : 1)).padStart(2, '0') + '</span><span class="quest-reward">' + premio.emoji + ' Skin exclusiva</span></div><h3>' + esc(atual.titulo) + '</h3><p class="skin-question">' + esc(atual.pergunta) + '</p><div class="skin-options">';
+    atual.opcoes.forEach(function (op, n) { h += '<button class="skin-option' + (sel === n ? ' selected' : '') + '" data-act="skinResposta" data-v="' + n + '"' + (foiResolvido ? ' disabled' : '') + '><span>' + String.fromCharCode(65 + n) + '</span><code>' + esc(op) + '</code>' + (foiResolvido && n === atual.certa ? '<b>✓</b>' : '') + '</button>'; });
+    h += '</div>';
+    if (feedbackSkin && feedbackSkin.id === atual.id && !feedbackSkin.correta) h += '<div class="skin-feedback wrong"><strong>Quase! Tente mais uma vez.</strong><span>Dica: ' + esc(atual.dica) + '</span></div>';
+    if (mostrarAcerto || foiResolvido) h += '<div class="skin-feedback right"><strong>Resposta certa! ' + premio.emoji + ' ' + esc(premio.nome) + ' desbloqueada!</strong><span>' + esc(atual.explicacao) + '</span></div>';
+    if (foiResolvido) h += '<button class="btn primary skin-next" data-act="skinProximo">Próximo desafio ' + ic('chevL') + '</button>';
+    else h += '<button class="btn primary skin-check" data-act="skinConferir"' + (sel === null ? ' disabled' : '') + '>Conferir resposta ' + ic('check') + '</button><p class="skin-tries-note">Pode tentar de novo sem perder pontos. A explicação aparece depois de acertar.</p>';
+    return h + '</article></section><div class="pad skin-quest-foot">Cada resposta certa libera uma skin exclusiva para equipar no Bitinho.</div>';
+  }
+  function telaBitinho() {
+    var feitos = DESAFIOS_SKIN.filter(function (d) { return S.desafiosBitinho[d.id]; }).length;
+    var h = '<header class="pad bitinho-page-head"><span class="eyebrow">SEU MASCOTE, SEU ESTILO</span><h1 class="title-xl">Cantinho do Bitinho</h1><p>Vista o Bitinho e conquiste visuais especiais estudando.</p></header>';
+    h += '<div class="pad bitinho-sections" role="tablist" aria-label="Seções do Bitinho"><button role="tab" aria-selected="' + (secaoBitinho === 'acessorios') + '" class="' + (secaoBitinho === 'acessorios' ? 'on' : '') + '" data-act="bitinhoSecao" data-v="acessorios">' + ic('star') + 'Acessórios</button><button role="tab" aria-selected="' + (secaoBitinho === 'desafios') + '" class="' + (secaoBitinho === 'desafios' ? 'on' : '') + '" data-act="bitinhoSecao" data-v="desafios">' + ic('target') + 'Desafios <span>' + feitos + '/' + DESAFIOS_SKIN.length + '</span></button></div>';
+    return h + (secaoBitinho === 'desafios' ? telaDesafiosSkin() : telaAcessoriosBitinho());
+  }
+
   function abas() {
-    var itens = [['inicio', 'Início', 'home'], ['disciplinas', 'Disciplinas', 'grid'], ['apostila', 'Apostila', 'book'], ['perfil', 'Perfil', 'user']];
+    var itens = [['inicio', 'Início', 'home'], ['disciplinas', 'Disciplinas', 'grid'], ['apostila', 'Apostila', 'book'], ['bitinho', 'Bitinho', 'sparkle'], ['perfil', 'Perfil', 'user']];
     return '<nav class="tabbar" aria-label="Navegação principal"><div class="tabbar-in pad">' + itens.map(function (i) {
       return '<button class="tab' + (ui.tab === i[0] ? ' on' : '') + '" data-act="tab" data-t="' + i[0] + '"' + (ui.tab === i[0] ? ' aria-current="page"' : '') + '><span class="pillbg">' + ic(i[2]) + '</span>' + i[1] + '</button>';
     }).join('') + '</div></nav>';
+  }
+
+  function prepararCanvasFundo() {
+    var canvas = document.createElement('canvas');
+    canvas.id = 'ambientCanvas'; canvas.setAttribute('aria-hidden', 'true');
+    APP.insertBefore(canvas, APP.firstChild);
+    fundoInterativo.canvas = canvas; fundoInterativo.ctx = canvas.getContext('2d');
+    fundoInterativo.movimentoReduzido = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    redimensionarCanvasFundo();
+    if (!fundoInterativo.eventosLigados) {
+      APP.addEventListener('pointermove', function (e) {
+        var r = APP.getBoundingClientRect();
+        fundoInterativo.ponteiro.x = e.clientX - r.left; fundoInterativo.ponteiro.y = e.clientY - r.top;
+        pedirDesenhoFundo();
+      });
+      APP.addEventListener('pointerleave', function () { fundoInterativo.ponteiro.x = -1000; fundoInterativo.ponteiro.y = -1000; pedirDesenhoFundo(); });
+      APP.addEventListener('pointerdown', function (e) {
+        if (e.target.closest('button, input, textarea, select, .tabbar')) return;
+        var r = APP.getBoundingClientRect();
+        fundoInterativo.ondas.push({ x: e.clientX - r.left, y: e.clientY - r.top, raio: 4, vida: 1 });
+        pedirDesenhoFundo();
+      });
+      window.addEventListener('resize', function () { redimensionarCanvasFundo(); pedirDesenhoFundo(); });
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden && fundoInterativo.quadro) { cancelAnimationFrame(fundoInterativo.quadro); fundoInterativo.quadro = 0; }
+        else pedirDesenhoFundo();
+      });
+      fundoInterativo.eventosLigados = true;
+    }
+    pedirDesenhoFundo();
+  }
+  function redimensionarCanvasFundo() {
+    var f = fundoInterativo, canvas = f.canvas;
+    if (!canvas || !f.ctx) return;
+    var largura = APP.clientWidth, altura = APP.clientHeight, escala = Math.min(window.devicePixelRatio || 1, 1.5);
+    if (!largura || !altura) return;
+    if (f.largura && f.altura && f.pontos.length) f.pontos.forEach(function (p) { p.x *= largura / f.largura; p.y *= altura / f.altura; });
+    f.largura = largura; f.altura = altura; f.escala = escala;
+    canvas.width = Math.round(largura * escala); canvas.height = Math.round(altura * escala);
+    canvas.style.width = largura + 'px'; canvas.style.height = altura + 'px';
+    f.ctx.setTransform(escala, 0, 0, escala, 0, 0);
+    if (!f.pontos.length) {
+      var sinais = ['</>', '{ }', '01', '[]'];
+      for (var i = 0; i < 22; i++) f.pontos.push({ x: Math.random() * largura, y: Math.random() * altura, vx: (Math.random() - .5) * .45, vy: (Math.random() - .5) * .45, raio: 1.2 + Math.random() * 1.1, sinal: i % 5 === 0 ? sinais[Math.floor(Math.random() * sinais.length)] : '' });
+    }
+  }
+  function pedirDesenhoFundo() {
+    var f = fundoInterativo;
+    if (!f.ctx || document.hidden) return;
+    if (f.movimentoReduzido) { desenharCanvasFundo(0); return; }
+    if (!f.quadro) f.quadro = requestAnimationFrame(desenharCanvasFundo);
+  }
+  function desenharCanvasFundo(tempo) {
+    var f = fundoInterativo, ctx = f.ctx;
+    f.quadro = 0;
+    if (!ctx) return;
+    if (!f.movimentoReduzido && tempo - f.ultimoDesenho < 32) { f.quadro = requestAnimationFrame(desenharCanvasFundo); return; }
+    f.ultimoDesenho = tempo;
+    ctx.clearRect(0, 0, f.largura, f.altura);
+    var raiz = document.documentElement;
+    var temaClaro = raiz.dataset.theme === 'light' || (raiz.dataset.theme !== 'dark' && !(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+    var linhaBase = temaClaro ? 'rgba(103,67,190,' : 'rgba(177,151,255,';
+    var pontoCor = temaClaro ? 'rgba(103,67,190,.62)' : 'rgba(177,151,255,.48)';
+    var codigoCor = temaClaro ? 'rgba(91,55,175,.52)' : 'rgba(177,151,255,.3)';
+    var px = f.ponteiro.x, py = f.ponteiro.y;
+    f.pontos.forEach(function (p) {
+      if (!f.movimentoReduzido) { p.x += p.vx; p.y += p.vy; }
+      if (p.x < -8) p.x = f.largura + 8; else if (p.x > f.largura + 8) p.x = -8;
+      if (p.y < -8) p.y = f.altura + 8; else if (p.y > f.altura + 8) p.y = -8;
+      var dx = p.x - px, dy = p.y - py, d = Math.sqrt(dx * dx + dy * dy);
+      if (d > 0 && d < 125) { var empurrao = (125 - d) * .035; p.x += dx / d * empurrao; p.y += dy / d * empurrao; }
+    });
+    for (var i = 0; i < f.pontos.length; i++) for (var j = i + 1; j < f.pontos.length; j++) {
+      var a = f.pontos[i], b = f.pontos[j], ddx = a.x - b.x, ddy = a.y - b.y, dist = Math.sqrt(ddx * ddx + ddy * ddy);
+      if (dist < 158) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.strokeStyle = linhaBase + ((1 - dist / 158) * (temaClaro ? .34 : .3)) + ')'; ctx.lineWidth = 1.35; ctx.stroke(); }
+    }
+    f.pontos.forEach(function (p) {
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.raio + .25, 0, Math.PI * 2); ctx.fillStyle = pontoCor; ctx.fill();
+      if (p.sinal) { ctx.font = '700 10px ui-monospace, monospace'; ctx.fillStyle = codigoCor; ctx.fillText(p.sinal, p.x + 7, p.y - 5); }
+    });
+    f.ondas = f.ondas.filter(function (o) {
+      ctx.beginPath(); ctx.arc(o.x, o.y, o.raio, 0, Math.PI * 2); ctx.strokeStyle = linhaBase + (o.vida * (temaClaro ? .62 : .52)) + ')'; ctx.lineWidth = 2; ctx.stroke();
+      if (!f.movimentoReduzido) { o.raio += 3; o.vida -= .035; }
+      return o.vida > 0;
+    });
+    if (!f.movimentoReduzido) f.quadro = requestAnimationFrame(desenharCanvasFundo);
+  }
+
+  function agendarReacaoBitinho() {
+    if (reacaoBitinhoTimer) clearTimeout(reacaoBitinhoTimer);
+    if (ui.screen !== 'inicio' || !document.querySelector('.home-mascot')) return;
+    reacaoBitinhoTimer = setTimeout(function () { animarBitinho(false); }, 7500 + Math.random() * 7000);
+  }
+  function animarBitinho(secreto) {
+    var botao = document.querySelector('.home-mascot');
+    if (!botao) return;
+    if (reacaoBitinhoTimer) clearTimeout(reacaoBitinhoTimer);
+    if (reacaoBitinhoLimpeza) clearTimeout(reacaoBitinhoLimpeza);
+    botao.classList.remove('secret', 'reaction'); botao.removeAttribute('data-reaction');
+    void botao.offsetWidth;
+    if (secreto) botao.classList.add('secret');
+    var reacoes = [
+      { tipo: 'hop', fala: 'Eba! Bora aprender? 🚀' },
+      { tipo: 'wiggle', fala: 'Oi, oi! 👋' },
+      { tipo: 'tilt', fala: 'Hmm... curioso! 🤔' },
+      { tipo: 'wave', fala: 'Um aceno pra você! ✨' },
+      { tipo: 'spin', fala: 'Uau, que energia! 💫' },
+      { tipo: 'bounce', fala: 'Subindo de nível! 📈' },
+      { tipo: 'shy', fala: 'Opa, você me viu! 🙈' },
+      { tipo: 'dance', fala: 'Hora da dancinha! 🎵' },
+      { tipo: 'stretch', fala: 'Alongando antes de estudar! 💪' },
+      { tipo: 'celebrate', fala: 'Você está arrasando! 🎉' }
+    ];
+    var reacao = reacoes[Math.floor(Math.random() * reacoes.length)];
+    if (!secreto) botao.dataset.reaction = reacao.tipo;
+    var balão = botao.querySelector('.mascot-reaction-bubble');
+    if (balão) { balão.textContent = secreto ? 'Segredo descoberto! ✨' : reacao.fala; balão.classList.add('visible'); }
+    reacaoBitinhoLimpeza = setTimeout(function () {
+      botao.classList.remove('secret'); botao.removeAttribute('data-reaction');
+      if (balão) { balão.classList.remove('visible'); balão.textContent = ''; }
+      agendarReacaoBitinho();
+    }, secreto ? 1900 : 1450);
   }
 
   /* ---------- Render ---------- */
@@ -736,6 +950,8 @@
     if (c.tema === 'claro') r.setAttribute('data-theme', 'light'); else if (c.tema === 'escuro') r.setAttribute('data-theme', 'dark'); else r.removeAttribute('data-theme');
   }
   function render(anim) {
+    if (reacaoBitinhoTimer) clearTimeout(reacaoBitinhoTimer);
+    if (reacaoBitinhoLimpeza) clearTimeout(reacaoBitinhoLimpeza);
     aplicarConfig();
     var old = document.getElementById('screen'), topo = old && !anim ? (old.querySelector('.l-body') || old).scrollTop : 0;
     if (old) Array.prototype.forEach.call(old.querySelectorAll('.mindmap-node'), function (no) { if (no._mapTypingTimer) clearInterval(no._mapTypingTimer); });
@@ -745,6 +961,7 @@
       case 'disciplinas': corpo = telaDisciplinas(); break;
       case 'trilha': corpo = telaTrilha(); break;
       case 'perfil': corpo = telaPerfil(); break;
+      case 'bitinho': corpo = telaBitinho(); break;
       case 'apostila': corpo = telaApostila(); break;
       case 'licao': corpo = telaLicao(); cls += ' lesson'; semAbas = true; break;
       case 'resultado': corpo = telaResultado(); cls += ' result'; semAbas = true; break;
@@ -753,6 +970,8 @@
     ui.keepAnim = !!anim;
     APP.className = S.config.plataforma;
     APP.innerHTML = '<div class="' + cls + (anim ? ' enter-' + anim : '') + '" id="screen">' + corpo + '</div>' + (semAbas ? '' : abas());
+    prepararCanvasFundo();
+    if (ui.screen === 'inicio') agendarReacaoBitinho();
     if (ui.screen === 'apostila' && temaApostila) {
       var chipOn = APP.querySelector('.ap-chip.on'), chipBox = chipOn && chipOn.parentNode; if (chipBox) chipBox.scrollLeft = chipOn.offsetLeft - chipBox.clientWidth / 2 + chipOn.offsetWidth / 2;
       var mapaNos = APP.querySelectorAll('.mindmap-node');
@@ -810,7 +1029,24 @@
     if (!el || el.disabled) return;
     var a = el.dataset.act, L = ui.lesson, ex;
     switch (a) {
+      case 'bitinhoSurpresa': animarBitinho(true); break;
       case 'tab': ui.tab = el.dataset.t; ir(el.dataset.t, {}, 'fade'); break;
+      case 'bitinhoSecao': secaoBitinho = el.dataset.v; respostaSkinSel = null; feedbackSkin = null; if (secaoBitinho === 'desafios') desafioSkinAtual = (DESAFIOS_SKIN.find(function (d) { return !S.desafiosBitinho[d.id]; }) || DESAFIOS_SKIN[0]).id; render('fade'); break;
+      case 'skinEquipar': if (S.skinsBitinho[el.dataset.id]) { S.skinEquipada = el.dataset.id; salvar(); render(null); toast('Look equipado no Bitinho! ✨'); } break;
+      case 'skinResposta': if (!S.desafiosBitinho[desafioSkinAtual]) { respostaSkinSel = parseInt(el.dataset.v, 10); feedbackSkin = null; render(null); } break;
+      case 'skinConferir':
+        var desafioSkin = DESAFIOS_SKIN.find(function (d) { return d.id === desafioSkinAtual; });
+        if (desafioSkin && respostaSkinSel !== null) {
+          if (respostaSkinSel === desafioSkin.certa) { S.desafiosBitinho[desafioSkin.id] = true; S.skinsBitinho['bonus_' + desafioSkin.id] = true; salvar(); feedbackSkin = { id: desafioSkin.id, correta: true }; }
+          else feedbackSkin = { id: desafioSkin.id, correta: false };
+          render('fade');
+          if (feedbackSkin.correta) toast('Skin exclusiva desbloqueada: ' + skinPorId('bonus_' + desafioSkin.id).nome + '! ✨');
+        }
+        break;
+      case 'skinProximo':
+        desafioSkinAtual = (DESAFIOS_SKIN.find(function (d) { return !S.desafiosBitinho[d.id]; }) || DESAFIOS_SKIN[0]).id;
+        respostaSkinSel = null; feedbackSkin = null; render('fwd');
+        break;
       case 'abrirApostila': ir('apostila', {}, 'fwd'); break;
       case 'apostilaCap': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(9, parseInt(el.dataset.v, 10) || 0)); S.apostilaRetomar = { lang: temaApostila, cap: apEstado.cap }; salvar(); render(null); var telaAp = document.getElementById('screen'); if (telaAp) telaAp.scrollTop = 0; break;
       case 'apostilaRetomar': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(9, parseInt(el.dataset.v, 10) || 0)); render(null); var telaRetomar = document.getElementById('screen'); if (telaRetomar) telaRetomar.scrollTop = 0; break;
@@ -819,7 +1055,15 @@
       case 'apostilaVoltar': if (apEstado.aberto) apEstado.aberto = false; else temaApostila = ''; render(null); var telaV = document.getElementById('screen'); if (telaV) telaV.scrollTop = 0; break;
       case 'apostilaEtapa': apEstado.etapa[el.dataset.id] = parseInt(el.dataset.e, 10); render(null); break;
       case 'apostilaNota': var nNota = parseInt(el.dataset.n, 10); apEstado.nota[el.dataset.id] = apEstado.nota[el.dataset.id] === nNota ? 0 : nNota; render(null); break;
-      case 'apostilaConcluir': S.apostila = S.apostila || {}; if (S.apostila[el.dataset.id]) delete S.apostila[el.dataset.id]; else S.apostila[el.dataset.id] = 1; salvar(); render(null); break;
+      case 'apostilaConcluir':
+        S.apostila = S.apostila || {};
+        var capituloConcluido = !S.apostila[el.dataset.id], numeroSkinCapitulo = skinCapitulo(el.dataset.id);
+        var skinCapituloId = numeroSkinCapitulo > 10 ? 'pycap' + (numeroSkinCapitulo - 10) : 'cap' + numeroSkinCapitulo;
+        var jaTinhaSkinCapitulo = !!S.skinsBitinho[skinCapituloId];
+        if (capituloConcluido) S.apostila[el.dataset.id] = 1; else delete S.apostila[el.dataset.id];
+        sincronizarSkinsCapitulos(); salvar(); render(null);
+        if (capituloConcluido && numeroSkinCapitulo && !jaTinhaSkinCapitulo) toast('Novo look desbloqueado: ' + skinPorId(skinCapituloId).nome + '! ✨');
+        break;
       case 'apostilaTema': temaApostila = el.dataset.v; apEstado.aberto = false; render(null); break;
       case 'apostilaEscolherTecnologia': temaApostila = ''; apEstado.aberto = false; render(null); break;
       case 'apostilaToggle':
@@ -859,6 +1103,23 @@
     }
   });
 
-  function telaAuth(){APP.innerHTML='<main class="auth-screen"><section class="auth-brand">'+mascote('feliz',72)+'<span class="eyebrow">APRENDA UM POUQUINHO TODO DIA</span><h1 class="title-xl">Bitinho</h1><p>Programação e computador sem complicação.</p></section><form class="auth-card" id="authForm"><h2>'+(auth.mode==='cadastro'?'Crie sua conta':'Entre no Bitinho')+'</h2>'+(auth.mode==='cadastro'?'<label>Seu nome<input name="nome" required maxlength="20"></label>':'')+'<label>E-mail<input name="email" type="email" required></label><label>Senha<input name="senha" type="password" required minlength="6"></label><button class="btn primary" type="submit">'+(auth.mode==='cadastro'?'Criar conta':'Entrar')+'</button><button class="linkbtn" id="trocarAuth" type="button">'+(auth.mode==='cadastro'?'Já tenho conta · Entrar':'Criar uma conta')+'</button><small>Conta local: dados salvos somente neste aparelho.</small></form></main>';document.getElementById('trocarAuth').onclick=function(){auth.mode=auth.mode==='login'?'cadastro':'login';telaAuth();};document.getElementById('authForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target),email=String(f.get('email')).trim().toLowerCase(),senha=String(f.get('senha')),u=users();if(auth.mode==='cadastro'){if(u[email]){toast('Já existe uma conta com esse e-mail.');return;}u[email]={senha:senha,nome:String(f.get('nome')).trim()||'Aprendiz'};localStorage.setItem(USERS_KEY,JSON.stringify(u));auth.user=email;localStorage.setItem('bitinho-session-v1',email);S=estadoDemo();S.nome=u[email].nome;S.xp=0;S.streak=0;S.melhor=0;S.diasEstudo=0;S.ultimoDia='';S.concluidas={};salvar();}else{if(!u[email]||u[email].senha!==senha){toast('E-mail ou senha incorretos.');return;}auth.user=email;localStorage.setItem('bitinho-session-v1',email);S=carregar();}render('fade');};}
+  function telaAuth() {
+    APP.innerHTML = '<main class="auth-screen"><section class="auth-brand">' + mascote('feliz',72) + '<span class="eyebrow">APRENDA UM POUQUINHO TODO DIA</span><h1 class="title-xl">Bitinho</h1><p>Programação e computador sem complicação.</p></section><form class="auth-card" id="authForm"><h2>' + (auth.mode === 'cadastro' ? 'Crie sua conta' : 'Entre no Bitinho') + '</h2>' + (auth.mode === 'cadastro' ? '<label>Seu nome<input name="nome" required maxlength="20"></label>' : '') + '<label>E-mail<input name="email" type="email" required></label><label>Senha<input name="senha" type="password" required minlength="6"></label><button class="btn primary" type="submit">' + (auth.mode === 'cadastro' ? 'Criar conta' : 'Entrar') + '</button><button class="linkbtn" id="trocarAuth" type="button">' + (auth.mode === 'cadastro' ? 'Já tenho conta · Entrar' : 'Criar uma conta') + '</button><small>Conta local: dados salvos somente neste aparelho.</small></form><footer class="auth-credit"><span>Desenvolvido por</span><picture><source srcset="assets/codexa-logo-dark.png" media="(prefers-color-scheme: dark)"><img src="assets/codexa-logo.png" alt="Codexa"></picture></footer></main>';
+    document.getElementById('trocarAuth').onclick = function () { auth.mode = auth.mode === 'login' ? 'cadastro' : 'login'; telaAuth(); };
+    document.getElementById('authForm').onsubmit = function (e) {
+      e.preventDefault();
+      var f = new FormData(e.target), email = String(f.get('email')).trim().toLowerCase(), senha = String(f.get('senha')), u = users();
+      if (auth.mode === 'cadastro') {
+        if (u[email]) { toast('Já existe uma conta com esse e-mail.'); return; }
+        u[email] = { senha: senha, nome: String(f.get('nome')).trim() || 'Aprendiz' };
+        localStorage.setItem(USERS_KEY, JSON.stringify(u)); auth.user = email; localStorage.setItem('bitinho-session-v1', email);
+        S = estadoDemo(); S.nome = u[email].nome; S.xp = 0; S.streak = 0; S.melhor = 0; S.diasEstudo = 0; S.ultimoDia = ''; S.concluidas = {}; salvar();
+      } else {
+        if (!u[email] || u[email].senha !== senha) { toast('E-mail ou senha incorretos.'); return; }
+        auth.user = email; localStorage.setItem('bitinho-session-v1', email); S = carregar();
+      }
+      render('fade');
+    };
+  }
   if(!auth.user||!users()[auth.user]){auth.user='';telaAuth();}else{S=carregar();render('fade');}
 })();
