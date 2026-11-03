@@ -51,3 +51,7 @@ Cada linguagem (HTML e Python) tem 10 capítulos (5 básicos e 5 intermediários
 ## Para virar app nativo
 
 A lógica de conteúdo (`content/*.js`) é dados puros e pode ser reaproveitada em React Native ou Flutter, ou empacotada com Capacitor.
+
+## Versão 1.2.0
+
+A tela inicial conta com fundo interativo e reações do Bitinho. A nova aba **Cantinho do Bitinho** reúne 20 visuais que são desbloqueados ao concluir capítulos de HTML e Python, além de cinco exercícios especiais que liberam skins exclusivas. Os acessórios e o progresso são salvos por conta neste aparelho. A tela de login também exibe a identidade da Codexa.
