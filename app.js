@@ -1079,6 +1079,43 @@
     var foto=document.getElementById('fotoPerfil'); if(foto) foto.addEventListener('change',function(){var f=foto.files&&foto.files[0];if(!f)return;if(f.size>1500000){toast('Escolha uma imagem de até 1,5 MB.');return;}var rd=new FileReader();rd.onload=function(){S.foto=rd.result;salvar();render(null);};rd.readAsDataURL(f);});
     var avatar3d = document.querySelector('.profile-avatar');
     if (avatar3d) {
+      avatar3d.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        document.querySelectorAll('.photo-context-menu, .photo-viewer').forEach(function (el) { el.remove(); });
+        var menu = document.createElement('div');
+        menu.className = 'photo-context-menu';
+        menu.setAttribute('role', 'menu');
+        menu.innerHTML = '<button type="button" role="menuitem" data-photo-action="view">Visualizar foto</button><button type="button" role="menuitem" data-photo-action="change">Mudar foto</button>';
+        document.body.appendChild(menu);
+        var bounds = menu.getBoundingClientRect();
+        menu.style.left = Math.max(8, Math.min(e.clientX, window.innerWidth - bounds.width - 8)) + 'px';
+        menu.style.top = Math.max(8, Math.min(e.clientY, window.innerHeight - bounds.height - 8)) + 'px';
+        function fecharMenu(ev) { if (!menu.contains(ev.target)) { menu.remove(); document.removeEventListener('pointerdown', fecharMenu); document.removeEventListener('keydown', fecharTecla); } }
+        function fecharTecla(ev) { if (ev.key === 'Escape') { menu.remove(); document.removeEventListener('pointerdown', fecharMenu); document.removeEventListener('keydown', fecharTecla); } }
+        document.addEventListener('pointerdown', fecharMenu);
+        document.addEventListener('keydown', fecharTecla);
+        menu.addEventListener('click', function (ev) {
+          var acao = ev.target.closest('[data-photo-action]');
+          if (!acao) return;
+          menu.remove();
+          document.removeEventListener('pointerdown', fecharMenu);
+          document.removeEventListener('keydown', fecharTecla);
+          if (acao.dataset.photoAction === 'change') { if (foto) foto.click(); return; }
+          var viewer = document.createElement('div');
+          viewer.className = 'photo-viewer';
+          viewer.setAttribute('role', 'dialog');
+          viewer.setAttribute('aria-modal', 'true');
+          viewer.setAttribute('aria-label', 'Visualizar foto de perfil');
+          viewer.innerHTML = '<button type="button" class="photo-viewer-close" aria-label="Fechar">×</button>' + (S.foto ? '<img src="' + S.foto + '" alt="Foto de perfil ampliada">' : '<div class="photo-viewer-mascot">' + mascote('feliz', 180, S.skinEquipada) + '</div>');
+          document.body.appendChild(viewer);
+          function fecharViewer() { viewer.remove(); document.removeEventListener('keydown', teclaViewer); }
+          function teclaViewer(keyEvent) { if (keyEvent.key === 'Escape') fecharViewer(); }
+          viewer.addEventListener('click', function (clickEvent) { if (clickEvent.target === viewer || clickEvent.target.closest('.photo-viewer-close')) fecharViewer(); });
+          document.addEventListener('keydown', teclaViewer);
+          viewer.querySelector('.photo-viewer-close').focus();
+        });
+        menu.querySelector('button').focus();
+      });
       var girando = false, arrastoX = 0, anguloInicial = 0, anguloAtual = 0, larguraAvatar = 190;
       avatar3d.addEventListener('pointerdown', function (e) { e.preventDefault(); girando = true; arrastoX = e.clientX; anguloInicial = anguloAtual; larguraAvatar = avatar3d.getBoundingClientRect().width || 190; avatar3d.setPointerCapture(e.pointerId); });
       avatar3d.addEventListener('pointermove', function (e) { if (!girando) return; anguloAtual = anguloInicial + ((e.clientX - arrastoX) / larguraAvatar) * 360; avatar3d.style.setProperty('--spin-deg', anguloAtual + 'deg'); });
