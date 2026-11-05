@@ -843,7 +843,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.6</span><p>A tela inicial destaca o próximo passo de estudo e oferece retomada rápida da Apostila. Os capítulos mostram progresso, revisão antes das ações finais e botões mais claros para praticar e avançar.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.6</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.9</span><p>Barras voltaram ao fundo normal. Os botões mantêm um reflexo de vidro mais suave e discreto, com resposta leve ao toque.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.9</p></div>'
     return h;
   }
 
@@ -1162,6 +1162,46 @@
   }
 
   /* ---------- Eventos ---------- */
+  var glassButtonSelector = '.btn, .tab .pillbg, .home-apostila-card, .ap-cap-card, .ap-close, .bitinho-sections button, .seg button, .mini-seg button, .ap-pager-card, .ap-resume, .ap-nav button, .backbtn, .xbtn, .ap-etapas button';
+  function posicionarReflexoGlass(alvo, e) {
+    if (!alvo) return;
+    var caixa = alvo.getBoundingClientRect();
+    if (!caixa.width || !caixa.height) return;
+    var x = Math.max(0, Math.min(100, (e.clientX - caixa.left) / caixa.width * 100));
+    var y = Math.max(0, Math.min(100, (e.clientY - caixa.top) / caixa.height * 100));
+    alvo.style.setProperty('--glass-x', x + '%');
+    alvo.style.setProperty('--glass-y', y + '%');
+    if (alvo.matches(glassButtonSelector)) {
+      alvo.style.setProperty('--glass-rotate-x', ((50 - y) * .045).toFixed(2) + 'deg');
+      alvo.style.setProperty('--glass-rotate-y', ((x - 50) * .045).toFixed(2) + 'deg');
+    }
+    alvo.classList.add('glass-tracking');
+  }
+  APP.addEventListener('pointermove', function (e) {
+    var origem = e.target, botaoGlass = origem.closest(glassButtonSelector);
+    posicionarReflexoGlass(botaoGlass, e);
+  });
+  APP.addEventListener('pointerdown', function (e) {
+    var botaoGlass = e.target.closest(glassButtonSelector);
+    if (!botaoGlass) return;
+    posicionarReflexoGlass(botaoGlass, e);
+    botaoGlass.classList.add('glass-pressed');
+  });
+  window.addEventListener('pointerup', function () {
+    var pressionados = APP.querySelectorAll('.glass-pressed');
+    Array.prototype.forEach.call(pressionados, function (el) {
+      el.classList.remove('glass-pressed');
+      el.style.removeProperty('--glass-rotate-x');
+      el.style.removeProperty('--glass-rotate-y');
+    });
+  });
+  APP.addEventListener('pointerleave', function () {
+    Array.prototype.forEach.call(APP.querySelectorAll('.glass-tracking'), function (el) {
+      el.classList.remove('glass-tracking');
+      el.style.removeProperty('--glass-rotate-x');
+      el.style.removeProperty('--glass-rotate-y');
+    });
+  });
   APP.addEventListener('click', function (e) {
     var el = e.target.closest('[data-act]');
     if (!el || el.disabled) return;

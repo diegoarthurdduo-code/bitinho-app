@@ -54,6 +54,18 @@ Cada linguagem (HTML e Python) tem 15 capítulos: cinco básicos, cinco intermed
 
 A lógica de conteúdo (`content/*.js`) é dados puros e pode ser reaproveitada em React Native ou Flutter, ou empacotada com Capacitor.
 
+## Versão 1.3.9
+
+Barras de navegação voltam ao fundo normal. Botões mantêm brilho e resposta ao toque em intensidade reduzida.
+
+## Versão 1.3.8
+
+Barras e botões ganharam reflexos de vidro que acompanham o toque ou o cursor, com movimento sutil ao interagir.
+
+## Versão 1.3.7
+
+Barras de navegação e botões ganharam um efeito de vidro translúcido, mantendo o restante das telas sem esse efeito.
+
 ## Versão 1.3.6
 
 A tela inicial destaca o próximo passo de estudo e oferece retomada rápida da Apostila. Os capítulos apresentam título e progresso no topo, revisão antes das ações finais, prática em destaque e navegação mais clara para o capítulo seguinte.
