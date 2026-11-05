@@ -350,11 +350,11 @@
   /* ---------- Telas ---------- */
   function telaInicio() {
     var alvo = alvoContinuar(), p = S.hojeQtd, meta = S.config.meta;
-    var bitinho = '<button type="button" class="home-mascot" data-act="abrirBitinho" aria-label="Personalizar o Bitinho" title="Personalizar o Bitinho"><span class="mascot-reaction-bubble" aria-hidden="true"></span><span class="mascot-sparkles" aria-hidden="true">✦　✧　✦</span>' + mascote('feliz', 64, S.skinEquipada) + '<span class="home-mascot-caption">Personalizar</span></button>';
+    var bitinho = '<button type="button" class="home-mascot" data-act="abrirBitinho" aria-label="Personalizar o Bitinho" title="Personalizar o Bitinho"><span class="mascot-reaction-bubble" aria-hidden="true"></span><span class="mascot-sparkles" aria-hidden="true">✦　✧　✦</span>' + mascote('feliz', 74, S.skinEquipada) + '<span class="home-mascot-caption">Personalizar</span></button>';
     var h = '<header class="top pad home-header"><div class="stack"><span class="eyebrow">' + saudacao() + '</span><h1 class="title-xl">Olá, ' + esc(S.nome || 'Aprendiz') + '!</h1><p class="home-subtitle">Sua próxima conquista começa com um passo.</p></div>' + bitinho + '</header>';
     h += '<div class="chips pad home-metrics"><span class="pill fire">' + ic('flame') + S.streak + (S.streak === 1 ? ' dia' : ' dias') + '</span><span class="pill bolt">' + ic('bolt') + S.xp + ' pontos</span><span class="pill">' + ic('star') + 'Nível ' + nivel() + '</span></div>';
     var dicasPc = ['Use Ctrl + Z para desfazer uma ação que acabou de fazer. Funciona em muitos editores e aplicativos.','Faça cópias dos arquivos importantes em outro local ou na nuvem. Assim, um problema no computador não apaga tudo.','Antes de clicar num link recebido por mensagem, confira quem enviou e para onde o endereço realmente aponta.','Use nomes claros para arquivos e pastas. Exemplo: trabalho-historia-outubro.docx.'];
-    h += '<div class="pad home-tip"><div class="tip tip-card">' + ic('bulb') + '<div><strong>Dica de computador</strong><br>' + dicasPc[(new Date().getDate() + S.hojeQtd) % dicasPc.length] + '</div></div></div>';
+    var dicaDoDia = '<div class="pad home-tip"><div class="tip tip-card">' + ic('bulb') + '<div><strong>Dica de computador</strong><br>' + dicasPc[(new Date().getDate() + S.hojeQtd) % dicasPc.length] + '</div></div></div>';
     if (retorno) {
       h += '<div class="pad"><div class="notice">' + ic('sparkle') + '<div><strong>Que bom ter você de volta!</strong><br>Sua sequência recomeça hoje, sem pressa. Você já estudou em ' + S.diasEstudo + ' dias e isso continua valendo.</div></div></div>';
     }
@@ -366,14 +366,21 @@
     } else {
       h += '<div class="pad home-continue"><div class="hero hero-complete"><span class="complete-mark" aria-hidden="true">✦</span><span class="kicker">Jornada concluída</span><h2>Você terminou todas as lições disponíveis!</h2><p class="meta">Seu esforço merece ser celebrado. Que tal revisar ou explorar outra disciplina?</p><button class="btn light" data-act="tab" data-t="disciplinas">Rever as disciplinas</button></div></div>';
     }
+    var retomada = S.apostilaRetomar, retomadaInfo = null;
+    if (retomada && (retomada.lang === 'html' || retomada.lang === 'python')) {
+      var capsRetomada = capitulosApostila(retomada.lang), indiceRetomada = Math.max(0, Math.min(capsRetomada.length - 1, Number(retomada.cap) || 0));
+      retomadaInfo = { lang: retomada.lang, cap: indiceRetomada, total: capsRetomada.length, capitulo: capsRetomada[indiceRetomada] };
+    }
+    h += '<div class="pad home-apostila"><button type="button" class="home-apostila-card" data-act="apostilaHome" data-lang="' + (retomadaInfo ? retomadaInfo.lang : '') + '" data-cap="' + (retomadaInfo ? retomadaInfo.cap : 0) + '" data-resume="' + (retomadaInfo ? '1' : '0') + '"><span class="home-apostila-icon">' + ic('book') + '</span><span class="home-apostila-copy"><strong>' + (retomadaInfo ? 'Continue na Apostila' : 'Conheça a Apostila') + '</strong></span><span class="home-apostila-arrow" aria-hidden="true">→</span></button></div>';
     var pct = Math.min(100, Math.round((p / meta) * 100));
-    h += '<div class="pad home-goal-wrap"><section class="home-goal"><div class="home-goal-copy"><span class="eyebrow">UM POUCO POR DIA</span><strong>Meta de hoje</strong><span class="home-goal-count">' + Math.min(p, meta) + ' de ' + meta + (meta === 1 ? ' lição' : ' lições') + '</span><p>' + (p >= meta ? 'Meta cumprida. Continue no seu ritmo!' : 'Uma lição curta já conta como um bom dia de estudo.') + '</p></div><div class="home-goal-ring" style="--goal-pct:' + pct + '%" role="img" aria-label="' + pct + '% da meta diária concluída"><span>' + pct + '<small>%</small></span></div></section></div>';
+    var bolinhasMeta = Array.apply(null, Array(meta)).map(function (_, n) { return '<i class="' + (n < p ? 'done' : '') + '" aria-hidden="true"></i>'; }).join('');
+    h += '<div class="pad home-goal-wrap"><section class="home-goal"><div class="home-goal-copy"><span class="eyebrow">UM POUCO POR DIA</span><strong>Meta de hoje</strong><span class="home-goal-count">' + Math.min(p, meta) + ' de ' + meta + (meta === 1 ? ' lição' : ' lições') + '</span><p>' + (p >= meta ? 'Meta cumprida. Continue no seu ritmo!' : 'Cada lição concluída conta. Vá no seu ritmo!') + '</p></div><div class="home-goal-dots" role="progressbar" aria-valuenow="' + Math.min(p, meta) + '" aria-valuemin="0" aria-valuemax="' + meta + '" aria-label="' + pct + '% da meta diária concluída">' + bolinhasMeta + '</div></section></div>';
     h += '<div class="pad list home-disciplines"><div class="section-h"><div><span class="eyebrow">SEU APRENDIZADO</span><h2 class="title-md">Suas disciplinas</h2></div><button class="linkbtn" data-act="tab" data-t="disciplinas">Ver todas</button></div>';
     DISC.forEach(function (d) {
       var t = totais(d);
       h += '<button class="disc discipline-card" data-discipline="' + esc(d.id) + '" data-act="disc" data-id="' + d.id + '"><span class="badge-ic">' + ic(d.icone) + '</span><span style="min-width:0"><span class="name">' + esc(d.nome) + '</span>' + bar(t.pct) + '</span><span class="pct">' + t.pct + '%</span></button>';
     });
-    return h + '</div>';
+    return h + '</div>' + dicaDoDia;
   }
 
   function telaDisciplinas() {
@@ -765,25 +772,24 @@
     var botoes = E > 1 ? '<div class="ap-etapas" role="group" aria-label="Etapas do código"><small>Etapa</small>' + Array.apply(null, Array(E)).map(function (_, e) { return '<button type="button" class="' + (e + 1 === etapa ? 'on' : '') + '" data-act="apostilaEtapa" data-id="' + c.id + '" data-e="' + (e + 1) + '" aria-pressed="' + (e + 1 === etapa) + '">' + (e + 1) + '</button>'; }).join('') + '</div>' : '';
     var cartao = '<div class="ap-code"><div class="ap-code-bar">' + ic(m.icone) + '<span>' + m.arq + '</span>' + botoes + '<button type="button" class="ap-copy" data-act="apostilaCopiar">Copiar código</button></div><pre class="ap-lines">' + corpo + '</pre><p class="ap-etapa-cap" aria-live="polite">' + legenda + '</p><textarea class="ap-code-source" aria-hidden="true" tabindex="-1" readonly hidden>' + esc(t.codigo) + '</textarea></div>';
     var notas = '<ol class="ap-notes">' + t.partes.map(function (p, k) {
-      return '<li><button type="button" class="ap-note' + (ativa === k + 1 ? ' on' : '') + '" data-act="apostilaNota" data-id="' + c.id + '" data-n="' + (k + 1) + '" aria-pressed="' + (ativa === k + 1) + '"><b class="ap-note-n">' + (k + 1) + '</b><span><u>' + esc(p[0]) + '</u><span>' + esc(p[1]) + '</span></span><small class="ap-arrow">' + (alvos[k].length ? '→ linha ' + alvos[k].map(function (i) { return i + 1; }).join(' e ') : 'vale para o código todo') + '</small></button></li>';
+      return '<li><button type="button" class="ap-note' + (ativa === k + 1 ? ' on' : '') + '" data-act="apostilaNota" data-id="' + c.id + '" data-n="' + (k + 1) + '" aria-pressed="' + (ativa === k + 1) + '"><b class="ap-note-n">' + (k + 1) + '</b><span><strong>' + esc(p[0]) + '</strong><span>' + esc(p[1]) + '</span></span><small class="ap-arrow">' + (alvos[k].length ? '→ linha ' + alvos[k].map(function (i) { return i + 1; }).join(' e ') : 'vale para o código todo') + '</small></button></li>';
     }).join('') + '</ol>';
     return { cartao: cartao, notas: notas };
   }
   function capituloHTML(c, cur, caps, lang) {
-    var t = c.t, m = APOSTILA_MARCA[lang], ex = extrasApostila[c.id] || {}, cod = codigoAnotado(c, lang), lido = apLido(c.id);
+    var t = c.t, m = APOSTILA_MARCA[lang], ex = extrasApostila[c.id] || {}, cod = codigoAnotado(c, lang);
     var sec = function (n, titulo, corpo) { return '<section class="ap-sec"><h3><b>' + n + '</b>' + titulo + '</h3>' + corpo + '</section>'; };
-    var licaoId = APOSTILA_LICOES[c.id], licaoRelacionada = licaoId && LIC[licaoId];
     var nomeNivel = c.nivel === 'basico' ? 'Básico' : c.nivel === 'intermediario' ? 'Intermediário' : 'Avançado';
     var h = '<article class="ap-chap" id="cap-' + c.id + '"><header class="ap-chap-head"><div class="ap-kicker"><span class="ap-lang">' + ic(m.icone) + m.nome + '</span><span class="soft-tag">Capítulo ' + (cur + 1) + ' de ' + caps.length + ' · ' + nomeNivel + '</span></div><h2>' + esc(c.titulo) + '</h2></header>';
     h += sec(1, 'Explicação', '<p class="ap-text">' + destacarTermos(t.objetivo, t.partes) + '</p>');
-    h += sec(2, 'Exemplo', cod.cartao + '<p class="ap-hint">Os números nos círculos ligam cada linha à explicação abaixo. Toque em uma explicação para destacar as linhas dela.</p>' + (ex.entrada || ex.saida ? '<div class="ap-io">' + (ex.entrada ? '<div><small>Entrada (o que a pessoa digita)</small>' + blocoCodigo(ex.entrada, 'ap-io-in') + '</div>' : '') + (ex.saida ? '<div><small>Resultado na tela</small>' + blocoCodigo(ex.saida, 'ap-io-out') + '</div>' : '') + '</div>' : '') + '<div class="ap-call ap-result"><strong>' + ic('ok') + 'Resultado esperado</strong><span>' + esc(t.resultado) + '</span></div>');
+    var entradaExemplo = ex.entrada ? '<div class="ap-io"><div><small>O que a pessoa digita</small>' + blocoCodigo(ex.entrada, 'ap-io-in') + '</div></div>' : '';
+    var resultadoExemplo = ex.saida ? '<div class="ap-call ap-result"><strong>' + ic('ok') + 'Resultado na tela</strong><pre class="ap-output">' + esc(ex.saida) + '</pre><span>' + esc(t.resultado) + '</span></div>' : '<div class="ap-call ap-result"><strong>' + ic('ok') + 'Resultado esperado</strong><span>' + esc(t.resultado) + '</span></div>';
+    h += sec(2, 'Exemplo', cod.cartao + '<p class="ap-hint">Os números nas linhas ligam o código às explicações abaixo. Toque em uma explicação para destacar o trecho correspondente.</p>' + entradaExemplo + resultadoExemplo);
     h += sec(3, 'Passo a passo', '<p class="ap-text">Cada quadro explica uma parte do código. Use as etapas do exemplo para ver o programa crescer aos poucos.</p>' + cod.notas);
     var erros = (ex.erros || []).map(function (e) { return '<div class="ap-err"><strong>' + ic('no') + 'Erro comum</strong>' + blocoCodigo(e[0], 'bad') + '<p>' + esc(e[1]) + '</p><strong class="okk">' + ic('ok') + 'Como corrigir</strong>' + blocoCodigo(e[2], 'good') + '</div>'; }).join('');
     h += sec(4, 'Dicas e cuidados', '<div class="ap-call ap-tip"><strong>' + ic('bulb') + 'Dica importante</strong><span>' + esc(t.dica) + '</span></div>' + erros);
-    h += sec(5, 'Revisão', '<div class="ap-call ap-review"><strong>' + ic('book') + 'Em poucas palavras</strong><ul>' + t.partes.slice(0, 3).map(function (p) { return '<li><b>' + esc(p[0]) + '</b> — ' + esc(p[1].split(/(?<=\.)\s/)[0]) + '</li>'; }).join('') + '</ul></div><div class="ap-call ap-practice"><strong>' + ic('target') + 'Hora de praticar</strong><span>' + esc(t.pratica) + '</span></div>' + (licaoRelacionada ? '<button type="button" class="btn ap-practice-link" data-act="apostilaPraticar" data-id="' + licaoId + '">' + ic('play') + '<span>Praticar este tema<small>Exercícios relacionados: ' + esc(licaoRelacionada.l.titulo) + '</small></span></button>' : '') + '<button type="button" class="btn ' + (lido ? 'soft' : '') + ' ap-done" data-act="apostilaConcluir" data-id="' + c.id + '">' + (lido ? 'Capítulo estudado · desmarcar' : 'Marcar capítulo como estudado') + '</button>');
-    var ant = cur > 0 ? '<button type="button" class="btn soft" data-act="apostilaCap" data-v="' + (cur - 1) + '">← ' + esc(caps[cur - 1].titulo) + '</button>' : '<span></span>';
-    var prox = cur < caps.length - 1 ? '<button type="button" class="btn" data-act="apostilaCap" data-v="' + (cur + 1) + '">' + esc(caps[cur + 1].titulo) + ' →</button>' : '<span></span>';
-    return h + '<nav class="ap-pager" aria-label="Capítulo anterior e próximo">' + ant + prox + '</nav></article>';
+    h += sec(5, 'Revisão', '<div class="ap-call ap-review"><strong>' + ic('book') + 'Em poucas palavras</strong><ul>' + t.partes.slice(0, 3).map(function (p) { return '<li><b>' + esc(p[0]) + '</b> — ' + esc(p[1].split(/(?<=\.)\s/)[0]) + '</li>'; }).join('') + '</ul></div>');
+    return h + '</article>';
   }
   function telaApostila() {
     var h = '<header class="pad apostila-head"><span class="eyebrow">Guia de estudo passo a passo</span><h1 class="title-xl">Apostila</h1><p class="muted">Escolha uma linguagem para ver os capítulos.</p></header>';
@@ -796,7 +802,7 @@
     }
     var lang = temaApostila, m = APOSTILA_MARCA[lang], caps = capitulosApostila(lang), cur = Math.min(apEstado.cap, caps.length - 1), c = caps[cur];
     var cap = conteudoApostila[c.nivel], lista = cap[lang]; capituloApostila = c.nivel;
-    var barra = '<div class="ap-top"><span class="ap-top-title">' + ic(m.icone) + m.nome + '</span><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a página anterior">' + ic('close') + '</button></div>';
+    var barra = '<div class="ap-top ap-top-picker"><span class="ap-top-title">' + ic(m.icone) + m.nome + '<small>· Capítulos</small></span><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a página anterior">' + ic('close') + '</button></div>';
     if (!apEstado.aberto) {
       var lidos = caps.filter(function (x) { return apLido(x.id); }).length, pct = Math.round(lidos / caps.length * 100);
       var coresCapitulos = ['#e87955', '#e0a33b', '#55a77b', '#3979b8', '#8b6cc1', '#cf6688', '#4c9b9a', '#bf7850', '#7386c3', '#9a9e3c', '#d06b4d', '#4f8fbe', '#8d66ac', '#5c9a71', '#bd6286'];
@@ -808,8 +814,14 @@
         return (k === 0 || caps[k - 1].nivel !== x.nivel ? '<h2 class="ap-pick-group">' + grupo + '</h2>' : '') + '<button type="button" class="ap-cap-card' + (lido ? ' done' : '') + '" style="--cap-color:' + coresCapitulos[k % coresCapitulos.length] + '" data-act="apostilaCap" data-v="' + k + '"><span class="ap-cap-num" aria-hidden="true">' + ic('book') + '</span><span class="ap-cap-text"><strong>' + esc(x.titulo) + '</strong><small>' + esc(x.t.objetivo) + '</small></span><span class="ap-cap-state">' + (lido ? 'Estudado ✓' : 'Abrir →') + '</span></button>';
       }).join('') + '</div></section>';
     }
-    h = barra + '<div class="pad">' + capituloHTML(c, cur, caps, lang) + '</div>';
-    h += '<div class="pad apostila-section-title mindmap-bottom-title"><span class="soft-tag">REVISÃO VISUAL</span><h2 class="title-md">Mapa mental do capítulo</h2><p class="muted">Chegou ao final das aulas? Explore os ramos para revisar os conceitos, os mini tópicos e o código animado.</p><section class="mindmap"><div class="mindmap-hub"><span>🧠 MAPA MENTAL</span><strong>' + (temaApostila === 'html' ? 'HTML' : 'Python') + ' · ' + cap.nome + '</strong><small>Explore cinco ideias e veja um exemplo de cada uma</small></div><div class="mindmap-roots">' + mapaMentalApostila[capituloApostila][temaApostila].map(function (m, n) { var exemplo = lista[n] || lista[0]; return '<details class="mindmap-node" data-map-node="' + n + '"><summary><span class="mindmap-icon">' + m.icone + '</span><span class="mindmap-label"><strong>' + esc(m.titulo) + '</strong><small>' + esc(m.resumo) + '</small></span><span class="mindmap-plus" aria-hidden="true">+</span></summary><div class="mindmap-details"><div class="mini-topics">' + m.mini.map(function (tag) { return '<span>' + esc(tag) + '</span>'; }).join('') + '</div><p><b>💡 Um passo além:</b> ' + esc(m.extra) + '</p><div class="map-code-window"><div class="map-code-toolbar"><span class="map-code-dots"><i></i><i></i><i></i></span><strong>' + (temaApostila === 'html' ? 'index.html' : 'exemplo.py') + '</strong><span class="map-code-status" aria-live="polite">O código aparece ao abrir este ramo</span></div><pre class="map-code-screen"><code class="map-code-output"></code><i class="map-code-caret" aria-hidden="true"></i></pre><pre class="map-code-source" hidden>' + esc(exemplo.codigo) + '</pre></div><small class="map-code-caption">Exemplo do tópico: ' + esc(exemplo.titulo.replace(/^\d+\.\s*/, '')) + '</small></div></details>'; }).join('') + '</div><div class="mindmap-footer">Dica de estudo <span>Abra um ramo, veja o código surgir letra por letra e depois encontre o mesmo exemplo na aula correspondente.</span></div></section></div>';
+    var barraLeitura = '<div class="ap-top ap-top-reading"><div class="ap-top-copy"><span class="ap-top-title">' + ic(m.icone) + m.nome + '</span><strong class="ap-top-heading">Capítulo ' + (cur + 1) + ' · ' + esc(c.titulo) + '</strong><div class="ap-top-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="0% lido" aria-label="Progresso de leitura do capítulo"><i style="width:0%"></i></div><small class="ap-reading-label">Capítulo ' + (cur + 1) + ' de ' + caps.length + ' · 0% lido</small></div><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a lista de capítulos">' + ic('close') + '</button></div>';
+    h = barraLeitura + '<div class="pad">' + capituloHTML(c, cur, caps, lang) + '</div>';
+    h += '<div class="pad apostila-section-title mindmap-bottom-title"><span class="soft-tag">REVISÃO VISUAL</span><h2 class="title-md">Mapa mental do capítulo</h2><p class="muted">Chegou ao final das aulas? Explore os ramos para revisar os conceitos, os mini tópicos e o código animado.</p><section class="mindmap"><div class="mindmap-hub"><span>🧠 MAPA MENTAL</span><strong>' + (temaApostila === 'html' ? 'HTML' : 'Python') + ' · ' + cap.nome + '</strong><small>Explore cinco ideias e veja um exemplo de cada uma</small></div><div class="mindmap-roots">' + mapaMentalApostila[capituloApostila][temaApostila].map(function (m, n) { var exemplo = lista[n] || lista[0]; return '<details class="mindmap-node" data-map-node="' + n + '"><summary><span class="mindmap-icon">' + ic(['book', 'code', 'folder', 'grid', 'bulb'][n % 5]) + '</span><span class="mindmap-label"><strong>' + esc(m.titulo) + '</strong><small>' + esc(m.resumo) + '</small></span><span class="mindmap-plus" aria-hidden="true">+</span></summary><div class="mindmap-details"><div class="mini-topics">' + m.mini.map(function (tag) { return '<span>' + esc(tag) + '</span>'; }).join('') + '</div><p><b>💡 Um passo além:</b> ' + esc(m.extra) + '</p><div class="map-code-window"><div class="map-code-toolbar"><span class="map-code-dots"><i></i><i></i><i></i></span><strong>' + (temaApostila === 'html' ? 'index.html' : 'exemplo.py') + '</strong><span class="map-code-status" aria-live="polite">O código aparece ao abrir este ramo</span></div><pre class="map-code-screen"><code class="map-code-output"></code><i class="map-code-caret" aria-hidden="true"></i></pre><pre class="map-code-source" hidden>' + esc(exemplo.codigo) + '</pre></div><small class="map-code-caption">Exemplo do tópico: ' + esc(exemplo.titulo.replace(/^\d+\.\s*/, '')) + '</small></div></details>'; }).join('') + '</div><div class="mindmap-footer">Dica de estudo <span>Abra um ramo, veja o código surgir letra por letra e depois encontre o mesmo exemplo na aula correspondente.</span></div></section></div>';
+    var licaoCapId = APOSTILA_LICOES[c.id], licaoCap = licaoCapId && LIC[licaoCapId], capLido = apLido(c.id);
+    h += '<div class="pad ap-chapter-actions">' + (licaoCap ? '<button type="button" class="btn primary ap-practice-link" data-act="apostilaPraticar" data-id="' + licaoCapId + '">' + ic('play') + '<span><strong>Praticar este tema</strong><small>' + esc(c.t.pratica) + '</small></span></button>' : '<div class="ap-practice-note"><strong>Hora de praticar</strong><span>' + esc(c.t.pratica) + '</span></div>') + (capLido ? '<div class="ap-complete-row"><span class="ap-done-badge">✓ Capítulo estudado</span><button type="button" class="linkbtn ap-undo" data-act="apostilaConcluir" data-id="' + c.id + '">Desfazer</button></div>' : '<button type="button" class="btn soft ap-done" data-act="apostilaConcluir" data-id="' + c.id + '">Marcar capítulo como estudado</button>') + '</div>';
+    var capAnterior = cur > 0 ? '<button type="button" class="ap-pager-card previous" data-act="apostilaCap" data-v="' + (cur - 1) + '"><small>← Capítulo anterior</small><strong>' + esc(caps[cur - 1].titulo) + '</strong></button>' : '';
+    var capProximo = cur < caps.length - 1 ? '<button type="button" class="ap-pager-card next" data-act="apostilaCap" data-v="' + (cur + 1) + '"><small>Próximo capítulo →</small><strong>' + esc(caps[cur + 1].titulo) + '</strong></button>' : '';
+    h += '<nav class="pad ap-pager" aria-label="Capítulo anterior e próximo">' + capAnterior + capProximo + '</nav>';
     return h;
   }
   function telaPerfil() {
@@ -831,7 +843,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.5</span><p>Na criação da conta, o aluno pode selecionar a série do Ensino Médio. A escolha fica salva no perfil.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.5</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.6</span><p>A tela inicial destaca o próximo passo de estudo e oferece retomada rápida da Apostila. Os capítulos mostram progresso, revisão antes das ações finais e botões mais claros para praticar e avançar.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.6</p></div>'
     return h;
   }
 
@@ -1041,6 +1053,25 @@
     APP.className = S.config.plataforma;
     APP.innerHTML = '<div class="' + cls + (anim ? ' enter-' + anim : '') + '" id="screen">' + corpo + '</div>' + (semAbas ? '' : abas());
     prepararCanvasFundo();
+    if (ui.screen === 'apostila' && temaApostila && apEstado.aberto) {
+      var telaLeitura = document.getElementById('screen');
+      if (telaLeitura) {
+        var atualizarProgressoLeitura = function () {
+          var faixa = telaLeitura.querySelector('.ap-top-progress');
+          if (!faixa) return;
+          var alturaRolavel = Math.max(0, telaLeitura.scrollHeight - telaLeitura.clientHeight);
+          var pctLeitura = alturaRolavel ? Math.min(100, Math.round(telaLeitura.scrollTop / alturaRolavel * 100)) : 100;
+          faixa.setAttribute('aria-valuenow', pctLeitura);
+          faixa.setAttribute('aria-valuetext', pctLeitura + '% lido');
+          var preenchimento = faixa.querySelector('i');
+          if (preenchimento) preenchimento.style.width = pctLeitura + '%';
+          var rotuloLeitura = telaLeitura.querySelector('.ap-reading-label');
+          if (rotuloLeitura) rotuloLeitura.textContent = 'Capítulo ' + (apEstado.cap + 1) + ' de ' + capitulosApostila(temaApostila).length + ' · ' + pctLeitura + '% lido';
+        };
+        telaLeitura.addEventListener('scroll', atualizarProgressoLeitura, { passive: true });
+        atualizarProgressoLeitura();
+      }
+    }
     if (ui.screen === 'inicio') agendarReacaoBitinho();
     if (ui.screen === 'apostila' && temaApostila) {
       var chipOn = APP.querySelector('.ap-chip.on'), chipBox = chipOn && chipOn.parentNode; if (chipBox) chipBox.scrollLeft = chipOn.offsetLeft - chipBox.clientWidth / 2 + chipOn.offsetWidth / 2;
@@ -1156,6 +1187,7 @@
         respostaSkinSel = null; feedbackSkin = null; render('fwd');
         break;
       case 'abrirApostila': ir('apostila', {}, 'fwd'); break;
+      case 'apostilaHome': temaApostila = el.dataset.lang || ''; apEstado.cap = Math.max(0, parseInt(el.dataset.cap, 10) || 0); apEstado.aberto = el.dataset.resume === '1' && !!temaApostila; if (temaApostila) { S.apostilaRetomar = { lang: temaApostila, cap: apEstado.cap }; salvar(); } ir('apostila', {}, 'fwd'); break;
       case 'apostilaCap': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(capitulosApostila(temaApostila).length - 1, parseInt(el.dataset.v, 10) || 0)); S.apostilaRetomar = { lang: temaApostila, cap: apEstado.cap }; salvar(); render(null); var telaAp = document.getElementById('screen'); if (telaAp) telaAp.scrollTop = 0; break;
       case 'apostilaRetomar': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(capitulosApostila(temaApostila).length - 1, parseInt(el.dataset.v, 10) || 0)); render(null); var telaRetomar = document.getElementById('screen'); if (telaRetomar) telaRetomar.scrollTop = 0; break;
       case 'apostilaPraticar': if (LIC[el.dataset.id]) iniciarLicao(el.dataset.id, { screen: 'apostila', params: {} }); break;
