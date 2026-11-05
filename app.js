@@ -360,11 +360,9 @@
     }
     if (alvo) {
       var i = LIC[alvo], tot = totais(i.d);
-      h += '<div class="pad home-continue"><section class="hero learning-card" aria-label="Continue aprendendo"><div class="learning-card-top"><span class="kicker"><i aria-hidden="true"></i> Continue aprendendo</span><span class="learning-card-mark" aria-hidden="true">&lt;/&gt;</span></div>' +
-        '<div class="learning-card-title"><h2>' + esc(i.l.titulo) + '</h2><p class="meta">' + esc(i.t.nome) + ' <span aria-hidden="true">·</span> ' + esc(i.m.nome) + '</p></div>' +
-        '<div class="learning-card-stats"><span>' + ic('bolt') + ' +' + i.l.xp + ' pontos</span><i aria-hidden="true"></i><span>' + i.l.minutos + ' min</span></div>' +
-        '<div class="learning-card-progress"><span>Progresso da trilha</span><strong>' + tot.pct + '%</strong></div>' + bar(tot.pct) +
-        '<button class="btn primary learning-card-button" data-act="comecar" data-id="' + alvo + '" data-from="inicio"><span>Continuar aprendendo</span><span class="learning-card-arrow" aria-hidden="true">→</span></button></section></div>';
+      h += '<div class="pad home-continue"><div class="hero"><span class="kicker">Continue de onde parou</span><div><h2>' + esc(i.l.titulo) + '</h2><p class="meta">' + esc(i.t.nome) + ' · ' + esc(i.m.nome) + '</p></div>' +
+        '<div class="tagrow"><span class="tag">' + ic('bolt') + ' +' + i.l.xp + ' pontos</span><span class="tag">' + i.l.minutos + ' min</span></div>' +
+        bar(tot.pct) + '<button class="btn light" data-act="comecar" data-id="' + alvo + '" data-from="inicio">' + ic('play') + 'Continuar aprendendo</button></div></div>';
     } else {
       h += '<div class="pad home-continue"><div class="hero hero-complete"><span class="complete-mark" aria-hidden="true">✦</span><span class="kicker">Jornada concluída</span><h2>Você terminou todas as lições disponíveis!</h2><p class="meta">Seu esforço merece ser celebrado. Que tal revisar ou explorar outra disciplina?</p><button class="btn light" data-act="tab" data-t="disciplinas">Rever as disciplinas</button></div></div>';
     }
@@ -845,7 +843,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.10</span><p>O card “Continue aprendendo” ganhou hierarquia mais clara, progresso legível, botão destacado e tipografia de sistema no estilo iOS.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.10</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.12</span><p>As mudanças de página, os toques nos botões e as notificações agora usam animações mais lentas e fluidas.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.12</p></div>'
     return h;
   }
 
