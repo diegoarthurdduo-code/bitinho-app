@@ -54,6 +54,10 @@ Cada linguagem (HTML e Python) tem 15 capítulos: cinco básicos, cinco intermed
 
 A lógica de conteúdo (`content/*.js`) é dados puros e pode ser reaproveitada em React Native ou Flutter, ou empacotada com Capacitor.
 
+## Versão 1.3.4
+
+O cadastro e o login aceitam somente endereços de e-mail válidos terminados em `@gmail.com`.
+
 ## Versão 1.3.3
 
 A personalização do Bitinho agora abre ao tocar no mascote da tela inicial. A barra inferior foi reduzida para quatro abas.
