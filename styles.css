@@ -1051,6 +1051,44 @@ button:not(:disabled):active { transform: scale(.97); }
 .profile-editor { padding-top: 17px; padding-bottom: 17px; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); }
 .profile-field input, .profile-field textarea { border-color: color-mix(in srgb, var(--accent) 14%, var(--line)); background: var(--bg); }
 .empty-copy { padding: 13px 15px; border: 1px dashed color-mix(in srgb, var(--accent) 35%, var(--line)); border-radius: 16px; color: var(--muted); background: color-mix(in srgb, var(--accent-soft) 42%, var(--surface)); font-size: 13px; line-height: 1.5; }
+
+/* Card "Continuar aprendendo": estilo localizado e tipografia do sistema iOS. */
+.home-continue .learning-card {
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 16%, var(--line));
+  border-radius: 24px;
+  color: var(--fg);
+  background: linear-gradient(145deg, #fff 0%, color-mix(in srgb, var(--accent-soft) 62%, #fff) 100%);
+  box-shadow: 0 9px 24px rgba(40,25,80,.08);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+}
+.home-continue .learning-card::after { content: none; }
+.home-continue .learning-card * { font-family: inherit; }
+.learning-card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.home-continue .learning-card .kicker { display: inline-flex; align-items: center; gap: 8px; color: var(--accent-deep); font-size: 12px; font-weight: 700; letter-spacing: .015em; opacity: 1; }
+.learning-card .kicker i { width: 8px; height: 8px; border-radius: 50%; background: #6a3df0; box-shadow: 0 0 0 4px rgba(106,61,240,.11); }
+.learning-card-mark { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid rgba(106,61,240,.12); border-radius: 12px; color: #5c35ca; background: rgba(106,61,240,.08); font: 750 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -.08em; }
+.learning-card-title { display: grid; gap: 5px; }
+.home-continue .learning-card .learning-card-title h2 { color: #181521; font: 750 clamp(23px, 6vw, 28px)/1.12 -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif; letter-spacing: -.035em; }
+.home-continue .learning-card .meta { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; color: #716d7d; font-size: 13px; font-weight: 500; line-height: 1.4; opacity: 1; }
+.learning-card-stats { display: flex; align-items: center; gap: 10px; color: #625c70; font-size: 12px; font-weight: 600; }
+.learning-card-stats span { display: inline-flex; align-items: center; gap: 5px; }
+.learning-card-stats .ic { width: 15px; height: 15px; color: #704be2; }
+.learning-card-stats > i { width: 3px; height: 3px; border-radius: 50%; background: #aaa3b9; }
+.learning-card-progress { display: flex; align-items: center; justify-content: space-between; margin-bottom: -9px; color: #736d80; font-size: 11px; font-weight: 600; }
+.learning-card-progress strong { color: #5130b5; font-size: 12px; font-weight: 750; font-variant-numeric: tabular-nums; }
+.home-continue .learning-card .bar { height: 6px; background: #e7e1f3; }
+.home-continue .learning-card .bar i { background: linear-gradient(90deg, #8b6cf0, #6038d1); }
+.home-continue .learning-card .learning-card-button { display: flex; justify-content: space-between; min-height: 50px; padding-inline: 16px; border: 0; border-radius: 16px; color: #fff; background: linear-gradient(100deg, #7048df, #5a32c7); box-shadow: 0 5px 12px rgba(91,50,199,.18); font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+.learning-card-arrow { display: grid; place-items: center; width: 27px; height: 27px; border-radius: 50%; background: rgba(255,255,255,.17); font-size: 19px; line-height: 1; transition: transform .2s ease; }
+.learning-card-button:hover .learning-card-arrow { transform: translateX(2px); }
+.learning-card-button:active { transform: scale(.985); }
+@media (max-width: 560px) {
+  .home-continue .learning-card { gap: 12px; padding: 16px; border-radius: 22px; }
+  .learning-card-mark { width: 33px; height: 33px; }
+  .home-continue .learning-card .learning-card-title h2 { font-size: 24px; }
+}
 @keyframes visualRise { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes ringArrive { from { opacity: .4; transform: scale(.82) rotate(-28deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
 @keyframes celebrateMark { 50% { transform: rotate(18deg) scale(1.12); } }
