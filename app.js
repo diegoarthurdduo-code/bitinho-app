@@ -33,6 +33,7 @@
   function estadoDemo() {
     return {
       nome: 'Aprendiz',
+      anoEscolar: '',
       apelido: '',
       bio: '',
       nota: '',
@@ -58,6 +59,7 @@
     s.apelido = s.apelido || '';
     s.bio = s.bio || '';
     s.nota = s.nota || '';
+    s.anoEscolar = s.anoEscolar || '';
     s.skinsBitinho = Object.assign({ classico: true }, s.skinsBitinho || {});
     s.desafiosBitinho = s.desafiosBitinho || {};
     s.skinEquipada = s.skinEquipada || 'classico';
@@ -829,7 +831,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.4</span><p>O cadastro e o login agora aceitam somente endereços de e-mail válidos terminados em @gmail.com.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.4</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.5</span><p>Na criação da conta, o aluno pode selecionar a série do Ensino Médio. A escolha fica salva no perfil.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.5</p></div>'
     return h;
   }
 
@@ -1210,20 +1212,21 @@
   });
 
   function telaAuth() {
-    APP.innerHTML = '<main class="auth-screen"><section class="auth-brand">' + mascote('feliz',72) + '<span class="eyebrow">APRENDA UM POUQUINHO TODO DIA</span><h1 class="title-xl">Bitinho</h1><p>Programação e computador sem complicação.</p></section><form class="auth-card" id="authForm"><h2>' + (auth.mode === 'cadastro' ? 'Crie sua conta' : 'Entre no Bitinho') + '</h2>' + (auth.mode === 'cadastro' ? '<label>Seu nome<input name="nome" required maxlength="20"></label>' : '') + '<label>E-mail<input name="email" type="email" required pattern="[A-Za-z0-9._%+-]+@gmail[.]com" title="Use um endereço terminado em @gmail.com" autocomplete="email"></label><label>Senha<input name="senha" type="password" required minlength="6"></label><button class="btn primary" type="submit">' + (auth.mode === 'cadastro' ? 'Criar conta' : 'Entrar') + '</button><button class="linkbtn" id="trocarAuth" type="button">' + (auth.mode === 'cadastro' ? 'Já tenho conta · Entrar' : 'Criar uma conta') + '</button><small>Conta local: dados salvos somente neste aparelho.</small></form><footer class="auth-credit"><span>Desenvolvido por</span><picture><source srcset="assets/codexa-logo-dark.png" media="(prefers-color-scheme: dark)"><img src="assets/codexa-logo.png" alt="Codexa"></picture></footer></main>';
+    APP.innerHTML = '<main class="auth-screen"><section class="auth-brand">' + mascote('feliz',72) + '<span class="eyebrow">APRENDA UM POUQUINHO TODO DIA</span><h1 class="title-xl">Bitinho</h1><p>Programação e computador sem complicação.</p></section><form class="auth-card" id="authForm"><h2>' + (auth.mode === 'cadastro' ? 'Crie sua conta' : 'Entre no Bitinho') + '</h2>' + (auth.mode === 'cadastro' ? '<label>Seu nome<input name="nome" required maxlength="20"></label><label>Série do Ensino Médio<select name="anoEscolar" required><option value="">Selecione sua série</option><option value="1-medio">1ª série</option><option value="2-medio">2ª série</option><option value="3-medio">3ª série</option></select></label>' : '') + '<label>E-mail<input name="email" type="email" required pattern="[A-Za-z0-9._%+-]+@gmail[.]com" title="Use um endereço terminado em @gmail.com" autocomplete="email"></label><label>Senha<input name="senha" type="password" required minlength="6"></label><button class="btn primary" type="submit">' + (auth.mode === 'cadastro' ? 'Criar conta' : 'Entrar') + '</button><button class="linkbtn" id="trocarAuth" type="button">' + (auth.mode === 'cadastro' ? 'Já tenho conta · Entrar' : 'Criar uma conta') + '</button><small>Conta local: dados salvos somente neste aparelho.</small></form><footer class="auth-credit"><span>Desenvolvido por</span><picture><source srcset="assets/codexa-logo-dark.png" media="(prefers-color-scheme: dark)"><img src="assets/codexa-logo.png" alt="Codexa"></picture></footer></main>';
     document.getElementById('trocarAuth').onclick = function () { auth.mode = auth.mode === 'login' ? 'cadastro' : 'login'; telaAuth(); };
     document.getElementById('authForm').onsubmit = function (e) {
       e.preventDefault();
-      var f = new FormData(e.target), email = String(f.get('email')).trim().toLowerCase(), senha = String(f.get('senha')), u = users();
+      var f = new FormData(e.target), email = String(f.get('email')).trim().toLowerCase(), senha = String(f.get('senha')), anoEscolar = String(f.get('anoEscolar') || ''), u = users();
       if (!/^[a-z0-9._%+-]+@gmail\.com$/.test(email)) { toast('Use um e-mail válido terminado em @gmail.com.'); return; }
+      if (auth.mode === 'cadastro' && ['1-medio', '2-medio', '3-medio'].indexOf(anoEscolar) < 0) { toast('Selecione sua série do Ensino Médio.'); return; }
       if (auth.mode === 'cadastro') {
         if (u[email]) { toast('Já existe uma conta com esse e-mail.'); return; }
-        u[email] = { senha: senha, nome: String(f.get('nome')).trim() || 'Aprendiz' };
+        u[email] = { senha: senha, nome: String(f.get('nome')).trim() || 'Aprendiz', anoEscolar: anoEscolar };
         localStorage.setItem(USERS_KEY, JSON.stringify(u)); auth.user = email; localStorage.setItem('bitinho-session-v1', email);
-        S = estadoDemo(); S.nome = u[email].nome; S.xp = 0; S.streak = 0; S.melhor = 0; S.diasEstudo = 0; S.ultimoDia = ''; S.concluidas = {}; salvar();
+        S = estadoDemo(); S.nome = u[email].nome; S.anoEscolar = anoEscolar; S.xp = 0; S.streak = 0; S.melhor = 0; S.diasEstudo = 0; S.ultimoDia = ''; S.concluidas = {}; salvar();
       } else {
         if (!u[email] || u[email].senha !== senha) { toast('E-mail ou senha incorretos.'); return; }
-        auth.user = email; localStorage.setItem('bitinho-session-v1', email); S = carregar();
+        auth.user = email; localStorage.setItem('bitinho-session-v1', email); S = carregar(); S.anoEscolar = u[email].anoEscolar || S.anoEscolar; salvar();
       }
       render('fade');
     };

@@ -453,7 +453,7 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; text-wrap
 .auth-card { display: grid; gap: 14px; padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 26px; box-shadow: var(--shadow); }
 .auth-card h2 { font: 800 24px var(--font-display); }
 .auth-card label { display: grid; gap: 6px; font-weight: 700; font-size: 14px; }
-.auth-card input { width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 13px; color: var(--fg); background: var(--bg); font: inherit; }
+.auth-card input, .auth-card select { width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 13px; color: var(--fg); background: var(--bg); font: inherit; }
 .auth-card small { color: var(--muted); line-height: 1.4; text-align: center; }
 .apostila-head { display: grid; gap: 6px; }
 .apostila-chooser { display: grid; gap: 12px; }

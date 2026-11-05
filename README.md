@@ -54,6 +54,10 @@ Cada linguagem (HTML e Python) tem 15 capítulos: cinco básicos, cinco intermed
 
 A lógica de conteúdo (`content/*.js`) é dados puros e pode ser reaproveitada em React Native ou Flutter, ou empacotada com Capacitor.
 
+## Versão 1.3.5
+
+Na criação da conta, o aluno seleciona a 1ª, 2ª ou 3ª série do Ensino Médio. A escolha fica salva no perfil para uso futuro na organização do conteúdo.
+
 ## Versão 1.3.4
 
 O cadastro e o login aceitam somente endereços de e-mail válidos terminados em `@gmail.com`.
