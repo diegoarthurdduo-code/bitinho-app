@@ -78,6 +78,7 @@
   var secaoBitinho = 'acessorios', respostaSkinSel = null, feedbackSkin = null, desafioSkinAtual = 'html', skinErroId = '';
   var fundoInterativo = { canvas: null, ctx: null, pontos: [], ondas: [], ponteiro: { x: -1000, y: -1000 }, largura: 0, altura: 0, escala: 1, quadro: 0, ultimoDesenho: 0, eventosLigados: false, movimentoReduzido: false };
   var reacaoBitinhoTimer = null, reacaoBitinhoLimpeza = null;
+  var praticaEstado = { lang: 'html', exercicio: 'html-basico', codigo: '', codigos: {}, diagnosticos: [], resultado: null, retorno: { screen: 'apostila', tab: 'apostila', scroll: 0 } };
 
   /* ---------- Utilidades ---------- */
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -791,8 +792,84 @@
     h += sec(5, 'Revisão', '<div class="ap-call ap-review"><strong>' + ic('book') + 'Em poucas palavras</strong><ul>' + t.partes.slice(0, 3).map(function (p) { return '<li><b>' + esc(p[0]) + '</b> — ' + esc(p[1].split(/(?<=\.)\s/)[0]) + '</li>'; }).join('') + '</ul></div>');
     return h + '</article>';
   }
+  var PRATICA_EXERCICIOS = {
+    html: [
+      { id: 'html-basico', nome: 'Título e parágrafo', pedido: 'Crie um título principal usando <h1> e um parágrafo usando <p>.', exemplo: '<h1>Olá, mundo!</h1>\n<p>Minha primeira página.</p>' },
+      { id: 'html-link', nome: 'Criar um link', pedido: 'Crie um link com <a>, um endereço no atributo href e um texto que a pessoa possa tocar.', exemplo: '<a href="https://exemplo.com">Visitar o site</a>' },
+      { id: 'html-imagem', nome: 'Adicionar uma imagem', pedido: 'Adicione uma imagem com <img>, um caminho em src e uma descrição em alt.', exemplo: '<img src="foto.jpg" alt="Descrição da imagem">' }
+    ],
+    python: [
+      { id: 'python-print', nome: 'Mostrar uma mensagem', pedido: 'Use print() para mostrar uma mensagem entre aspas.', exemplo: 'print("Olá, mundo!")' },
+      { id: 'python-variavel', nome: 'Criar uma variável', pedido: 'Crie uma variável e mostre o valor dela usando print().', exemplo: 'nome = "Lia"\nprint(nome)' }
+    ]
+  };
+  function praticaAtual() { return PRATICA_EXERCICIOS[praticaEstado.lang].find(function (x) { return x.id === praticaEstado.exercicio; }) || PRATICA_EXERCICIOS[praticaEstado.lang][0]; }
+  function chavePratica() { return praticaEstado.exercicio; }
+  function telaPraticar() {
+    var idioma = praticaEstado.lang, atual = praticaAtual(), html = idioma === 'html';
+    var linguagens = [['html', 'HTML'], ['python', 'Python']].map(function (x) { return '<option value="' + x[0] + '"' + (x[0] === idioma ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('');
+    var exercicios = PRATICA_EXERCICIOS[idioma].map(function (x) { return '<option value="' + x.id + '"' + (x.id === praticaEstado.exercicio ? ' selected' : '') + '>' + esc(x.nome) + '</option>'; }).join('');
+    var mensagens = praticaEstado.diagnosticos.length ? '<strong>' + esc(praticaEstado.diagnosticos[0].titulo) + '</strong><ul>' + praticaEstado.diagnosticos.map(function (x) { return '<li>Linha ' + x.linha + ': ' + esc(x.mensagem) + '</li>';  }).join('') + '</ul>' : praticaEstado.resultado ? '<strong>' + esc(praticaEstado.resultado.titulo) + '</strong><span>' + esc(praticaEstado.resultado.mensagem) + '</span>' : '<strong>Pronto para praticar?</strong><span>Escreva seu código e toque em “Verificar código”.</span>';
+    var preview = html ? '<button type="button" data-act="praticaPrevia">Ver prévia HTML</button>' : '<button type="button" disabled title="Python não é executado nesta apostila">Executar Python indisponível</button>';
+    return '<div class="practice-shell"><header class="practice-header"><button type="button" class="backbtn" data-act="praticaVoltar" aria-label="Voltar para a apostila">' + ic('chevL') + '<span> Apostila</span></button><div class="practice-heading"><strong>Praticar</strong><small>HTML e Python · análise local</small></div><button type="button" class="practice-spin" data-act="praticaGirar" aria-label="Girar o terminal em 360 graus">↻ 360°</button></header><section class="practice-terminal" id="practice-terminal" aria-label="Terminal de prática"><div class="practice-terminal-top"><span class="practice-dots"><i></i><i></i><i></i></span><span>bitinho / praticar</span><span style="margin-left:auto">local</span></div><div class="practice-controls"><label class="sr-only" for="practice-language">Escolha a linguagem</label><select id="practice-language" aria-label="Linguagem">' + linguagens + '</select><label class="sr-only" for="practice-exercise">Escolha o exercício</label><select id="practice-exercise" aria-label="Exercício">' + exercicios + '</select><p class="practice-prompt">' + esc(atual.pedido) + '</p><div class="practice-actions"><button type="button" class="practice-check" data-act="praticaVerificar">Verificar código</button>' + preview + '<button type="button" data-act="praticaLimpar">Limpar</button></div></div><div class="practice-editor-box"><pre id="practice-highlight" class="practice-code-layer practice-highlight" aria-hidden="true"></pre><textarea id="practice-editor" class="practice-code-layer practice-editor" aria-label="Editor de código ' + (html ? 'HTML' : 'Python') + '" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off"></textarea></div><div class="practice-feedback ' + (praticaEstado.resultado ? (praticaEstado.resultado.ok ? 'ok' : 'error') : '') + '" id="practice-feedback" aria-live="polite" role="status">' + mensagens + '</div><div class="practice-preview" id="practice-preview"><div class="practice-preview-label">Prévia isolada do HTML</div><iframe title="Prévia isolada do HTML" sandbox="" hidden></iframe></div><div class="practice-footer"><button type="button" data-act="praticaCopiar">Copiar código</button><button type="button" data-act="praticaBaixar">Baixar arquivo</button></div><div class="practice-hint">A verificação aponta problemas comuns, sem executar o código. Python não roda nesta versão. Baixe o arquivo ou copie o código para abrir no VS Code.</div></section></div>';
+  }
+  function guardarCodigoPratica() { var ta = document.getElementById('practice-editor'); if (ta) { praticaEstado.codigo = ta.value; praticaEstado.codigos[chavePratica()] = ta.value; } }
+  function destacarCodigoPratica() {
+    var ta = document.getElementById('practice-editor'), pre = document.getElementById('practice-highlight'); if (!ta || !pre) return;
+    var codigo = ta.value, erros = praticaEstado.diagnosticos.slice().sort(function (a, b) { return a.inicio - b.inicio; }), html = '', pos = 0;
+    erros.forEach(function (x) { if (x.fim > x.inicio && x.inicio >= pos) { html += esc(codigo.slice(pos, x.inicio)) + '<mark>' + esc(codigo.slice(x.inicio, x.fim)) + '</mark>'; pos = x.fim; } });
+    html += esc(codigo.slice(pos));
+    erros.filter(function (x) { return x.fim === x.inicio; }).forEach(function (x) { html = esc(codigo.slice(0, x.inicio)) + '<mark class="insert-point"> </mark>' + esc(codigo.slice(x.inicio)); });
+    pre.innerHTML = html || ' '; pre.scrollTop = ta.scrollTop; pre.scrollLeft = ta.scrollLeft;
+  }
+  function linhaDeCodigo(codigo, indice) { return codigo.slice(0, indice).split('\n').length; }
+  function erroPratica(codigo, inicio, fim, titulo, mensagem) { return { inicio: Math.max(0, inicio), fim: Math.max(0, fim), linha: linhaDeCodigo(codigo, inicio), titulo: titulo, mensagem: mensagem }; }
+  function analisarHTMLPratica(codigo) {
+    var erros = [], semFecho = ['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'], pilha = [], limpo = codigo.replace(/<!--[\s\S]*?-->/g, function (x) { return x.replace(/[^\n]/g, ' '); }), re = /<\/?([a-z][\w:-]*)\b[^>]*>/gi, m;
+    while ((m = re.exec(limpo))) { var nome = m[1].toLowerCase(); if (semFecho.indexOf(nome) >= 0) continue; if (m[0].indexOf('</') === 0) { var topo = pilha[pilha.length - 1]; if (!topo || topo.nome !== nome) { erros.push(erroPratica(codigo, m.index, m.index + m[0].length, 'Etiqueta fora de ordem', 'Esta etiqueta de fechamento não corresponde à última etiqueta aberta. Confira a ordem e o nome das tags.')); break; } pilha.pop(); } else if (!/\/>$/.test(m[0])) pilha.push({ nome: nome, inicio: m.index, fim: m.index + m[0].length }); }
+    if (!erros.length && pilha.length) { var aberta = pilha[pilha.length - 1]; erros.push(erroPratica(codigo, aberta.inicio, aberta.fim, 'Falta fechar uma etiqueta', 'A tag <' + aberta.nome + '> foi aberta, mas não encontrei </' + aberta.nome + '>. Adicione o fechamento correspondente.')); }
+    if (erros.length) return erros;
+    var ok = false, dica = '';
+    if (praticaEstado.exercicio === 'html-basico') { ok = /<h1\b[^>]*>[\s\S]*?<\/h1>/i.test(codigo) && /<p\b[^>]*>[\s\S]*?<\/p>/i.test(codigo); dica = 'Inclua um título completo, como <h1>Meu título</h1>, e um parágrafo, como <p>Meu texto</p>.'; }
+    if (praticaEstado.exercicio === 'html-link') { ok = /<a\b[^>]*href\s*=\s*(["'][^"']+["']|[^\s>]+)[^>]*>[\s\S]*?<\/a>/i.test(codigo); dica = 'Crie um link com href e texto, por exemplo: <a href="https://exemplo.com">Visitar</a>.'; }
+    if (praticaEstado.exercicio === 'html-imagem') { ok = /<img\b[^>]*src\s*=\s*(["'][^"']+["']|[^\s>]+)[^>]*>/i.test(codigo); dica = 'Adicione uma tag <img> com um caminho no atributo src.'; if (ok && !/\balt\s*=/.test(codigo)) return [erroPratica(codigo, codigo.length, codigo.length, 'Inclua uma descrição da imagem', 'O src foi encontrado. Para concluir o exercício e ajudar leitores de tela, acrescente alt="Descrição da imagem" na tag <img>.')]; }
+    return ok ? [] : [erroPratica(codigo, codigo.length, codigo.length, 'Revise o objetivo do exercício', dica)];
+  }
+  function analisarPythonPratica(codigo) {
+    var erros = [], pilha = [], aspas = '', inicioAspas = -1, escapeProximo = false, comentario = false;
+    for (var i = 0; i < codigo.length; i++) { var ch = codigo.charAt(i); if (ch === '\n') { comentario = false; continue; } if (comentario) continue; if (aspas) { if (escapeProximo) { escapeProximo = false; continue; } if (ch === '\\') { escapeProximo = true; continue; } if (ch === aspas) aspas = ''; } else { if (ch === '#') { comentario = true; continue; } if (ch === '"' || ch === "'") { aspas = ch; inicioAspas = i; continue; } if ('([{'.indexOf(ch) >= 0) pilha.push({ ch: ch, i: i }); else if (')]}'.indexOf(ch) >= 0) { var esperado = { ')': '(', ']': '[', '}': '{' }[ch], abriu = pilha.pop(); if (!abriu || abriu.ch !== esperado) { erros.push(erroPratica(codigo, i, i + 1, 'Sinal sem par correspondente', 'Este parêntese ou colchete não corresponde à abertura. Confira os pares e a ordem.')); break; } } } }
+    if (!erros.length && aspas) erros.push(erroPratica(codigo, inicioAspas, codigo.indexOf('\n', inicioAspas) < 0 ? codigo.length : codigo.indexOf('\n', inicioAspas), 'Texto sem fechar', 'Abra e feche o texto usando o mesmo tipo de aspas.'));
+    if (!erros.length && pilha.length) { var p = pilha[pilha.length - 1]; erros.push(erroPratica(codigo, p.i, p.i + 1, 'Falta fechar um sinal', 'Há um parêntese, colchete ou chave sem fechamento.')); }
+    if (!erros.length) { var linhas = codigo.split('\n'), pos = 0; for (var n = 0; n < linhas.length; n++) { var ln = linhas[n]; if (/^\s*(if|elif|else|for|while|def|class|try|except|finally|with)\b/.test(ln) && ln.trim() && !ln.trim().endsWith(':')) { erros.push(erroPratica(codigo, pos, pos + ln.length, 'Pode faltar dois-pontos', 'Em Python, esta instrução geralmente termina com :. Confira esta linha.')); break; } pos += ln.length + 1; } }
+    if (erros.length) return erros;
+    if (praticaEstado.exercicio === 'python-print' && !/\bprint\s*\(\s*(["']).+?\1\s*\)/s.test(codigo)) return [erroPratica(codigo, codigo.length, codigo.length, 'Revise o exercício', 'Use print() com uma mensagem entre aspas, por exemplo: print("Olá!").')];
+    if (praticaEstado.exercicio === 'python-variavel') { if (!/^[ \t]*[A-Za-z_]\w*[ \t]*=[^=].+$/m.test(codigo)) return [erroPratica(codigo, codigo.length, codigo.length, 'Crie uma variável', 'Use uma atribuição, por exemplo: nome = "Lia".')]; if (!/\bprint\s*\(\s*[A-Za-z_]\w*\s*\)/.test(codigo)) return [erroPratica(codigo, codigo.length, codigo.length, 'Mostre o valor da variável', 'Depois de criar a variável, use print(nome) para mostrar o valor dela.')]; }
+    return [];
+  }
+  function verificarPratica() {
+    guardarCodigoPratica(); var texto = praticaEstado.codigo;
+    if (!texto.trim()) praticaEstado.diagnosticos = [erroPratica(texto, 0, 0, 'O editor está vazio', 'Escreva uma primeira versão do exercício e verifique novamente.')];
+    else praticaEstado.diagnosticos = praticaEstado.lang === 'html' ? analisarHTMLPratica(texto) : analisarPythonPratica(texto);
+    if (!praticaEstado.diagnosticos.length) praticaEstado.resultado = { ok: true, titulo: 'Está correto para este exercício! ✓', mensagem: praticaEstado.lang === 'html' ? 'Encontrei a estrutura pedida. Isso é uma verificação estática, não uma execução.' : 'O padrão pedido foi encontrado. Python não foi executado; esta é uma verificação didática básica.' }; else praticaEstado.resultado = null;
+    render(null);
+  }
+  function instalarEditorPratica() {
+    var editor = document.getElementById('practice-editor'), lang = document.getElementById('practice-language'), ex = document.getElementById('practice-exercise'); if (!editor) return;
+    editor.value = praticaEstado.codigo; destacarCodigoPratica();
+    editor.addEventListener('input', function () { praticaEstado.codigo = editor.value; praticaEstado.codigos[chavePratica()] = editor.value; praticaEstado.diagnosticos = []; praticaEstado.resultado = null; destacarCodigoPratica(); var fb = document.getElementById('practice-feedback'); if (fb) { fb.className = 'practice-feedback'; fb.innerHTML = '<strong>Continue praticando</strong><span>Toque em “Verificar código” quando quiser conferir.</span>'; } });
+    editor.addEventListener('scroll', destacarCodigoPratica);
+    editor.addEventListener('keydown', function (e) { if (e.key === 'Tab') { e.preventDefault(); editor.setRangeText('  ', editor.selectionStart, editor.selectionEnd, 'end'); editor.dispatchEvent(new Event('input', { bubbles: true })); } });
+    if (lang) lang.addEventListener('change', function () { praticaEstado.codigos[chavePratica()] = editor.value; praticaEstado.lang = lang.value; praticaEstado.exercicio = PRATICA_EXERCICIOS[lang.value][0].id; praticaEstado.codigo = praticaEstado.codigos[praticaEstado.exercicio] !== undefined ? praticaEstado.codigos[praticaEstado.exercicio] : PRATICA_EXERCICIOS[lang.value][0].exemplo; praticaEstado.diagnosticos = []; praticaEstado.resultado = null; render(null); });
+    if (ex) ex.addEventListener('change', function () { praticaEstado.codigos[chavePratica()] = editor.value; praticaEstado.exercicio = ex.value; var atual = praticaAtual(); praticaEstado.codigo = praticaEstado.codigos[chavePratica()] !== undefined ? praticaEstado.codigos[chavePratica()] : atual.exemplo; praticaEstado.diagnosticos = []; praticaEstado.resultado = null; render(null); });
+  }
+  function executarPreviaHTML() {
+    guardarCodigoPratica(); var preview = document.getElementById('practice-preview'), frame = preview && preview.querySelector('iframe'); if (!preview || !frame) return;
+    var safe = praticaEstado.codigo.replace(/<!--[\s\S]*?-->/g, '').replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '').replace(/<(?:iframe|object|embed|base|link)\b[^>]*>[\s\S]*?<\/(?:iframe|object|embed|base|link)\s*>/gi, '').replace(/<(?:iframe|object|embed|base|link)\b[^>]*\/?\s*>/gi, '').replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '').replace(/\s(?:src|href)\s*=\s*(["'])(?!data:|#)[\s\S]*?\1/gi, '');
+    frame.hidden = false; preview.classList.add('open'); frame.srcdoc = '<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; img-src data:; style-src \'unsafe-inline\'; font-src data:">' + safe;
+  }
+  function voltarDaPratica() { var alvo = praticaEstado.retorno || { screen: 'apostila', tab: 'apostila', scroll: 0 }; ui.screen = alvo.screen; ui.tab = alvo.tab; render('back'); var tela = document.getElementById('screen'); if (tela) tela.scrollTop = alvo.scroll || 0; }
   function telaApostila() {
-    var h = '<header class="pad apostila-head"><span class="eyebrow">Guia de estudo passo a passo</span><h1 class="title-xl">Apostila</h1><p class="muted">Escolha uma linguagem para ver os capítulos.</p></header>';
+    var h = '<header class="pad apostila-head"><span class="eyebrow">Guia de estudo passo a passo</span><h1 class="title-xl">Apostila</h1><p class="muted">Escolha uma linguagem para ver os capítulos.</p><button type="button" class="btn soft ap-practice-entry" data-act="abrirPraticar">' + ic('terminal') + 'Praticar HTML ou Python</button></header>';
     if (!temaApostila) {
       h += '<section class="pad apostila-chooser"><div><span class="soft-tag">ETAPA 1 DE 2</span><h2 class="title-lg" style="margin-top:8px">O que você quer estudar?</h2><p class="muted" style="margin-top:6px">Escolha uma opção. Depois explore capítulos básicos, intermediários e avançados.</p></div><div class="technology-cards">' + [
         ['html', ic('code'), 'HTML', 'Monte páginas com títulos, textos, imagens, links e formulários.', 'Você vai aprender a estruturar conteúdo para a web.', '#e87955'],
@@ -802,7 +879,7 @@
     }
     var lang = temaApostila, m = APOSTILA_MARCA[lang], caps = capitulosApostila(lang), cur = Math.min(apEstado.cap, caps.length - 1), c = caps[cur];
     var cap = conteudoApostila[c.nivel], lista = cap[lang]; capituloApostila = c.nivel;
-    var barra = '<div class="ap-top ap-top-picker"><span class="ap-top-title">' + ic(m.icone) + m.nome + '<small>· Capítulos</small></span><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a página anterior">' + ic('close') + '</button></div>';
+    var barra = '<div class="ap-top ap-top-picker"><span class="ap-top-title">' + ic(m.icone) + m.nome + '<small>· Capítulos</small></span><button type="button" class="ap-practice-top" data-act="abrirPraticar">' + ic('terminal') + 'Praticar</button><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a página anterior">' + ic('close') + '</button></div>';
     if (!apEstado.aberto) {
       var lidos = caps.filter(function (x) { return apLido(x.id); }).length, pct = Math.round(lidos / caps.length * 100);
       var coresCapitulos = ['#e87955', '#e0a33b', '#55a77b', '#3979b8', '#8b6cc1', '#cf6688', '#4c9b9a', '#bf7850', '#7386c3', '#9a9e3c', '#d06b4d', '#4f8fbe', '#8d66ac', '#5c9a71', '#bd6286'];
@@ -814,7 +891,7 @@
         return (k === 0 || caps[k - 1].nivel !== x.nivel ? '<h2 class="ap-pick-group">' + grupo + '</h2>' : '') + '<button type="button" class="ap-cap-card' + (lido ? ' done' : '') + '" style="--cap-color:' + coresCapitulos[k % coresCapitulos.length] + '" data-act="apostilaCap" data-v="' + k + '"><span class="ap-cap-num" aria-hidden="true">' + ic('book') + '</span><span class="ap-cap-text"><strong>' + esc(x.titulo) + '</strong><small>' + esc(x.t.objetivo) + '</small></span><span class="ap-cap-state">' + (lido ? 'Estudado ✓' : 'Abrir →') + '</span></button>';
       }).join('') + '</div></section>';
     }
-    var barraLeitura = '<div class="ap-top ap-top-reading"><div class="ap-top-copy"><span class="ap-top-title">' + ic(m.icone) + m.nome + '</span><strong class="ap-top-heading">Capítulo ' + (cur + 1) + ' · ' + esc(c.titulo) + '</strong><div class="ap-top-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="0% lido" aria-label="Progresso de leitura do capítulo"><i style="width:0%"></i></div><small class="ap-reading-label">Capítulo ' + (cur + 1) + ' de ' + caps.length + ' · 0% lido</small></div><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a lista de capítulos">' + ic('close') + '</button></div>';
+    var barraLeitura = '<div class="ap-top ap-top-reading"><div class="ap-top-copy"><span class="ap-top-title">' + ic(m.icone) + m.nome + '</span><strong class="ap-top-heading">Capítulo ' + (cur + 1) + ' · ' + esc(c.titulo) + '</strong><div class="ap-top-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="0% lido" aria-label="Progresso de leitura do capítulo"><i style="width:0%"></i></div><small class="ap-reading-label">Capítulo ' + (cur + 1) + ' de ' + caps.length + ' · 0% lido</small></div><button type="button" class="ap-practice-top" data-act="abrirPraticar">' + ic('terminal') + 'Praticar</button><button type="button" class="ap-close" data-act="apostilaVoltar" aria-label="Voltar para a lista de capítulos">' + ic('close') + '</button></div>';
     h = barraLeitura + '<div class="pad">' + capituloHTML(c, cur, caps, lang) + '</div>';
     h += '<div class="pad apostila-section-title mindmap-bottom-title"><span class="soft-tag">REVISÃO VISUAL</span><h2 class="title-md">Mapa mental do capítulo</h2><p class="muted">Chegou ao final das aulas? Explore os ramos para revisar os conceitos, os mini tópicos e o código animado.</p><section class="mindmap"><div class="mindmap-hub"><span>🧠 MAPA MENTAL</span><strong>' + (temaApostila === 'html' ? 'HTML' : 'Python') + ' · ' + cap.nome + '</strong><small>Explore cinco ideias e veja um exemplo de cada uma</small></div><div class="mindmap-roots">' + mapaMentalApostila[capituloApostila][temaApostila].map(function (m, n) { var exemplo = lista[n] || lista[0]; return '<details class="mindmap-node" data-map-node="' + n + '"><summary><span class="mindmap-icon">' + ic(['book', 'code', 'folder', 'grid', 'bulb'][n % 5]) + '</span><span class="mindmap-label"><strong>' + esc(m.titulo) + '</strong><small>' + esc(m.resumo) + '</small></span><span class="mindmap-plus" aria-hidden="true">+</span></summary><div class="mindmap-details"><div class="mini-topics">' + m.mini.map(function (tag) { return '<span>' + esc(tag) + '</span>'; }).join('') + '</div><p><b>💡 Um passo além:</b> ' + esc(m.extra) + '</p><div class="map-code-window"><div class="map-code-toolbar"><span class="map-code-dots"><i></i><i></i><i></i></span><strong>' + (temaApostila === 'html' ? 'index.html' : 'exemplo.py') + '</strong><span class="map-code-status" aria-live="polite">O código aparece ao abrir este ramo</span></div><pre class="map-code-screen"><code class="map-code-output"></code><i class="map-code-caret" aria-hidden="true"></i></pre><pre class="map-code-source" hidden>' + esc(exemplo.codigo) + '</pre></div><small class="map-code-caption">Exemplo do tópico: ' + esc(exemplo.titulo.replace(/^\d+\.\s*/, '')) + '</small></div></details>'; }).join('') + '</div><div class="mindmap-footer">Dica de estudo <span>Abra um ramo, veja o código surgir letra por letra e depois encontre o mesmo exemplo na aula correspondente.</span></div></section></div>';
     var licaoCapId = APOSTILA_LICOES[c.id], licaoCap = licaoCapId && LIC[licaoCapId], capLido = apLido(c.id);
@@ -843,7 +920,7 @@
       '<div class="setrow"><span class="l">Aparência</span><div class="mini-seg">' + [['auto', 'Auto'], ['claro', 'Claro'], ['escuro', 'Escuro']].map(function (x) { return '<button class="' + (c.tema === x[0] ? 'on' : '') + '" data-act="tema" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="setrow"><span class="l">Visual da plataforma<small>Compare iPhone e Android</small></span><div class="mini-seg">' + [['ios', 'iOS'], ['android', 'Android']].map(function (x) { return '<button class="' + (c.plataforma === x[0] ? 'on' : '') + '" data-act="plat" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
       '</div></div>';
-    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.12</span><p>As mudanças de página, os toques nos botões e as notificações agora usam animações mais lentas e fluidas.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.12</p></div>'
+    h += '<div class="pad profile-release-area"><details class="release-notes"><summary><span>✨</span><span><strong>Novidades do app</strong><small>Veja o que mudou nesta versão</small></span></summary><div class="release-notes-body"><span class="release-version">Versão 1.3.13</span><p>A Apostila ganhou a área Praticar para conferir código HTML e Python, visualizar HTML com segurança e copiar ou baixar seus arquivos.</p></div></details><button class="linkbtn" data-act="sairConta">Sair da conta</button><button class="linkbtn" data-act="reiniciar">Reiniciar dados de demonstração</button><p class="foot-note">Protótipo com conteúdo de exemplo. Seu progresso fica salvo neste aparelho.</p><p class="profile-version" aria-label="Versão do app">v1.3.13</p></div>'
     return h;
   }
 
@@ -1045,6 +1122,7 @@
       case 'perfil': corpo = telaPerfil(); break;
       case 'bitinho': corpo = telaBitinho(); break;
       case 'apostila': corpo = telaApostila(); break;
+      case 'praticar': corpo = telaPraticar(); cls += ' practice-screen'; semAbas = true; break;
       case 'licao': corpo = telaLicao(); cls += ' lesson'; semAbas = true; break;
       case 'resultado': corpo = telaResultado(); cls += ' result'; semAbas = true; break;
       default: corpo = telaInicio();
@@ -1106,6 +1184,7 @@
     }
     if (!anim && topo) { var el = document.getElementById('screen'); (el.querySelector('.l-body') || el).scrollTop = topo; }
     if (ui.screen === 'licao') { ui.lesson.prevPct = pctLicao(); }
+    if (ui.screen === 'praticar') instalarEditorPratica();
     var ta = document.getElementById('resposta');
     if (ta) ta.addEventListener('input', function () { ui.lesson.texto = ta.value; var b = document.querySelector('[data-act="conferir"]'); if (b) b.disabled = !respostaCompleta(); });
     var nome = document.getElementById('nome');
@@ -1227,6 +1306,14 @@
         respostaSkinSel = null; feedbackSkin = null; render('fwd');
         break;
       case 'abrirApostila': ir('apostila', {}, 'fwd'); break;
+      case 'abrirPraticar': praticaEstado.retorno = { screen: ui.screen, tab: ui.tab, scroll: (document.getElementById('screen') || {}).scrollTop || 0 }; if (praticaEstado.codigos[praticaEstado.exercicio] !== undefined) praticaEstado.codigo = praticaEstado.codigos[praticaEstado.exercicio]; else praticaEstado.codigo = praticaAtual().exemplo; praticaEstado.diagnosticos = []; praticaEstado.resultado = null; ir('praticar', {}, 'fwd'); break;
+      case 'praticaVoltar': voltarDaPratica(); break;
+      case 'praticaVerificar': verificarPratica(); break;
+      case 'praticaPrevia': executarPreviaHTML(); break;
+      case 'praticaLimpar': praticaEstado.codigo = ''; praticaEstado.codigos[praticaEstado.exercicio] = ''; praticaEstado.diagnosticos = []; praticaEstado.resultado = null; render(null); var editorLimpo = document.getElementById('practice-editor'); if (editorLimpo) editorLimpo.focus(); break;
+      case 'praticaCopiar': guardarCodigoPratica(); copiarTexto(praticaEstado.codigo); break;
+      case 'praticaBaixar': guardarCodigoPratica(); var arqPratica = document.createElement('a'), blobPratica = new Blob([praticaEstado.codigo], { type: 'text/plain;charset=utf-8' }); arqPratica.href = URL.createObjectURL(blobPratica); arqPratica.download = praticaEstado.lang === 'html' ? 'meu-primeiro-site.html' : 'meu-programa.py'; arqPratica.click(); setTimeout(function () { URL.revokeObjectURL(arqPratica.href); }, 1000); toast('Arquivo baixado. Você pode abri-lo no VS Code.'); break;
+      case 'praticaGirar': var painelGiro = document.getElementById('practice-terminal'); if (painelGiro) { painelGiro.classList.remove('spin-once'); void painelGiro.offsetWidth; painelGiro.classList.add('spin-once'); setTimeout(function () { painelGiro.classList.remove('spin-once'); }, 900); } break;
       case 'apostilaHome': temaApostila = el.dataset.lang || ''; apEstado.cap = Math.max(0, parseInt(el.dataset.cap, 10) || 0); apEstado.aberto = el.dataset.resume === '1' && !!temaApostila; if (temaApostila) { S.apostilaRetomar = { lang: temaApostila, cap: apEstado.cap }; salvar(); } ir('apostila', {}, 'fwd'); break;
       case 'apostilaCap': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(capitulosApostila(temaApostila).length - 1, parseInt(el.dataset.v, 10) || 0)); S.apostilaRetomar = { lang: temaApostila, cap: apEstado.cap }; salvar(); render(null); var telaAp = document.getElementById('screen'); if (telaAp) telaAp.scrollTop = 0; break;
       case 'apostilaRetomar': apEstado.aberto = true; apEstado.cap = Math.max(0, Math.min(capitulosApostila(temaApostila).length - 1, parseInt(el.dataset.v, 10) || 0)); render(null); var telaRetomar = document.getElementById('screen'); if (telaRetomar) telaRetomar.scrollTop = 0; break;
@@ -1305,3 +1392,7 @@
   }
   if(!auth.user||!users()[auth.user]){auth.user='';telaAuth();}else{S=carregar();render('fade');}
 })();
+
+
+
+

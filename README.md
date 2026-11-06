@@ -54,6 +54,10 @@ Cada linguagem (HTML e Python) tem 15 capítulos: cinco básicos, cinco intermed
 
 A lógica de conteúdo (`content/*.js`) é dados puros e pode ser reaproveitada em React Native ou Flutter, ou empacotada com Capacitor.
 
+## Versão 1.3.13
+
+A Apostila ganhou uma área Praticar em tela cheia para HTML e Python, com verificação didática, prévia isolada de HTML, cópia e download de código. Python não é executado no navegador.
+
 ## Versão 1.3.12
 
 As mudanças de página, os toques nos botões e as notificações agora usam animações mais lentas e fluidas.
@@ -105,3 +109,7 @@ Os cards das skins do Bitinho agora têm fundos mais coloridos, brilho e animaç
 ## Versão 1.2.1
 
 A tela inicial conta com fundo interativo e reações do Bitinho. O mascote continua visível mesmo quando há uma foto de perfil, que fica na aba Perfil. A aba **Cantinho do Bitinho** reúne 20 visuais que são desbloqueados ao concluir capítulos de HTML e Python, além de cinco exercícios especiais que liberam skins exclusivas. Os acessórios e o progresso são salvos por conta neste aparelho. A tela de login também exibe a identidade da Codexa.
+
+
+
+

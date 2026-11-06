@@ -1312,3 +1312,55 @@ button:not(:disabled):active { transform: scale(.985); }
     transform: none !important;
   }
 }
+
+/* Praticar: editor em tela cheia, com prévia e feedback acessíveis. */
+#screen.practice-screen { overflow: hidden; padding: 0; gap: 0; }
+.practice-shell { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; background: var(--bg); }
+.practice-header { display: flex; align-items: center; gap: 10px; flex: none; padding: 10px 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.practice-header .backbtn { flex: none; margin: 0; padding: 8px; }
+.practice-heading { display: grid; gap: 1px; min-width: 0; flex: 1; }
+.practice-heading strong { font: 800 17px/1.1 var(--font-display); }
+.practice-heading small { color: var(--muted); font-size: 10px; }
+.practice-spin { flex: none; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--accent-deep); font-size: 11px; font-weight: 800; }
+.practice-terminal { display: flex; flex: 1; min-height: 0; flex-direction: column; margin: 10px 10px max(8px, env(safe-area-inset-bottom, 0px)); overflow: hidden; border: 1px solid #352b4e; border-radius: 18px; background: var(--code-bg); color: var(--code-fg); box-shadow: var(--shadow); }
+.practice-terminal.spin-once { animation: practiceSpin .8s cubic-bezier(.2,.75,.25,1); }
+@keyframes practiceSpin { 0% { transform: perspective(900px) rotateY(0); } 50% { transform: perspective(900px) rotateY(180deg); } 100% { transform: perspective(900px) rotateY(360deg); } }
+.practice-terminal-top { display: flex; align-items: center; gap: 6px; flex: none; min-height: 36px; padding: 7px 12px; background: var(--code-bar); color: #c9bfdf; font: 10px var(--font-mono); }
+.practice-dots { display: flex; gap: 5px; margin-right: 5px; }
+.practice-dots i { width: 8px; height: 8px; border-radius: 50%; background: #ff7d83; }
+.practice-dots i:nth-child(2) { background: #f2c66d; }.practice-dots i:nth-child(3) { background: #7bd6a5; }
+.practice-controls { display: grid; grid-template-columns: 1fr 1.25fr; gap: 7px; flex: none; padding: 10px; border-bottom: 1px solid #352b4e; background: #191522; }
+.practice-controls select { min-width: 0; height: 37px; padding: 0 9px; border: 1px solid #443b5c; border-radius: 10px; background: #262033; color: #f5f2fc; font: 700 11px var(--font-body); }
+.practice-prompt { grid-column: 1/-1; margin: 0; color: #c9bfdf; font-size: 11px; line-height: 1.45; }
+.practice-actions { display: flex; gap: 6px; grid-column: 1/-1; }
+.practice-actions button,.practice-footer button { min-height: 35px; padding: 7px 10px; border: 1px solid #51476d; border-radius: 10px; background: #292333; color: #f7f4ff; font-size: 10px; font-weight: 800; }
+.practice-actions .practice-check { flex: 1; border-color: var(--accent); background: var(--accent); color: #fff; }
+.practice-actions button:disabled { opacity: .5; cursor: not-allowed; }
+.practice-editor-box { position: relative; flex: 1; min-height: 140px; overflow: hidden; background: var(--code-bg); }
+.practice-code-layer { position: absolute; inset: 0; box-sizing: border-box; width: 100%; height: 100%; margin: 0; padding: 16px 14px; border: 0; overflow: auto; white-space: pre; tab-size: 2; font: 12px/1.7 var(--font-mono); }
+.practice-highlight { z-index: 0; pointer-events: none; color: var(--code-fg); overflow: hidden; }
+.practice-highlight mark { color: var(--code-fg); background: rgba(255, 83, 121, .15); border-bottom: 2px wavy #ff7294; }
+.practice-highlight mark.insert-point { display: inline-block; width: .72em; height: 1.2em; vertical-align: text-bottom; border-radius: 3px; background: rgba(255, 83, 121, .4); }
+.practice-editor { z-index: 1; resize: none; outline: 0; background: transparent; color: transparent; -webkit-text-fill-color: transparent; caret-color: #d0bcff; }
+.practice-editor::selection { background: rgba(143, 112, 232, .5); color: transparent; }
+.practice-feedback { flex: none; max-height: 112px; overflow: auto; padding: 9px 12px; border-top: 1px solid #352b4e; background: #201b2b; color: #c9bfdf; font-size: 10px; line-height: 1.45; }
+.practice-feedback strong { display: block; margin-bottom: 3px; color: #fff; font-size: 11px; }
+.practice-feedback.ok { background: #142a22; color: #c6f3d9; }.practice-feedback.ok strong { color: #c6f3d9; }
+.practice-feedback.error { background: #321a25; color: #ffd3df; }.practice-feedback.error strong { color: #ffd3df; }
+.practice-feedback.warning { background: #302919; color: #f8e8b6; }.practice-feedback.warning strong { color: #f8e8b6; }
+.practice-preview { flex: none; max-height: 0; overflow: hidden; background: #fff; transition: max-height .25s ease; }
+.practice-preview.open { max-height: 220px; border-top: 1px solid #51476d; }
+.practice-preview iframe { display: block; width: 100%; height: 200px; border: 0; background: #fff; }
+.practice-preview-label { padding: 5px 12px; background: #f5f2fc; color: #4a3d67; font: 10px var(--font-body); }
+.practice-footer { display: flex; align-items: center; gap: 7px; flex: none; padding: 8px 10px; border-top: 1px solid #352b4e; background: var(--code-bar); }
+.practice-footer button { flex: 1; }
+.practice-hint { padding: 0 11px 8px; color: #9690a6; background: var(--code-bar); font-size: 9px; line-height: 1.35; }
+@media (max-height: 700px) { .practice-prompt { font-size: 10px; }.practice-editor-box { min-height: 100px; }.practice-feedback { max-height: 82px; }.practice-preview.open { max-height: 160px; }.practice-preview iframe { height: 140px; } }
+@media (prefers-reduced-motion: reduce) { .practice-terminal.spin-once { animation: none; } .practice-preview { transition: none; } }
+
+.ap-practice-entry { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; }
+.ap-practice-top { display: inline-flex; align-items: center; justify-content: center; gap: 5px; flex: none; min-height: 36px; padding: 7px 10px; border: 1px solid rgba(255,255,255,.38); border-radius: 12px; background: rgba(255,255,255,.15); color: #fff; font-size: 11px; font-weight: 800; white-space: nowrap; }
+.ap-top-picker .ap-practice-top { border-color: var(--line); background: var(--surface); color: var(--accent-deep); }
+.ap-practice-top .ic { width: 16px; height: 16px; }
+@media (max-width: 360px) { .ap-top-reading .ap-practice-top { min-height: 32px; padding: 6px 7px; font-size: 10px; } .ap-top-reading .ap-close { width: 32px; height: 32px; } }
+
